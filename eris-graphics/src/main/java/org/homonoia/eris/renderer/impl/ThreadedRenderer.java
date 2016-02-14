@@ -2,9 +2,11 @@ package org.homonoia.eris.renderer.impl;
 
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
+import org.homonoia.eris.core.Errors;
 import org.homonoia.eris.core.annotations.ContextualComponent;
 import org.homonoia.eris.core.exceptions.InitializationException;
-import org.homonoia.eris.events.frame.Render;
+import org.homonoia.eris.events.graphics.Render;
+import org.homonoia.eris.events.graphics.ScreenMode;
 import org.homonoia.eris.graphics.Graphics;
 import org.homonoia.eris.math.Vector2b;
 import org.homonoia.eris.math.Vector3b;
@@ -18,13 +20,14 @@ import org.homonoia.eris.renderer.commands.EnableCommand;
 import org.joml.*;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.system.MemoryUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.FloatBuffer;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
-import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
+import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.GL_MULTISAMPLE;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE_CUBE_MAP;
@@ -36,6 +39,8 @@ import static org.lwjgl.opengl.GL32.GL_TEXTURE_CUBE_MAP_SEAMLESS;
  */
 @ContextualComponent
 public class ThreadedRenderer extends Contextual implements Renderer, Runnable {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Render.class);
 
     private static final EnableCommand ENABLE_CULL_COMMAND = EnableCommand.builder()
             .renderKey(RenderKey.builder()
@@ -105,6 +110,7 @@ public class ThreadedRenderer extends Contextual implements Renderer, Runnable {
         this.graphics = graphics;
 
         subscribe(this::handleRenderEvent, Render.class);
+        subscribe(this::handleScreenMode, ScreenMode.class);
     }
 
     @Override
@@ -113,18 +119,21 @@ public class ThreadedRenderer extends Contextual implements Renderer, Runnable {
             return;
         }
 
+        thread.setUncaughtExceptionHandler(this::handleRenderingThreadException);
         thread.start();
     }
 
     @Override
     public void run() {
 
-        long window = graphics.getWindow();
+        long window = graphics.getRenderWindow();
 
         try {
             initializeOpenGl(window, graphics.getWidth(), graphics.getHeight());
         } catch (InitializationException e) {
-            return;
+            LOG.error("Initialization Error in Renderer", e);
+            getContext().setExitCode(e.getError());
+            glfwSetWindowShouldClose(graphics.getRenderWindow(), GLFW_TRUE);
         }
 
         while (!threadExit.get()) {
@@ -243,7 +252,7 @@ public class ThreadedRenderer extends Contextual implements Renderer, Runnable {
         if (window != MemoryUtil.NULL) {
             glfwMakeContextCurrent(window);
         } else {
-            throw new InitializationException("Failed to initialize Renderer.\nAttempting to initialize OpenGL without a Window.");
+            throw new InitializationException("Failed to initialize Renderer.\nAttempting to initialize OpenGL without a Window.", Errors.GL_CREATE_ERROR);
         }
 
         glEnable(GL_MULTISAMPLE);
@@ -259,5 +268,15 @@ public class ThreadedRenderer extends Contextual implements Renderer, Runnable {
         state.add(CLEAR_COMMAND);
         state.add(ENABLE_DEPTH_COMMAND);
         state.add(ENABLE_CULL_COMMAND);
+    }
+
+    private void handleScreenMode(final ScreenMode evt) {
+        viewportDirty.set(true);
+    }
+
+    private void handleRenderingThreadException(final Thread thread, final Throwable throwable) {
+        LOG.error("Uncaught Exception in Rendering Thread", throwable);
+        getContext().setExitCode(Errors.RUNTIME);
+        glfwSetWindowShouldClose(graphics.getRenderWindow(), GLFW_TRUE);
     }
 }

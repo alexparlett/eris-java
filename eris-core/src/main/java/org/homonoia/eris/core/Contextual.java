@@ -136,4 +136,8 @@ public abstract class Contextual {
         eventBuilder.source(this);
         context.publish(eventBuilder.build());
     }
+
+    protected Context getContext() {
+        return context;
+    }
 }

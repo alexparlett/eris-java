@@ -1,4 +1,4 @@
-package org.homonoia.eris.events.frame;
+package org.homonoia.eris.events.graphics;
 
 import org.homonoia.eris.events.Event;
 

@@ -1,9 +1,7 @@
 package org.homonoia.eris.core;
 
+import org.homonoia.eris.core.annotations.ContextualComponent;
 import org.homonoia.eris.events.Event;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.subjects.PublishSubject;
@@ -12,14 +10,15 @@ import rx.subjects.Subject;
 
 import javax.annotation.PreDestroy;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * The type Contextual.
  */
-@Component
-@Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
+@ContextualComponent
 public class Context {
 
+    private AtomicReference<Errors> exitCode = new AtomicReference<>(Errors.SUCCESS);
     private final Subject<Event, Event> subject = new SerializedSubject<>(PublishSubject.create());
 
     /**
@@ -60,4 +59,11 @@ public class Context {
         subject.onNext(event);
     }
 
+    public Errors getExitCode() {
+        return exitCode.get();
+    }
+
+    public void setExitCode(final Errors exitCode) {
+        this.exitCode.set(exitCode);
+    }
 }
