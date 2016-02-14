@@ -1,4 +1,14 @@
+###
+# IntelliJ
+###
 build/
 .idea
 *.iml
+
+###
+# Gradle
+###
 .gradle
+gradlew.bat
+gradlew
+gradle/wrapper

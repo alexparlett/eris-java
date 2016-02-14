@@ -1,0 +1,55 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+
+    }
+}
+
+configure(allprojects) {
+    group 'org.homonoia'
+    version '0.1-SNAPSHOT'
+}
+
+configure(subprojects) {
+    apply plugin: 'java'
+    apply plugin: 'idea'
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        testCompile 'junit:junit:4.+'
+        testCompile 'org.mockito:mockito-all:+'
+
+        compile 'org.slf4j:slf4j-simple:+'
+        compile 'io.reactivex:rxjava:1.+'
+
+        compile 'org.springframework:spring-beans:4.2.4.RELEASE'
+        compile 'org.springframework:spring-context:4.2.4.RELEASE'
+
+        compile 'org.lwjgl:lwjgl:3.+'
+        compile 'org.lwjgl:lwjgl-platform:3.0.0a:natives-windows'
+        compile 'org.lwjgl:lwjgl-platform:3.0.0a:natives-linux'
+        compile 'org.lwjgl:lwjgl-platform:3.0.0a:natives-osx'
+
+        compile 'org.joml:joml:1.6.8'
+    }
+
+    idea {
+        module {
+            downloadJavadoc true
+            downloadSources true
+        }
+    }
+}
+
+task wrapper(type: Wrapper) {
+    gradleVersion '2.9'
+}

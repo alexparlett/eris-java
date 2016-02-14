@@ -1,0 +1,4 @@
+dependencies {
+    compile project(':eris-event')
+    compile project(':eris-core')
+}

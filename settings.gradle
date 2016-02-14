@@ -1,0 +1,7 @@
+rootProject.name = 'eris-parent'
+
+include 'eris-core'
+include 'eris-event'
+include 'eris-resource'
+include 'eris-graphics'
+
