@@ -102,7 +102,7 @@ public class JsonPatch {
             throw new JsonException("Invalid Remove. Cannot remove root.");
         }
 
-        String elementName = getElementName(lastIndexOf + 1);
+        String elementName = getElementName(lastIndexOf);
 
         if (JsonPath.NUMBER_PREDICATE.test(elementName) && origin.isJsonArray()) {
             try {
@@ -155,7 +155,7 @@ public class JsonPatch {
     }
 
     private JsonElement getOrigin(final JsonElement patchableDocument, final int lastIndexOf) throws JsonException {
-        String queryPath = path.substring(0, lastIndexOf);
+        String queryPath = lastIndexOf > 0 ? path.substring(0, lastIndexOf) : path;
         JsonElement origin;
         try {
             origin = JsonPath.search(patchableDocument, queryPath)
@@ -171,7 +171,7 @@ public class JsonPatch {
     private String getElementName(final int beginIndex) throws JsonException {
         String elementName;
         try {
-            elementName = path.substring(beginIndex);
+            elementName = path.substring(beginIndex + 1);
         } catch (IndexOutOfBoundsException ex) {
             throw new JsonException("Invalid {}. Path[{}] does not contain a target element.", op, path);
         }
@@ -189,7 +189,11 @@ public class JsonPatch {
             }
 
             JsonArray jsonArray = patchableDocument.getAsJsonArray();
-            jsonArray.forEach(jsonElement -> jsonArray.remove(jsonElement));
+            int i = jsonArray.size() - 1;
+            while(i >= 0 && i < jsonArray.size()) {
+                jsonArray.remove(i);
+                i = jsonArray.size() - 1;
+            }
             jsonArray.addAll(value.getAsJsonArray());
         } else if (patchableDocument.isJsonObject()) {
             if (!value.isJsonObject()) {
@@ -197,7 +201,7 @@ public class JsonPatch {
             }
 
             JsonObject jsonObject = patchableDocument.getAsJsonObject();
-            jsonObject.entrySet().forEach(entry -> jsonObject.remove(entry.getKey()));
+            jsonObject.entrySet().clear();
             value.getAsJsonObject().entrySet().forEach(entry -> jsonObject.add(entry.getKey(), entry.getValue()));
         } else {
             throw new JsonException("Invalid {}. Attempting to replace root where the value is neither an array or an object.", op);

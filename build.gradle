@@ -31,15 +31,18 @@ configure(subprojects) {
         compile 'org.slf4j:slf4j-simple:+'
         compile 'io.reactivex:rxjava:1.+'
 
-        compile 'org.springframework:spring-beans:4.2.4.RELEASE'
-        compile 'org.springframework:spring-context:4.2.4.RELEASE'
+        compile 'org.springframework:spring-beans:4.2.+'
+        compile 'org.springframework:spring-context:4.2.+'
 
         compile 'org.lwjgl:lwjgl:3.+'
-        compile 'org.lwjgl:lwjgl-platform:3.0.0a:natives-windows'
-        compile 'org.lwjgl:lwjgl-platform:3.0.0a:natives-linux'
-        compile 'org.lwjgl:lwjgl-platform:3.0.0a:natives-osx'
+        compile 'org.lwjgl:lwjgl-platform:3.+:natives-windows'
+        compile 'org.lwjgl:lwjgl-platform:3.+:natives-linux'
+        compile 'org.lwjgl:lwjgl-platform:3.+:natives-osx'
 
-        compile 'org.joml:joml:1.6.8'
+        compile 'org.joml:joml:+'
+
+        compile 'net.sf.sociaal:jbullet:3.+'
+        compile 'com.badlogicgames.ashley:ashley:1.7.+'
     }
 
     idea {

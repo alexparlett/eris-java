@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 /**
@@ -53,14 +54,14 @@ public class JsonFile extends Resource {
             parser.forEachRemaining(elements::add);
 
             if (elements.isEmpty()) {
-                throw new IOException("No Json Elements in file.");
+                throw new IOException("Failed to load Json File. No Json Elements found.");
             } else if (elements.size() == 1) {
                 root = elements.get(0);
             } else {
                 root = new JsonArray();
                 elements.stream().forEach(((JsonArray) root)::add);
             }
-        } catch (JsonParseException ex) {
+        } catch (JsonParseException | NoSuchElementException ex) {
             throw new IOException("Failed to load JsonFile.", ex);
         }
     }

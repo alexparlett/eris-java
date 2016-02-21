@@ -22,17 +22,23 @@ public final class JsonPath {
         JsonElement current = Objects.requireNonNull(root, "JsonElement to be searched cannot be null.");
         if (StringUtils.isEmpty(path)) {
             throw new JsonPathException("Path to search for cannot be empty.");
+        } else if (!path.startsWith(PATH_DELIMITER)) {
+            throw new JsonPathException("Path must begin at root.");
         }
 
-        if (!PATH_DELIMITER.equals(path)) {
+        if (PATH_DELIMITER.compareTo(path) == 0) {
             return Optional.of(current);
         }
 
-        String[] split = path.split(PATH_DELIMITER);
+        String[] split = path.substring(1).split(PATH_DELIMITER);
         for (int i = 0; i < split.length && current != null; i++) {
             String segment = split[i];
             if (NUMBER_PREDICATE.test(segment) && current.isJsonArray()) {
-                current = current.getAsJsonArray().get(Integer.parseInt(segment));
+                try {
+                    current = current.getAsJsonArray().get(Integer.parseInt(segment));
+                } catch (IndexOutOfBoundsException ex) {
+                    current = null;
+                }
             } else {
                 current = current.getAsJsonObject().get(segment);
             }
