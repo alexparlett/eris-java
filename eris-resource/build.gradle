@@ -1,4 +1,6 @@
 dependencies {
     compile project(':eris-event')
     compile project(':eris-core')
+
+    compile 'com.google.code.gson:gson:2.6.1'
 }

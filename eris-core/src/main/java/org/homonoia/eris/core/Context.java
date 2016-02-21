@@ -2,6 +2,9 @@ package org.homonoia.eris.core;
 
 import org.homonoia.eris.core.annotations.ContextualComponent;
 import org.homonoia.eris.events.Event;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.subjects.PublishSubject;
@@ -16,10 +19,11 @@ import java.util.concurrent.atomic.AtomicReference;
  * The type Contextual.
  */
 @ContextualComponent
-public class Context {
+public class Context implements ApplicationContextAware {
 
     private AtomicReference<Errors> exitCode = new AtomicReference<>(Errors.SUCCESS);
     private final Subject<Event, Event> subject = new SerializedSubject<>(PublishSubject.create());
+    private ApplicationContext applicationContext;
 
     /**
      * Ensures that all subscriptions to the context are properly unsubscribed when it is deleted.
@@ -65,5 +69,14 @@ public class Context {
 
     public void setExitCode(final Errors exitCode) {
         this.exitCode.set(exitCode);
+    }
+
+    @Override
+    public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
+        this.applicationContext = applicationContext;
+    }
+
+    public ApplicationContext getApplicationContext() {
+        return applicationContext;
     }
 }
