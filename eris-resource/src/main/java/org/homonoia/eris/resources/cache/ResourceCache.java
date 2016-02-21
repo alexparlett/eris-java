@@ -79,8 +79,8 @@ public class ResourceCache extends Contextual {
         }
         else if (resource != null && resource.getState().equals(Resource.AsyncState.LOADING))
         {
-            while (resource.getState() == Resource.AsyncState.LOADING);
-            if (resource.getState() == Resource.AsyncState.SUCCESS)
+            while (resource.getState().equals(Resource.AsyncState.LOADING));
+            if (resource.getState().equals(Resource.AsyncState.SUCCESS))
                 return resource;
         } else if (resource != null && !resource.getState().equals(Resource.AsyncState.FAILED)) {
             try {
@@ -126,8 +126,8 @@ public class ResourceCache extends Contextual {
         }
         else if (resource != null && resource.getState().equals(Resource.AsyncState.LOADING))
         {
-            while (resource.getState() == Resource.AsyncState.LOADING);
-            if (resource.getState() == Resource.AsyncState.SUCCESS)
+            while (resource.getState().equals(Resource.AsyncState.LOADING));
+            if (resource.getState().equals(Resource.AsyncState.SUCCESS))
                 return resource;
         } else if (resource != null && !resource.getState().equals(Resource.AsyncState.FAILED)) {
             try {
