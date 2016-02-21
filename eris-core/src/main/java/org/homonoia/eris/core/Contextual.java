@@ -92,8 +92,8 @@ public abstract class Contextual {
         subscriptions.entrySet()
                 .stream()
                 .filter(entry -> entry.getKey().matches(eventClass))
-                .map(entry -> entry.getValue())
-                .forEach(subscription -> subscription.unsubscribe());
+                .map(Map.Entry::getValue)
+                .forEach(Subscription::unsubscribe);
         subscriptions.clear();
     }
 
@@ -106,8 +106,8 @@ public abstract class Contextual {
         subscriptions.entrySet()
                 .stream()
                 .filter(entry -> entry.getKey().matches(eventSource))
-                .map(entry -> entry.getValue())
-                .forEach(subscription -> subscription.unsubscribe());
+                .map(Map.Entry::getValue)
+                .forEach(Subscription::unsubscribe);
         subscriptions.clear();
     }
 
@@ -122,8 +122,8 @@ public abstract class Contextual {
         subscriptions.entrySet()
                 .stream()
                 .filter(entry -> entry.getKey().matches(eventClass, eventSrc))
-                .map(entry -> entry.getValue())
-                .forEach(subscription -> subscription.unsubscribe());
+                .map(Map.Entry::getValue)
+                .forEach(Subscription::unsubscribe);
         subscriptions.clear();
     }
 

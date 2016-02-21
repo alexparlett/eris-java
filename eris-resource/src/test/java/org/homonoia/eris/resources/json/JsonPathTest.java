@@ -102,7 +102,7 @@ public class JsonPathTest {
 
         JsonElement root = jsonFile.getRoot().orElseThrow(() -> new Exception("Root not found."));
 
-        JsonElement result = JsonPath.search(root, "/a/e").orElseThrow(() -> new NoSuchElementException("Element not found."));
+        JsonPath.search(root, "/a/e").orElseThrow(() -> new NoSuchElementException("Element not found."));
     }
 
     @Test(expected = JsonPathException.class)

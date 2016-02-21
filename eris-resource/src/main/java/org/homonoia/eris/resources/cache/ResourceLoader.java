@@ -63,7 +63,7 @@ public class ResourceLoader extends Contextual {
     }
 
     private void process(LoadingTask loadingTask) {
-        if (loadingTask.resource == null || loadingTask.path == null) {
+        if (loadingTask.resource != null && loadingTask.path != null) {
             loadingTask.resource.setState(Resource.AsyncState.LOADING);
             try (InputStream inputStream = Files.newInputStream(loadingTask.path)) {
                 loadingTask.resource.load(inputStream);

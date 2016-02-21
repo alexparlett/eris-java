@@ -160,9 +160,7 @@ public class JsonPatch {
         try {
             origin = JsonPath.search(patchableDocument, queryPath)
                     .orElseThrow(() -> new JsonException("Invalid {}. No element found for Path[{}] in target json.", op, queryPath));
-        } catch (JsonPathException ex) {
-            throw new JsonException("Invalid {}. JsonPath could not search element.", ex, op);
-        } catch (NullPointerException ex) {
+        } catch (JsonPathException | NullPointerException ex) {
             throw new JsonException("Invalid {}. JsonPath could not search element.", ex, op);
         }
         return origin;
