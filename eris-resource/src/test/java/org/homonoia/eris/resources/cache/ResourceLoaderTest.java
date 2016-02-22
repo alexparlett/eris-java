@@ -3,7 +3,7 @@ package org.homonoia.eris.resources.cache;
 import com.google.gson.Gson;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.resources.Resource;
-import org.homonoia.eris.resources.json.JsonFile;
+import org.homonoia.eris.resources.types.JsonFile;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;

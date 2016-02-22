@@ -1,10 +1,12 @@
-package org.homonoia.eris.resources.json;
+package org.homonoia.eris.resources.types;
 
 import com.google.gson.*;
 import com.google.gson.stream.JsonWriter;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.resources.Resource;
-import org.homonoia.eris.resources.json.exceptions.JsonException;
+import org.homonoia.eris.resources.types.json.JsonPatch;
+import org.homonoia.eris.resources.types.json.JsonType;
+import org.homonoia.eris.resources.types.json.exceptions.JsonException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

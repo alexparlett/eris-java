@@ -95,11 +95,11 @@ public class ResourceCache extends Contextual {
         return null;
     }
 
-    public <T extends Resource> T getTemporary(final Class<T> clazz, final Path path) {
+    public <T extends Resource> Optional<T> getTemporary(final Class<T> clazz, final Path path) {
         return getTemporary(clazz, path, false);
     }
 
-    public <T extends Resource> T getTemporary(final Class<T> clazz, final Path path, boolean errorOnFail) {
+    public <T extends Resource> Optional<T> getTemporary(final Class<T> clazz, final Path path, boolean errorOnFail) {
         Path relativePath = path;
         if (path.isAbsolute()) {
             for (Path directory : directories) {
@@ -122,13 +122,13 @@ public class ResourceCache extends Contextual {
         });
 
         if (resource != null && resource.getState().equals(Resource.AsyncState.SUCCESS)) {
-            return resource;
+            return Optional.of(resource);
         }
         else if (resource != null && resource.getState().equals(Resource.AsyncState.LOADING))
         {
             while (resource.getState().equals(Resource.AsyncState.LOADING));
             if (resource.getState().equals(Resource.AsyncState.SUCCESS))
-                return resource;
+                return Optional.of(resource);
         } else if (resource != null && !resource.getState().equals(Resource.AsyncState.FAILED)) {
             try {
                 Path fullPath = findFile(path).orElseThrow(() -> new IOException("Resource does not exist."));
@@ -139,7 +139,7 @@ public class ResourceCache extends Contextual {
         }
 
         // Resource == Null || Resource State == FAILED
-        return null;
+        return Optional.empty();
     }
 
     public synchronized void remove(final Class<? extends Resource> clazz, final Path path) {

@@ -1,4 +1,4 @@
-package org.homonoia.eris.resources.json.exceptions;
+package org.homonoia.eris.resources.types.json.exceptions;
 
 /**
  * Created by alexparlett on 17/02/2016.

@@ -1,4 +1,4 @@
-package org.homonoia.eris.resources.json;
+package org.homonoia.eris.resources.types.json;
 
 /**
  * Created by alexparlett on 14/02/2016.
