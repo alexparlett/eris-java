@@ -1,9 +1,8 @@
-package org.homonoia.eris.resources.types.json;
+package org.homonoia.eris.resources.types;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import org.homonoia.eris.core.Context;
-import org.homonoia.eris.resources.types.JsonFile;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;

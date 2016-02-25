@@ -3,7 +3,7 @@ package org.homonoia.eris.resources.types.json;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import org.homonoia.eris.core.Context;
-import org.homonoia.eris.resources.types.json.exceptions.JsonPathException;
+import org.homonoia.eris.resources.exceptions.JsonPathException;
 import org.homonoia.eris.resources.types.JsonFile;
 import org.junit.Test;
 import org.junit.runner.RunWith;

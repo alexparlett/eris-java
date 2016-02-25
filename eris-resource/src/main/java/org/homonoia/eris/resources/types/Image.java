@@ -2,6 +2,7 @@ package org.homonoia.eris.resources.types;
 
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.resources.Resource;
+import org.homonoia.eris.resources.exceptions.ImageException;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBIWriteCallback;
 import org.lwjgl.stb.STBImage;
@@ -17,6 +18,7 @@ import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.text.MessageFormat;
+import java.util.Objects;
 
 /**
  * Created by alexparlett on 21/02/2016.
@@ -36,6 +38,8 @@ public class Image extends Resource {
 
     @Override
     public void load(final InputStream inputStream) throws IOException {
+        Objects.requireNonNull(inputStream, "Input Stream must not be null.");
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         int read = inputStream.read();
         while(read >= 0) {
@@ -43,28 +47,39 @@ public class Image extends Resource {
             read = inputStream.read();
         }
 
+        if (baos.size() <= 0) {
+            throw new IOException(MessageFormat.format("Failed to load Image {0}. File empty.", getPath()));
+        }
+
         ByteBuffer byteBuffer = BufferUtils.createByteBuffer(baos.size());
         byteBuffer.put(baos.toByteArray());
+        byteBuffer.rewind();
 
-        IntBuffer status = BufferUtils.createIntBuffer(3);
+        IntBuffer width = BufferUtils.createIntBuffer(1);
+        IntBuffer height = BufferUtils.createIntBuffer(1);
+        IntBuffer components = BufferUtils.createIntBuffer(1);
 
-        STBImage.stbi_set_flip_vertically_on_load(1);
-        data = STBImage.stbi_load_from_memory(byteBuffer, status, status, status, 0);
-        width = status.get(0);
-        height = status.get(1);
-        components = status.get(2);
-        if (data == null || width <= 0 || height <= 0 || components <= 0) {
+        data = STBImage.stbi_load_from_memory(byteBuffer, width, height, components, 0);
+        this.width = width.get();
+        this.height = height.get();
+        this.components = components.get();
+        if (data == null || this.width <= 0 || this.height <= 0 || this.components <= 0) {
             LOG.error("Failed to load Image {}. {}", getPath(), STBImage.stbi_failure_reason());
-            throw new IOException(MessageFormat.format("Failed to load Image {0}. {1}", getPath(), STBImage.stbi_failure_reason()));
+            throw new IOException(MessageFormat.format("Failed to load Image {0}. {1}", getPath(), Objects.toString(STBImage.stbi_failure_reason(), "")));
         }
     }
 
     @Override
     public void save(final OutputStream outputStream) throws IOException {
+        Objects.requireNonNull(outputStream, "Output Stream must not be null.");
+
+        if (data == null || this.width <= 0 || this.height <= 0 || this.components <= 0) {
+            LOG.error("Failed to save Image {}.", getPath());
+            throw new IOException(MessageFormat.format("Failed to save Image {0}. Image data invalid.", getPath()));
+        }
+
         ByteBuffer writeContext = BufferUtils.createByteBuffer(width * components);
-        ByteBuffer outputContext = BufferUtils.createByteBuffer(width * height * components);
-
-
+        ByteBuffer outputContext = ByteBuffer.wrap(new byte[width * height * components]);
 
         int success = STBImageWrite.stbi_write_png_to_func(STBIWriteCallback.create((context, data, size) -> outputContext.put(STBIWriteCallback.getData(data, size))), writeContext, width, height, components, data, width * components);
         if (success == 0) {
@@ -74,13 +89,17 @@ public class Image extends Resource {
         outputStream.write(outputContext.array());
     }
 
-    public boolean resize(int width, int height) {
+    public boolean resize(int width, int height) throws ImageException {
         if (this.width == width && this.height == height) {
             return false;
         }
 
         if (width == 0 || height == 0) {
             return false;
+        }
+
+        if (data == null) {
+            throw new ImageException("Failed to resize {}. No Image Data.", getPath());
         }
 
         ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * components);
@@ -98,8 +117,8 @@ public class Image extends Resource {
 
     public void flip() {
         int rowSize = components * width;
-        ByteBuffer rowBuffer = BufferUtils.createByteBuffer(rowSize);
-        ByteBuffer oppositeRowBuffer = BufferUtils.createByteBuffer(rowSize);
+        ByteBuffer rowBuffer = ByteBuffer.wrap(new byte[rowSize]);
+        ByteBuffer oppositeRowBuffer = ByteBuffer.wrap(new byte[rowSize]);
         int halfRows = height / 2;
 
         for (int i = 0; i < halfRows; i++)
