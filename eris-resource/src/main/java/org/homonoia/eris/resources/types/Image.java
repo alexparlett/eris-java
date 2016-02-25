@@ -5,6 +5,7 @@ import org.homonoia.eris.resources.Resource;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBIWriteCallback;
 import org.lwjgl.stb.STBImage;
+import org.lwjgl.stb.STBImageResize;
 import org.lwjgl.stb.STBImageWrite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,6 +48,7 @@ public class Image extends Resource {
 
         IntBuffer status = BufferUtils.createIntBuffer(3);
 
+        STBImage.stbi_set_flip_vertically_on_load(1);
         data = STBImage.stbi_load_from_memory(byteBuffer, status, status, status, 0);
         width = status.get(0);
         height = status.get(1);
@@ -62,12 +64,52 @@ public class Image extends Resource {
         ByteBuffer writeContext = BufferUtils.createByteBuffer(width * components);
         ByteBuffer outputContext = BufferUtils.createByteBuffer(width * height * components);
 
+
+
         int success = STBImageWrite.stbi_write_png_to_func(STBIWriteCallback.create((context, data, size) -> outputContext.put(STBIWriteCallback.getData(data, size))), writeContext, width, height, components, data, width * components);
         if (success == 0) {
-            throw new IOException(MessageFormat.format("Failed to write Image {0}.", getPath()));
+            throw new IOException(MessageFormat.format("Failed to save Image {0}.", getPath()));
         }
 
         outputStream.write(outputContext.array());
+    }
+
+    public boolean resize(int width, int height) {
+        if (this.width == width && this.height == height) {
+            return false;
+        }
+
+        if (width == 0 || height == 0) {
+            return false;
+        }
+
+        ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * components);
+        if (STBImageResize.stbir_resize_uint8(data, this.width, this.height, this.width * components, buffer, width, height, width * components, components) == 0) {
+            LOG.error("Failed to resize Image {}.", getPath());
+            return false;
+        }
+
+        this.width = width;
+        this.height = height;
+        this.data = buffer;
+
+        return true;
+    }
+
+    public void flip() {
+        int rowSize = components * width;
+        ByteBuffer rowBuffer = BufferUtils.createByteBuffer(rowSize);
+        ByteBuffer oppositeRowBuffer = BufferUtils.createByteBuffer(rowSize);
+        int halfRows = height / 2;
+
+        for (int i = 0; i < halfRows; i++)
+        {
+            System.arraycopy(data.array(), getPixelOffset(0, i), rowBuffer.array(), 0, rowSize);
+            System.arraycopy(data.array(), getPixelOffset(0, height - i - 1), oppositeRowBuffer.array(), 0, rowSize);
+
+            System.arraycopy(oppositeRowBuffer.array(), 0, data.array(), getPixelOffset(0, i), rowSize);
+            System.arraycopy(rowBuffer.array(), 0, data.array(), getPixelOffset(0, height - i - 1), rowSize);
+        }
     }
 
     public int getComponents() {
@@ -102,7 +144,8 @@ public class Image extends Resource {
         this.data = data;
     }
 
-    public void flip() {
-
+    public int getPixelOffset(int column, int row)
+    {
+        return (row * width + column) * components;
     }
 }
