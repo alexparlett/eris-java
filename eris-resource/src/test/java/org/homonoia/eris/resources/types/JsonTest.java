@@ -26,16 +26,16 @@ import static org.mockito.Mockito.when;
  * Created by alexparlett on 21/02/2016.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class JsonFileTest {
+public class JsonTest {
 
     @Rule
-    TemporaryFolder folder = new TemporaryFolder();
+    public TemporaryFolder folder = new TemporaryFolder();
 
     @Mock
-    ApplicationContext applicationContext;
+    private ApplicationContext applicationContext;
 
     @InjectMocks
-    Context context;
+    private Context context;
 
     @Test
     public void testLoad_Successful() throws Exception {
@@ -46,7 +46,7 @@ public class JsonFileTest {
 
         InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 
-        JsonFile jsonFile = new JsonFile(context);
+        Json jsonFile = new Json(context);
         jsonFile.load(inputStream);
 
         JsonElement root = jsonFile.getRoot().orElseThrow(() -> new Exception("Root not found."));
@@ -73,7 +73,7 @@ public class JsonFileTest {
 
         InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 
-        JsonFile jsonFile = new JsonFile(context);
+        Json jsonFile = new Json(context);
         jsonFile.load(inputStream);
     }
 }

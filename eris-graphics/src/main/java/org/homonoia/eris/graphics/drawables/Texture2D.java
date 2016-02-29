@@ -6,7 +6,7 @@ import org.homonoia.eris.core.Context;
 import org.homonoia.eris.graphics.Graphics;
 import org.homonoia.eris.resources.cache.ResourceCache;
 import org.homonoia.eris.resources.types.Image;
-import org.homonoia.eris.resources.types.JsonFile;
+import org.homonoia.eris.resources.types.Json;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.system.MemoryUtil;
 
@@ -30,20 +30,21 @@ public class Texture2D extends Texture {
     @Override
     public void load(final InputStream inputStream) throws IOException {
 
-        JsonFile jsonFile = new JsonFile(getContext());
-        jsonFile.load(inputStream);
+        Json json = new Json(getContext());
+        json.load(inputStream);
 
-        JsonObject root = jsonFile.getRoot()
+        JsonObject root = json.getRoot()
                 .map(JsonElement::getAsJsonObject)
                 .orElseThrow(() -> new IOException("Failed to load Texture2D. Metadata Json invalid."));
+        parseParameters(root);
 
         Path file = Paths.get(root.get("file").getAsString());
 
         ResourceCache resourceCache = getContext().getComponent(ResourceCache.class);
         Image image = resourceCache.getTemporary(Image.class, file)
                 .orElseThrow(() -> new IOException("Failed to load Texture2D. Metadata Json doesn't contain valid file"));
+        image.flip();
 
-        parseParameters(root);
         int format = getFormat(image);
 
         long win = GLFW.glfwGetCurrentContext();

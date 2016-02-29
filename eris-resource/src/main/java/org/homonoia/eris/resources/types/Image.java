@@ -2,7 +2,7 @@ package org.homonoia.eris.resources.types;
 
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.resources.Resource;
-import org.homonoia.eris.resources.exceptions.ImageException;
+import org.homonoia.eris.resources.types.image.ImageException;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.stb.STBIWriteCallback;
 import org.lwjgl.stb.STBImage;

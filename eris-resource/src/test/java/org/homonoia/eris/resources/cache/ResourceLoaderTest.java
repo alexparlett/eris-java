@@ -3,7 +3,7 @@ package org.homonoia.eris.resources.cache;
 import com.google.gson.Gson;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.resources.Resource;
-import org.homonoia.eris.resources.types.JsonFile;
+import org.homonoia.eris.resources.types.Json;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -43,7 +43,7 @@ public class ResourceLoaderTest {
         when(applicationContext.getBean(Gson.class)).thenReturn(new Gson());
 
         Path path = Paths.get(ClassLoader.getSystemClassLoader().getResource("test.json").toURI());
-        Resource resource = new JsonFile(context);
+        Resource resource = new Json(context);
 
         resourceLoader.load(resource, path, true);
 
@@ -57,7 +57,7 @@ public class ResourceLoaderTest {
         when(applicationContext.getBean(Gson.class)).thenReturn(new Gson());
 
         Path path = Paths.get(ClassLoader.getSystemClassLoader().getResource("bad.json").toURI());
-        Resource resource = new JsonFile(context);
+        Resource resource = new Json(context);
 
         resourceLoader.load(resource, path, true);
 
@@ -69,7 +69,7 @@ public class ResourceLoaderTest {
 
         when(applicationContext.getBean(Gson.class)).thenReturn(new Gson());
 
-        Resource resource = new JsonFile(context);
+        Resource resource = new Json(context);
 
         resourceLoader.load(resource, null, true);
     }
@@ -90,7 +90,7 @@ public class ResourceLoaderTest {
         when(applicationContext.getBean(Gson.class)).thenReturn(new Gson());
 
         Path path = Paths.get(ClassLoader.getSystemClassLoader().getResource("test.json").toURI());
-        Resource resource = new JsonFile(context);
+        Resource resource = new Json(context);
 
         resourceLoader.load(resource, path, false);
 
@@ -105,7 +105,7 @@ public class ResourceLoaderTest {
         when(applicationContext.getBean(Gson.class)).thenReturn(new Gson());
 
         Path path = Paths.get(ClassLoader.getSystemClassLoader().getResource("bad.json").toURI());
-        Resource resource = new JsonFile(context);
+        Resource resource = new Json(context);
 
         resourceLoader.load(resource, path, false);
 

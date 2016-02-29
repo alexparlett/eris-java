@@ -2,7 +2,7 @@ package org.homonoia.eris.renderer;
 
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
-import org.homonoia.eris.core.Errors;
+import org.homonoia.eris.core.ExitCode;
 import org.homonoia.eris.core.annotations.ContextualComponent;
 import org.homonoia.eris.core.exceptions.InitializationException;
 import org.homonoia.eris.events.graphics.Render;
@@ -146,7 +146,7 @@ public class Renderer extends Contextual implements Runnable {
         glfwMakeContextCurrent(MemoryUtil.NULL);
     }
 
-    public void terminate() {
+    public void shutdown() {
         initialized = false;
         threadExit.set(true);
 
@@ -243,7 +243,7 @@ public class Renderer extends Contextual implements Runnable {
         if (window != MemoryUtil.NULL) {
             glfwMakeContextCurrent(window);
         } else {
-            throw new InitializationException("Failed to initialize Renderer.\nAttempting to initialize OpenGL without a Window.", Errors.GL_CREATE_ERROR);
+            throw new InitializationException("Failed to initialize Renderer.\nAttempting to initialize OpenGL without a Window.", ExitCode.GL_CREATE_ERROR);
         }
 
         glEnable(GL_MULTISAMPLE);
@@ -267,7 +267,7 @@ public class Renderer extends Contextual implements Runnable {
 
     private void handleRenderingThreadException(final Thread thread, final Throwable throwable) {
         LOG.error("Uncaught Exception in Rendering Thread", throwable);
-        getContext().setExitCode(Errors.RUNTIME);
+        getContext().setExitCode(ExitCode.RUNTIME);
         glfwSetWindowShouldClose(graphics.getRenderWindow(), GLFW_TRUE);
     }
 }

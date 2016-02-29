@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicReference;
 @ContextualComponent
 public class Context implements ApplicationContextAware {
 
-    private AtomicReference<Errors> exitCode = new AtomicReference<>(Errors.SUCCESS);
+    private AtomicReference<ExitCode> exitCode = new AtomicReference<>(ExitCode.SUCCESS);
     private final Subject<Event, Event> subject = new SerializedSubject<>(PublishSubject.create());
     private ApplicationContext applicationContext;
 
@@ -63,11 +63,11 @@ public class Context implements ApplicationContextAware {
         subject.onNext(event);
     }
 
-    public Errors getExitCode() {
+    public ExitCode getExitCode() {
         return exitCode.get();
     }
 
-    public void setExitCode(final Errors exitCode) {
+    public void setExitCode(final ExitCode exitCode) {
         this.exitCode.set(exitCode);
     }
 

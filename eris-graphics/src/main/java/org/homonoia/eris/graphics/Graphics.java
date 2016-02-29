@@ -2,7 +2,7 @@ package org.homonoia.eris.graphics;
 
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
-import org.homonoia.eris.core.Errors;
+import org.homonoia.eris.core.ExitCode;
 import org.homonoia.eris.core.annotations.ContextualComponent;
 import org.homonoia.eris.core.exceptions.InitializationException;
 import org.homonoia.eris.events.core.ExitRequested;
@@ -265,7 +265,7 @@ public class Graphics extends Contextual {
 
         if (renderWindow == MemoryUtil.NULL)
         {
-            throw new InitializationException("", Errors.WINDOW_CREATE_ERROR);
+            throw new InitializationException("", ExitCode.WINDOW_CREATE_ERROR);
         }
 
         glfwMakeContextCurrent(renderWindow);
@@ -282,7 +282,7 @@ public class Graphics extends Contextual {
         try {
             GL.createCapabilities();
         } catch (IllegalStateException ex) {
-            throw new InitializationException("", Errors.GL_CREATE_ERROR);
+            throw new InitializationException("", ExitCode.GL_CREATE_ERROR);
         }
 
         if (!isFullscreen()) {
@@ -313,7 +313,7 @@ public class Graphics extends Contextual {
 
         if (backgroundWindow == MemoryUtil.NULL)
         {
-            throw new InitializationException("", Errors.WINDOW_CREATE_ERROR);
+            throw new InitializationException("", ExitCode.WINDOW_CREATE_ERROR);
         }
 
         glfwMakeContextCurrent(backgroundWindow);
@@ -321,7 +321,7 @@ public class Graphics extends Contextual {
         try {
             GL.createCapabilities();
         } catch (IllegalStateException ex) {
-            throw new InitializationException("", Errors.GL_CREATE_ERROR);
+            throw new InitializationException("", ExitCode.GL_CREATE_ERROR);
         }
 
         glfwSetWindowCloseCallback(backgroundWindow, GLFWWindowCloseCallback.create(this::handleWindowCloseCallback));

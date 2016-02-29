@@ -4,8 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import org.homonoia.eris.core.Context;
-import org.homonoia.eris.resources.exceptions.JsonException;
-import org.homonoia.eris.resources.types.JsonFile;
+import org.homonoia.eris.resources.types.Json;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -45,7 +44,7 @@ public class JsonPatchTest {
 
         InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 
-        JsonFile jsonFile = new JsonFile(context);
+        Json jsonFile = new Json(context);
         jsonFile.load(inputStream);
 
         JsonPatch patch = gson.fromJson(patchJson, JsonPatch.class);
@@ -63,7 +62,7 @@ public class JsonPatchTest {
 
         InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 
-        JsonFile jsonFile = new JsonFile(context);
+        Json jsonFile = new Json(context);
         jsonFile.load(inputStream);
 
         JsonPatch patch = gson.fromJson(patchJson, JsonPatch.class);
@@ -81,7 +80,7 @@ public class JsonPatchTest {
 
         InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 
-        JsonFile jsonFile = new JsonFile(context);
+        Json jsonFile = new Json(context);
         jsonFile.load(inputStream);
 
         JsonPatch patch = gson.fromJson(patchJson, JsonPatch.class);
@@ -103,7 +102,7 @@ public class JsonPatchTest {
 
         InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 
-        JsonFile jsonFile = new JsonFile(context);
+        Json jsonFile = new Json(context);
         jsonFile.load(inputStream);
 
         JsonPatch patch = gson.fromJson(patchJson, JsonPatch.class);
@@ -125,7 +124,7 @@ public class JsonPatchTest {
 
         InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 
-        JsonFile jsonFile = new JsonFile(context);
+        Json jsonFile = new Json(context);
         jsonFile.load(inputStream);
 
         JsonPatch patch = gson.fromJson(patchJson, JsonPatch.class);
@@ -147,7 +146,7 @@ public class JsonPatchTest {
 
         InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 
-        JsonFile jsonFile = new JsonFile(context);
+        Json jsonFile = new Json(context);
         jsonFile.load(inputStream);
 
         JsonPatch patch = gson.fromJson(patchJson, JsonPatch.class);
@@ -169,7 +168,7 @@ public class JsonPatchTest {
 
         InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 
-        JsonFile jsonFile = new JsonFile(context);
+        Json jsonFile = new Json(context);
         jsonFile.load(inputStream);
 
         JsonPatch patch = gson.fromJson(patchJson, JsonPatch.class);
@@ -191,7 +190,7 @@ public class JsonPatchTest {
 
         InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 
-        JsonFile jsonFile = new JsonFile(context);
+        Json jsonFile = new Json(context);
         jsonFile.load(inputStream);
 
         JsonPatch patch = gson.fromJson(patchJson, JsonPatch.class);
@@ -209,7 +208,7 @@ public class JsonPatchTest {
 
         InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 
-        JsonFile jsonFile = new JsonFile(context);
+        Json jsonFile = new Json(context);
         jsonFile.load(inputStream);
 
         JsonPatch patch = gson.fromJson(patchJson, JsonPatch.class);
@@ -227,7 +226,7 @@ public class JsonPatchTest {
 
         InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 
-        JsonFile jsonFile = new JsonFile(context);
+        Json jsonFile = new Json(context);
         jsonFile.load(inputStream);
 
         JsonPatch patch = gson.fromJson(patchJson, JsonPatch.class);
@@ -246,7 +245,7 @@ public class JsonPatchTest {
 
         InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 
-        JsonFile jsonFile = new JsonFile(context);
+        Json jsonFile = new Json(context);
         jsonFile.load(inputStream);
 
         JsonPatch patch = gson.fromJson(patchJson, JsonPatch.class);
@@ -264,7 +263,7 @@ public class JsonPatchTest {
 
         InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 
-        JsonFile jsonFile = new JsonFile(context);
+        Json jsonFile = new Json(context);
         jsonFile.load(inputStream);
 
         JsonPatch patch = gson.fromJson(patchJson, JsonPatch.class);
@@ -282,7 +281,7 @@ public class JsonPatchTest {
 
         InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 
-        JsonFile jsonFile = new JsonFile(context);
+        Json jsonFile = new Json(context);
         jsonFile.load(inputStream);
 
         JsonPatch patch = gson.fromJson(patchJson, JsonPatch.class);
@@ -303,7 +302,7 @@ public class JsonPatchTest {
 
         InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 
-        JsonFile jsonFile = new JsonFile(context);
+        Json jsonFile = new Json(context);
         jsonFile.load(inputStream);
 
         JsonPatch patch = gson.fromJson(patchJson, JsonPatch.class);
@@ -324,7 +323,7 @@ public class JsonPatchTest {
 
         InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 
-        JsonFile jsonFile = new JsonFile(context);
+        Json jsonFile = new Json(context);
         jsonFile.load(inputStream);
 
         JsonPatch patch = gson.fromJson(patchJson, JsonPatch.class);
@@ -342,7 +341,7 @@ public class JsonPatchTest {
 
         InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 
-        JsonFile jsonFile = new JsonFile(context);
+        Json jsonFile = new Json(context);
         jsonFile.load(inputStream);
 
         JsonPatch patch = gson.fromJson(patchJson, JsonPatch.class);
@@ -360,7 +359,7 @@ public class JsonPatchTest {
 
         InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 
-        JsonFile jsonFile = new JsonFile(context);
+        Json jsonFile = new Json(context);
         jsonFile.load(inputStream);
 
         JsonPatch patch = gson.fromJson(patchJson, JsonPatch.class);
@@ -382,7 +381,7 @@ public class JsonPatchTest {
 
         InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 
-        JsonFile jsonFile = new JsonFile(context);
+        Json jsonFile = new Json(context);
         jsonFile.load(inputStream);
 
         JsonPatch patch = gson.fromJson(patchJson, JsonPatch.class);
@@ -404,7 +403,7 @@ public class JsonPatchTest {
 
         InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 
-        JsonFile jsonFile = new JsonFile(context);
+        Json jsonFile = new Json(context);
         jsonFile.load(inputStream);
 
         JsonPatch patch = gson.fromJson(patchJson, JsonPatch.class);
@@ -424,7 +423,7 @@ public class JsonPatchTest {
 
         InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 
-        JsonFile jsonFile = new JsonFile(context);
+        Json jsonFile = new Json(context);
         jsonFile.load(inputStream);
 
         JsonPatch patch = gson.fromJson(patchJson, JsonPatch.class);
@@ -444,7 +443,7 @@ public class JsonPatchTest {
 
         InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 
-        JsonFile jsonFile = new JsonFile(context);
+        Json jsonFile = new Json(context);
         jsonFile.load(inputStream);
 
         JsonPatch patch = gson.fromJson(patchJson, JsonPatch.class);
@@ -462,7 +461,7 @@ public class JsonPatchTest {
 
         InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 
-        JsonFile jsonFile = new JsonFile(context);
+        Json jsonFile = new Json(context);
         jsonFile.load(inputStream);
 
         JsonPatch patch = gson.fromJson(patchJson, JsonPatch.class);
@@ -480,7 +479,7 @@ public class JsonPatchTest {
 
         InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 
-        JsonFile jsonFile = new JsonFile(context);
+        Json jsonFile = new Json(context);
         jsonFile.load(inputStream);
 
         JsonPatch patch = gson.fromJson(patchJson, JsonPatch.class);
@@ -498,7 +497,7 @@ public class JsonPatchTest {
 
         InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 
-        JsonFile jsonFile = new JsonFile(context);
+        Json jsonFile = new Json(context);
         jsonFile.load(inputStream);
 
         JsonPatch patch = gson.fromJson(patchJson, JsonPatch.class);
@@ -516,7 +515,7 @@ public class JsonPatchTest {
 
         InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 
-        JsonFile jsonFile = new JsonFile(context);
+        Json jsonFile = new Json(context);
         jsonFile.load(inputStream);
 
         JsonPatch patch = gson.fromJson(patchJson, JsonPatch.class);

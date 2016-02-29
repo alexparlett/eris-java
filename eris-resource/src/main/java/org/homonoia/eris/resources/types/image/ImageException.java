@@ -1,11 +1,12 @@
-package org.homonoia.eris.resources.exceptions;
+package org.homonoia.eris.resources.types.image;
 
+import org.homonoia.eris.resources.exceptions.ResourceException;
 import org.slf4j.helpers.MessageFormatter;
 
 /**
  * Created by alexparlett on 17/02/2016.
  */
-public class ImageException extends Exception {
+public class ImageException extends ResourceException {
     public ImageException(final String msg) {
         super(msg);
     }

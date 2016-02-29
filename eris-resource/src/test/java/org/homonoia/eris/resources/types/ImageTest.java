@@ -1,7 +1,7 @@
 package org.homonoia.eris.resources.types;
 
 import org.homonoia.eris.core.Context;
-import org.homonoia.eris.resources.exceptions.ImageException;
+import org.homonoia.eris.resources.types.image.ImageException;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -33,10 +33,10 @@ public class ImageTest {
     public TemporaryFolder folder = new TemporaryFolder();
 
     @Mock
-    ApplicationContext applicationContext;
+    private ApplicationContext applicationContext;
 
     @InjectMocks
-    Context context;
+    private Context context;
 
     @Test
     public void testLoad_Successful() throws IOException {

@@ -3,8 +3,6 @@ package org.homonoia.eris.resources.types.json;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import org.homonoia.eris.resources.exceptions.JsonException;
-import org.homonoia.eris.resources.exceptions.JsonPathException;
 import org.springframework.util.StringUtils;
 
 import java.util.Objects;

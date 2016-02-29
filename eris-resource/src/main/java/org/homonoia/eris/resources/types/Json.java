@@ -6,7 +6,7 @@ import org.homonoia.eris.core.Context;
 import org.homonoia.eris.resources.Resource;
 import org.homonoia.eris.resources.types.json.JsonPatch;
 import org.homonoia.eris.resources.types.json.JsonType;
-import org.homonoia.eris.resources.exceptions.JsonException;
+import org.homonoia.eris.resources.types.json.JsonException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,14 +19,14 @@ import java.util.Optional;
 /**
  * Created by alexparlett on 14/02/2016.
  */
-public class JsonFile extends Resource {
+public class Json extends Resource {
 
-    private static final Logger LOG = LoggerFactory.getLogger(JsonFile.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Json.class);
 
     private final Gson gson;
     private JsonElement root;
 
-    public JsonFile(final Context context) {
+    public Json(final Context context) {
         super(context);
         this.gson = context.getApplicationContext().getBean(Gson.class);
     }
@@ -64,7 +64,7 @@ public class JsonFile extends Resource {
                 elements.stream().forEach(((JsonArray) root)::add);
             }
         } catch (JsonParseException | NoSuchElementException ex) {
-            throw new IOException("Failed to load JsonFile.", ex);
+            throw new IOException("Failed to load Json.", ex);
         }
     }
 
@@ -74,7 +74,7 @@ public class JsonFile extends Resource {
             JsonWriter writer = new JsonWriter(new OutputStreamWriter(outputStream, "UTF-8"));
             gson.toJson(root, writer);
         } catch (JsonParseException ex) {
-            throw new IOException("Failed to save JsonFile.", ex);
+            throw new IOException("Failed to save Json.", ex);
         }
     }
 

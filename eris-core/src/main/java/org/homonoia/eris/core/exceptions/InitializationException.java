@@ -1,24 +1,24 @@
 package org.homonoia.eris.core.exceptions;
 
-import org.homonoia.eris.core.Errors;
+import org.homonoia.eris.core.ExitCode;
 
 /**
  * Created by alexparlett on 06/02/2016.
  */
-public class InitializationException extends Exception {
+public class InitializationException extends ErisException {
 
-    private Errors error;
+    private ExitCode error;
 
     public InitializationException(final String msg) {
-        this(msg, Errors.UNKNOWN);
+        this(msg, ExitCode.UNKNOWN);
     }
 
-    public InitializationException(final String msg, final Errors error) {
+    public InitializationException(final String msg, final ExitCode error) {
         super(msg);
         this.error = error;
     }
 
-    public Errors getError() {
+    public ExitCode getError() {
         return error;
     }
 }

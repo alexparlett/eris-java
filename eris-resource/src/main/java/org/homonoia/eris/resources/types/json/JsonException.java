@@ -1,11 +1,11 @@
-package org.homonoia.eris.resources.exceptions;
+package org.homonoia.eris.resources.types.json;
 
-import org.slf4j.helpers.MessageFormatter;
+import org.homonoia.eris.resources.exceptions.ResourceException;
 
 /**
  * Created by alexparlett on 17/02/2016.
  */
-public class JsonException extends Exception {
+public class JsonException extends ResourceException {
     public JsonException(final String msg) {
         super(msg);
     }
@@ -15,10 +15,10 @@ public class JsonException extends Exception {
     }
 
     public JsonException(final String msg, final Throwable ex, final Object... args) {
-        super(MessageFormatter.arrayFormat(msg, args).getMessage(), ex);
+        super(msg, ex, args);
     }
 
     public JsonException(final String msg, final Object... args) {
-        super(MessageFormatter.arrayFormat(msg, args).getMessage());
+        super(msg, args);
     }
 }
