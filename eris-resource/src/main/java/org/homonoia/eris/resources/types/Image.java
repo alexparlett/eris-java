@@ -89,13 +89,13 @@ public class Image extends Resource {
         outputStream.write(outputContext.array());
     }
 
-    public boolean resize(int width, int height) throws ImageException {
+    public void resize(int width, int height) throws ImageException {
         if (this.width == width && this.height == height) {
-            return false;
+            return;
         }
 
         if (width == 0 || height == 0) {
-            return false;
+            throw new ImageException("Failed to resize {}. Width and Height must be greater than 0.", getPath());
         }
 
         if (data == null) {
@@ -104,15 +104,12 @@ public class Image extends Resource {
 
         ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * components);
         if (STBImageResize.stbir_resize_uint8(data, this.width, this.height, this.width * components, buffer, width, height, width * components, components) == 0) {
-            LOG.error("Failed to resize Image {}.", getPath());
-            return false;
+            throw new ImageException("Failed to resize Image {}.", getPath());
         }
 
         this.width = width;
         this.height = height;
         this.data = buffer;
-
-        return true;
     }
 
     public void flip() {
