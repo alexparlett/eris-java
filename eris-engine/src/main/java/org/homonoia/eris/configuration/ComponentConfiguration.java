@@ -3,7 +3,7 @@ package org.homonoia.eris.configuration;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.annotations.ContextualBean;
 import org.homonoia.eris.core.components.Clock;
-import org.homonoia.eris.core.components.FileSystem;
+import org.homonoia.eris.io.FileSystem;
 import org.homonoia.eris.engine.Engine;
 import org.homonoia.eris.engine.Locale;
 import org.homonoia.eris.engine.Log;

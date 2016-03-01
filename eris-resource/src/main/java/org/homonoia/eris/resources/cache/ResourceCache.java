@@ -3,7 +3,7 @@ package org.homonoia.eris.resources.cache;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.annotations.ContextualComponent;
-import org.homonoia.eris.core.components.FileSystem;
+import org.homonoia.eris.io.FileSystem;
 import org.homonoia.eris.resources.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

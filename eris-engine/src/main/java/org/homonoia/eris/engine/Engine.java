@@ -5,7 +5,7 @@ import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.ExitCode;
 import org.homonoia.eris.core.annotations.ContextualComponent;
 import org.homonoia.eris.core.components.Clock;
-import org.homonoia.eris.core.components.FileSystem;
+import org.homonoia.eris.io.FileSystem;
 import org.homonoia.eris.core.exceptions.InitializationException;
 import org.homonoia.eris.events.core.ExitRequested;
 import org.homonoia.eris.graphics.Graphics;

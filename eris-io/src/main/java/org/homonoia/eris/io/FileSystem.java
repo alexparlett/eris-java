@@ -1,4 +1,4 @@
-package org.homonoia.eris.core.components;
+package org.homonoia.eris.io;
 
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;

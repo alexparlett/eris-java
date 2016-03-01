@@ -7,7 +7,7 @@ import ch.qos.logback.core.util.StatusPrinter;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.annotations.ContextualComponent;
-import org.homonoia.eris.core.components.FileSystem;
+import org.homonoia.eris.io.FileSystem;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
