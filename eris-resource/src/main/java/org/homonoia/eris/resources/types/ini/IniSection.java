@@ -21,7 +21,7 @@ public class IniSection implements Iterable<Map.Entry<String,String>> {
         return Optional.ofNullable(keyValues.get(key));
     }
 
-    public Optional<Integer> getInt(final String key) {
+    public Optional<Integer> getInteger(final String key) {
         return get(key).map(Integer::parseInt);
     }
 
@@ -31,6 +31,10 @@ public class IniSection implements Iterable<Map.Entry<String,String>> {
 
     public Optional<Boolean> getBoolean(final String key) {
         return get(key).map(Boolean::parseBoolean);
+    }
+
+    public Optional<Float> getFloat(final String key) {
+        return get(key).map(Float::parseFloat);
     }
 
     public void remove(final String key) {

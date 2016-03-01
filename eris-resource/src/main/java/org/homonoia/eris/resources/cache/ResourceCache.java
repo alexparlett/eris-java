@@ -3,6 +3,7 @@ package org.homonoia.eris.resources.cache;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.annotations.ContextualComponent;
+import org.homonoia.eris.core.components.FileSystem;
 import org.homonoia.eris.resources.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,9 +23,10 @@ public class ResourceCache extends Contextual {
 
     private static final Logger LOG = LoggerFactory.getLogger(ResourceCache.class);
 
-    private final Map<Class<? extends Resource>, Map<Path, Resource>> groups;
-    private final List<Path> directories;
+    private final Map<Class<? extends Resource>, Map<Path, Resource>> groups = new HashMap<>();
+    private final List<Path> directories = new ArrayList<>();
     private final ResourceLoader loader;
+    private final FileSystem fileSystem;
 
     /**
      * Instantiates a new Contextual.
@@ -32,11 +34,10 @@ public class ResourceCache extends Contextual {
      * @param context the context
      */
     @Autowired
-    public ResourceCache(final Context context) {
+    public ResourceCache(final Context context, final FileSystem fileSystem) {
         super(context);
-        groups = new HashMap<>();
-        directories = new ArrayList<>();
-        loader = new ResourceLoader(context);
+        this.loader = new ResourceLoader(context, fileSystem);
+        this.fileSystem = fileSystem;
     }
 
     public void shutdown() {
@@ -48,7 +49,7 @@ public class ResourceCache extends Contextual {
     }
 
     public boolean addDirectory(final Path path, final int priority) {
-        if (Files.isReadable(path) && Files.isDirectory(path)) {
+        if (fileSystem.isAccessible(path)) {
             if (priority < directories.size()) {
                 directories.add(priority, path);
             } else {
@@ -64,24 +65,27 @@ public class ResourceCache extends Contextual {
         return directories.remove(path);
     }
 
-    public <T extends Resource> T get(final Class<T> clazz, final Path path) {
+    public <T extends Resource> Optional<T> get(final Class<T> clazz, final Path path) {
         return get(clazz, path, true);
     }
 
-    public <T extends Resource> T get(final Class<T> clazz, final Path path, boolean errorOnFail) {
+    public <T extends Resource> Optional<T> get(final Class<T> clazz, final Path path, boolean errorOnFail) {
+        Objects.requireNonNull(path);
+        Objects.requireNonNull(clazz);
+
         T resource = find(clazz, path).map((res) -> (T) res).orElseGet(() -> {
             add(clazz, path, true);
             return find(clazz, path).map((res) -> (T) res).orElse(null);
         });
 
         if (resource != null && resource.getState().equals(Resource.AsyncState.SUCCESS)) {
-            return resource;
+            return Optional.of(resource);
         }
         else if (resource != null && resource.getState().equals(Resource.AsyncState.LOADING))
         {
             while (resource.getState().equals(Resource.AsyncState.LOADING));
             if (resource.getState().equals(Resource.AsyncState.SUCCESS))
-                return resource;
+                return Optional.of(resource);
         } else if (resource != null && !resource.getState().equals(Resource.AsyncState.FAILED)) {
             try {
                 Path fullPath = findFile(path).orElseThrow(() -> new IOException("Resource does not exist."));
@@ -92,7 +96,7 @@ public class ResourceCache extends Contextual {
         }
 
         // Resource == Null || Resource State == FAILED
-        return null;
+        return Optional.empty();
     }
 
     public <T extends Resource> Optional<T> getTemporary(final Class<T> clazz, final Path path) {
@@ -100,6 +104,9 @@ public class ResourceCache extends Contextual {
     }
 
     public <T extends Resource> Optional<T> getTemporary(final Class<T> clazz, final Path path, boolean errorOnFail) {
+        Objects.requireNonNull(path);
+        Objects.requireNonNull(clazz);
+
         Path relativePath = path;
         if (path.isAbsolute()) {
             for (Path directory : directories) {
@@ -143,6 +150,9 @@ public class ResourceCache extends Contextual {
     }
 
     public synchronized void remove(final Class<? extends Resource> clazz, final Path path) {
+        Objects.requireNonNull(path);
+        Objects.requireNonNull(clazz);
+
         Map<Path, ? extends Resource> group = groups.get(clazz);
         if (group != null) {
             group.remove(path);
@@ -150,6 +160,7 @@ public class ResourceCache extends Contextual {
     }
 
     public synchronized void remove(final Class<? extends Resource> clazz) {
+        Objects.requireNonNull(clazz);
         groups.remove(clazz);
     }
 
@@ -158,6 +169,9 @@ public class ResourceCache extends Contextual {
     }
 
     public void add(final Class<? extends Resource> clazz, final Path path, final boolean immediate) {
+        Objects.requireNonNull(path);
+        Objects.requireNonNull(clazz);
+
         try {
             if (find(clazz, path).isPresent()) {
                 return;

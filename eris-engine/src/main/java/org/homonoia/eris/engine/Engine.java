@@ -5,6 +5,7 @@ import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.ExitCode;
 import org.homonoia.eris.core.annotations.ContextualComponent;
 import org.homonoia.eris.core.components.Clock;
+import org.homonoia.eris.core.components.FileSystem;
 import org.homonoia.eris.core.exceptions.InitializationException;
 import org.homonoia.eris.events.core.ExitRequested;
 import org.homonoia.eris.graphics.Graphics;
@@ -17,7 +18,6 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
-import java.util.concurrent.Callable;
 
 /**
  * Created by alexp on 25/02/2016.
@@ -46,6 +46,9 @@ public class Engine extends Contextual {
     @Autowired
     private FileSystem fileSystem;
 
+    @Autowired
+    private Log log;
+
     /**
      * Instantiates a new Engine.
      *
@@ -64,6 +67,7 @@ public class Engine extends Contextual {
 
         fileSystem.addPath(fileSystem.getApplicationDataDirectory());
         fileSystem.addPath(fileSystem.getApplicationDirectory());
+        fileSystem.addPath(fileSystem.getTempDirectory());
 
         resourceCache.addDirectory(fileSystem.getApplicationDataDirectory());
         resourceCache.addDirectory(fileSystem.getApplicationDirectory().resolve("Data"));
@@ -87,8 +91,8 @@ public class Engine extends Contextual {
             throw new InitializationException("Failed to initialize GLFW.", ExitCode.GLFW_CREATE_ERROR);
         }
 
-        graphics.setTitle(settings.getString("Game", "AppName").orElse("Eris"));
-        graphics.setIcon(settings.getString("Game", "Icon").orElse("icon.ico"));
+        graphics.setTitle("Eris");
+        graphics.setIcon("icon.ico");
         graphics.setResizable(settings.getBoolean("Graphics", "Resizable").orElse(false));
         graphics.setSize(settings.getInteger("Graphics", "Width").orElse(1024), settings.getInteger("Graphics", "Height").orElse(768));
         graphics.setBorderless(settings.getBoolean("Graphics", "Borderless").orElse(false));
@@ -120,9 +124,18 @@ public class Engine extends Contextual {
         shutdownLog();
     }
 
+    private void initializationLog() {
+        log.initialize();
+    }
+
+    private void shutdownLog() {
+        log.shutdown();
+    }
+
     private void handleExitRequest(final ExitRequested exitRequest) {
     }
 
     private void handleGLFWError(int error, long description) {
+
     }
 }

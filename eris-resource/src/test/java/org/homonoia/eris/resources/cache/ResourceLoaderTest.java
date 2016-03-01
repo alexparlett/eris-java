@@ -2,8 +2,10 @@ package org.homonoia.eris.resources.cache;
 
 import com.google.gson.Gson;
 import org.homonoia.eris.core.Context;
+import org.homonoia.eris.core.components.FileSystem;
 import org.homonoia.eris.resources.Resource;
 import org.homonoia.eris.resources.types.Json;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -31,11 +33,19 @@ public class ResourceLoaderTest {
     ApplicationContext applicationContext;
 
     @Spy
+    FileSystem fileSystem;
+
+    @Spy
     @InjectMocks
     Context context;
 
     @InjectMocks
     ResourceLoader resourceLoader;
+
+    @Before
+    public void setup() {
+
+    }
 
     @Test
     public void testLoad_SuccessfulImmediate() throws URISyntaxException, IOException {

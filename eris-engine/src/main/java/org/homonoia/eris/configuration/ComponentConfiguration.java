@@ -3,8 +3,10 @@ package org.homonoia.eris.configuration;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.annotations.ContextualBean;
 import org.homonoia.eris.core.components.Clock;
+import org.homonoia.eris.core.components.FileSystem;
 import org.homonoia.eris.engine.Engine;
 import org.homonoia.eris.engine.Locale;
+import org.homonoia.eris.engine.Log;
 import org.homonoia.eris.engine.Settings;
 import org.homonoia.eris.graphics.Graphics;
 import org.homonoia.eris.renderer.Renderer;
@@ -23,8 +25,8 @@ public class ComponentConfiguration {
     }
 
     @ContextualBean
-    public ResourceCache resourceCache(Context context) {
-        return new ResourceCache(context);
+    public ResourceCache resourceCache(Context context, FileSystem fileSystem) {
+        return new ResourceCache(context, fileSystem);
     }
 
     @ContextualBean
@@ -53,7 +55,17 @@ public class ComponentConfiguration {
     }
 
     @ContextualBean
-    public Settings settings(Context context, ResourceCache resourceCache) {
-        return new Settings(context, resourceCache);
+    public Settings settings(Context context, ResourceCache resourceCache, FileSystem fileSystem) {
+        return new Settings(context, resourceCache, fileSystem);
+    }
+
+    @ContextualBean
+    public FileSystem fileSystem(Context context) {
+        return new FileSystem(context);
+    }
+
+    @ContextualBean
+    public Log log(Context context) {
+        return new Log(context);
     }
 }

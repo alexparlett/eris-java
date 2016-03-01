@@ -44,6 +44,8 @@ configure(subprojects) {
 
         compile 'net.sf.sociaal:jbullet:3.+'
         compile 'com.badlogicgames.ashley:ashley:1.7.+'
+
+        compile 'org.luaj:luaj-jse:3.+'
     }
 
     configurations.all {

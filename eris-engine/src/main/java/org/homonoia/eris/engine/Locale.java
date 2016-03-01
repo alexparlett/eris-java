@@ -45,7 +45,7 @@ public class Locale extends Contextual {
         pages.clear();
 
         Path fullPath = Paths.get(LOCALES_PATH, language, LOCALES_EXTENSION);
-        Json json = resourceCache.get(Json.class, fullPath);
+        Json json = resourceCache.get(Json.class, fullPath).orElseThrow(() -> new IOException(MessageFormat.format("Failed to load Locale {0} at {1}. File does not exist.", language, fullPath)));
         if (json != null) {
             Optional<Page[]> maybePages = json.fromJson(Page[].class);
             List<Page> pages = maybePages.map(Arrays::asList).orElse(Collections.emptyList());

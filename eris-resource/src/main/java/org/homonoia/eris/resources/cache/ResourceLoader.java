@@ -2,13 +2,13 @@ package org.homonoia.eris.resources.cache;
 
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
+import org.homonoia.eris.core.components.FileSystem;
 import org.homonoia.eris.resources.Resource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.Objects;
@@ -23,15 +23,17 @@ public class ResourceLoader extends Contextual {
 
     private static final Logger LOG = LoggerFactory.getLogger(ResourceLoader.class);
 
-    private ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private final FileSystem fileSystem;
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     /**
      * Instantiates a new Contextual.
      *
      * @param context the context
      */
-    public ResourceLoader(final Context context) {
+    public ResourceLoader(final Context context, final FileSystem fileSystem) {
         super(context);
+        this.fileSystem = fileSystem;
     }
 
     public void shutdown() {
@@ -41,6 +43,10 @@ public class ResourceLoader extends Contextual {
     public void load(final Resource resource, final Path fullPath, final boolean immediate) throws IOException {
         Objects.requireNonNull(resource, MessageFormat.format("Failed to load {0} resource cannot be null", resource.getPath()));
         Objects.requireNonNull(fullPath, MessageFormat.format("Failed to load {0} path cannot be null", resource.getPath()));
+
+        if (!fileSystem.isAccessible(fullPath)) {
+            throw new IOException(fullPath.toString() + " is not accessible.");
+        }
 
         if (resource.getState().equals(Resource.AsyncState.FAILED) ||
                 resource.getState().equals(Resource.AsyncState.SUCCESS) ||
@@ -65,7 +71,7 @@ public class ResourceLoader extends Contextual {
     private void process(LoadingTask loadingTask) {
         if (loadingTask.resource != null && loadingTask.path != null) {
             loadingTask.resource.setState(Resource.AsyncState.LOADING);
-            try (InputStream inputStream = Files.newInputStream(loadingTask.path)) {
+            try (InputStream inputStream = fileSystem.newInputStream(loadingTask.path)) {
                 loadingTask.resource.load(inputStream);
                 loadingTask.resource.setState(Resource.AsyncState.SUCCESS);
                 LOG.info("Loaded {} {}", loadingTask.resource.getClass().getSimpleName(), loadingTask.resource.getPath());

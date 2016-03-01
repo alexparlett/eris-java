@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>${USER_HOME}/HomonoiaStudios/Eris/Logs/engine.log</file>
+        <file>${APP_DIR}/Logs/engine.log</file>
         <append>false</append>
         <encoder>
             <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
