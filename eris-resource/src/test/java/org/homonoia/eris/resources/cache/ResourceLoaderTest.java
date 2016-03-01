@@ -33,18 +33,18 @@ public class ResourceLoaderTest {
     ApplicationContext applicationContext;
 
     @Spy
-    FileSystem fileSystem;
-
-    @Spy
     @InjectMocks
     Context context;
 
+    @Spy
     @InjectMocks
+    FileSystem fileSystem;
+
     ResourceLoader resourceLoader;
 
     @Before
     public void setup() {
-
+        resourceLoader = new ResourceLoader(context, fileSystem);
     }
 
     @Test
@@ -53,6 +53,8 @@ public class ResourceLoaderTest {
         when(applicationContext.getBean(Gson.class)).thenReturn(new Gson());
 
         Path path = Paths.get(ClassLoader.getSystemClassLoader().getResource("test.json").toURI());
+        fileSystem.addPath(path.getParent());
+
         Resource resource = new Json(context);
 
         resourceLoader.load(resource, path, true);

@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -38,6 +40,26 @@ public class FileSystem extends Contextual {
     }
 
     public boolean isAccessible(final Path path) {
+        Objects.requireNonNull(path);
+
+        if (allowedPaths.isEmpty()) {
+            return true;
+        }
+
+        Path fullPath;
+        if (!path.isAbsolute()) {
+            fullPath = getApplicationDataDirectory().resolve(path);
+        } else {
+            fullPath = path;
+        }
+
+        for (Path allowedPath : allowedPaths) {
+            int compareTo = allowedPath.compareTo(fullPath);
+            if (compareTo <= 0) {
+                return true;
+            }
+        }
+
         return false;
     }
 
@@ -47,6 +69,17 @@ public class FileSystem extends Contextual {
         }
         throw new IOException("Path not accessible");
     }
+
+    public OutputStream newOutputStream(final Path path) throws IOException {
+        if (isAccessible(path)) {
+            if (!path.getParent().toFile().exists()) {
+                Files.createDirectories(path.getParent());
+            }
+            return Files.newOutputStream(path);
+        }
+        throw new IOException("Path not accessible");
+    }
+
 
     public static Path getApplicationDataDirectory() {
         if (Platform.get().equals(Platform.WINDOWS)) {
@@ -58,19 +91,11 @@ public class FileSystem extends Contextual {
         }
     }
 
-
     public static Path getApplicationDirectory() {
         return Paths.get(System.getProperty("user.dir"));
     }
 
     public static Path getTempDirectory() {
         return Paths.get(System.getProperty("java.io.tmpdir"));
-    }
-
-    public OutputStream newOutputStream(final Path path) throws IOException {
-        if (isAccessible(path)) {
-            return Files.newOutputStream(path);
-        }
-        throw new IOException("Path not accessible");
     }
 }
