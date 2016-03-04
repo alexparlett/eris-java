@@ -9,6 +9,7 @@ import org.homonoia.eris.io.FileSystem;
 import org.homonoia.eris.core.exceptions.InitializationException;
 import org.homonoia.eris.events.core.ExitRequested;
 import org.homonoia.eris.graphics.Graphics;
+import org.homonoia.eris.io.Input;
 import org.homonoia.eris.renderer.Renderer;
 import org.homonoia.eris.resources.cache.ResourceCache;
 import org.homonoia.eris.resources.types.ini.IniException;
@@ -48,6 +49,9 @@ public class Engine extends Contextual {
 
     @Autowired
     private Log log;
+
+    @Autowired
+    private Input input;
 
     /**
      * Instantiates a new Engine.
@@ -103,13 +107,15 @@ public class Engine extends Contextual {
 
         graphics.initialize();
         renderer.initialize();
+        input.initialize();
+
+        graphics.show();
     }
 
     public void run() {
     }
 
     public void shutdown() {
-        graphics.minimize();
         graphics.hide();
 
         renderer.shutdown();
@@ -121,14 +127,14 @@ public class Engine extends Contextual {
 
         GLFW.glfwTerminate();
 
-        shutdownLog();
+        shutdownLog(elapsedTime, frameNumber);
     }
 
     private void initializationLog() {
         log.initialize();
     }
 
-    private void shutdownLog() {
+    private void shutdownLog(final double elapsedTime, final int frameNumber) {
         log.shutdown();
     }
 

@@ -106,15 +106,15 @@ public class Renderer extends Contextual implements Runnable {
     public Renderer(final Context context, final Graphics graphics) {
         super(context);
         this.graphics = graphics;
-
-        subscribe(this::handleRenderEvent, Render.class);
-        subscribe(this::handleScreenMode, ScreenMode.class);
     }
 
     public void initialize() {
         if (initialized) {
             return;
         }
+
+        subscribe(this::handleRenderEvent, Render.class);
+        subscribe(this::handleScreenMode, ScreenMode.class);
 
         thread.setUncaughtExceptionHandler(this::handleRenderingThreadException);
         thread.start();
@@ -135,11 +135,11 @@ public class Renderer extends Contextual implements Runnable {
 
         while (!threadExit.get()) {
             state.process();
-            glfwSwapBuffers(0);
+            glfwSwapBuffers(window);
 
             if (viewportDirty.get()) {
                 glViewport(0, 0, graphics.getWidth(), graphics.getHeight());
-                glfwSwapBuffers(0);
+                glfwSwapBuffers(window);
             }
         }
 
@@ -149,6 +149,8 @@ public class Renderer extends Contextual implements Runnable {
     public void shutdown() {
         initialized = false;
         threadExit.set(true);
+
+        unsubscribe();
 
         try {
             thread.join();

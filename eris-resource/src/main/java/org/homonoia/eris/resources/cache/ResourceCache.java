@@ -42,6 +42,7 @@ public class ResourceCache extends Contextual {
 
     public void shutdown() {
         loader.shutdown();
+        clear();
     }
 
     public boolean addDirectory(final Path path) {

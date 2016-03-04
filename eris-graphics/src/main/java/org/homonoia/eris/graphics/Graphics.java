@@ -74,11 +74,16 @@ public class Graphics extends Contextual {
         initialized = false;
 
         if (renderWindow != MemoryUtil.NULL) {
+            glfwSetFramebufferSizeCallback(renderWindow,  null);
+            glfwSetWindowCloseCallback(renderWindow, null);
+
             glfwDestroyWindow(renderWindow);
             renderWindow = MemoryUtil.NULL;
         }
 
         if (backgroundWindow != MemoryUtil.NULL) {
+            glfwSetWindowCloseCallback(backgroundWindow, null);
+
             glfwDestroyWindow(backgroundWindow);
             backgroundWindow = MemoryUtil.NULL;
         }
@@ -195,6 +200,27 @@ public class Graphics extends Contextual {
         return initialized;
     }
 
+    public boolean isFocused() {
+        if (renderWindow != MemoryUtil.NULL) {
+            return glfwGetWindowAttrib(renderWindow, GLFW_FOCUSED) == GLFW_TRUE;
+        }
+        return false;
+    }
+
+    public boolean isMinimized() {
+        if (renderWindow != MemoryUtil.NULL) {
+            return glfwGetWindowAttrib(renderWindow, GLFW_ICONIFIED) == GLFW_TRUE;
+        }
+        return false;
+    }
+
+    public boolean isVisible() {
+        if (renderWindow != MemoryUtil.NULL) {
+            return glfwGetWindowAttrib(renderWindow, GLFW_VISIBLE) == GLFW_TRUE;
+        }
+        return false;
+    }
+
     public int getWidth() {
         return width.get();
     }
@@ -244,6 +270,7 @@ public class Graphics extends Contextual {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
 
         glfwWindowHint(GLFW_DECORATED, borderless ? GLFW_FALSE : GLFW_TRUE);
         glfwWindowHint(GLFW_RESIZABLE, resizable ? GLFW_TRUE : GLFW_FALSE);
@@ -270,10 +297,11 @@ public class Graphics extends Contextual {
 
         glfwMakeContextCurrent(renderWindow);
 
-        IntBuffer buffer = BufferUtils.createIntBuffer(2);
-        glfwGetFramebufferSize(renderWindow, buffer, buffer);
-        this.width.set(buffer.get());
-        this.height.set(buffer.get());
+        IntBuffer widthBuffer = BufferUtils.createIntBuffer(1);
+        IntBuffer heightBuffer = BufferUtils.createIntBuffer(1);
+        glfwGetFramebufferSize(renderWindow, widthBuffer, heightBuffer);
+        this.width.set(widthBuffer.get());
+        this.height.set(heightBuffer.get());
 
         if (isVsync()) {
             glfwSwapInterval(1);
@@ -297,8 +325,6 @@ public class Graphics extends Contextual {
         LOG.info("\tOpen GL: %s", glGetString(GL11.GL_VERSION));
         LOG.info("\tGLSL: %s", glGetString(GL20.GL_SHADING_LANGUAGE_VERSION));
         LOG.info("\tGLFW: %s", glfwGetVersionString());
-
-        show();
 
         glfwMakeContextCurrent(MemoryUtil.NULL);
     }

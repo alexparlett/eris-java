@@ -9,6 +9,7 @@ import org.homonoia.eris.engine.Locale;
 import org.homonoia.eris.engine.Log;
 import org.homonoia.eris.engine.Settings;
 import org.homonoia.eris.graphics.Graphics;
+import org.homonoia.eris.io.Input;
 import org.homonoia.eris.renderer.Renderer;
 import org.homonoia.eris.resources.cache.ResourceCache;
 import org.springframework.context.annotation.Configuration;
@@ -67,5 +68,10 @@ public class ComponentConfiguration {
     @ContextualBean
     public Log log(Context context) {
         return new Log(context);
+    }
+
+    @ContextualBean
+    public Input input(Context context, Graphics graphics) {
+        return new Input(context, graphics);
     }
 }
