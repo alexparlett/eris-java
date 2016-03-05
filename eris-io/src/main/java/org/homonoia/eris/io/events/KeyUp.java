@@ -1,30 +1,28 @@
-package org.homonoia.eris.events.io;
+package org.homonoia.eris.io.events;
 
 import org.homonoia.eris.events.Event;
+import org.homonoia.eris.io.Key;
+import org.homonoia.eris.io.Modifier;
+
+import java.util.List;
 
 /**
  * Created by alexp on 05/03/2016.
  */
 public class KeyUp extends Event {
 
-    private final boolean repeat;
-    private final int key;
+    private final Key key;
     private final int scancode;
-    private final int mods;
+    private final List<Modifier> mods;
 
     protected KeyUp(final Builder builder) {
         super(builder);
-        this.repeat = builder.repeat;
         this.key = builder.key;
         this.scancode = builder.scancode;
         this.mods = builder.mods;
     }
 
-    public boolean isRepeat() {
-        return repeat;
-    }
-
-    public int getKey() {
+    public Key getKey() {
         return key;
     }
 
@@ -32,7 +30,7 @@ public class KeyUp extends Event {
         return scancode;
     }
 
-    public int getMods() {
+    public List<Modifier> getMods() {
         return mods;
     }
 
@@ -42,12 +40,11 @@ public class KeyUp extends Event {
 
     public static final class Builder extends EventBuilder<Builder> {
 
-        private boolean repeat;
-        private int mods;
-        private int key;
+        private List<Modifier> mods;
+        private Key key;
         private int scancode;
 
-        public Builder key(final int key) {
+        public Builder key(final Key key) {
             this.key = key;
             return this;
         }
@@ -57,13 +54,8 @@ public class KeyUp extends Event {
             return this;
         }
 
-        public Builder mods(final int mods) {
+        public Builder mods(final List<Modifier> mods) {
             this.mods = mods;
-            return this;
-        }
-
-        public Builder repeat(final boolean repeat) {
-            this.repeat = repeat;
             return this;
         }
 

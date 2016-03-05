@@ -1,4 +1,4 @@
-package org.homonoia.eris.events.io;
+package org.homonoia.eris.io.events;
 
 import org.homonoia.eris.events.Event;
 import org.joml.Vector2d;

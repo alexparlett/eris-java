@@ -1,14 +1,18 @@
-package org.homonoia.eris.events.io;
+package org.homonoia.eris.io.events;
 
 import org.homonoia.eris.events.Event;
+import org.homonoia.eris.io.Button;
+import org.homonoia.eris.io.Modifier;
+
+import java.util.List;
 
 /**
  * Created by alexp on 05/03/2016.
  */
 public class MouseButtonDown extends Event {
 
-    private final int mods;
-    private final int button;
+    private final List<Modifier> mods;
+    private final Button button;
 
     protected MouseButtonDown(final Builder builder) {
         super(builder);
@@ -16,11 +20,11 @@ public class MouseButtonDown extends Event {
         this.mods = builder.mods;
     }
 
-    public int getMods() {
+    public List<Modifier> getMods() {
         return mods;
     }
 
-    public int getButton() {
+    public Button getButton() {
         return button;
     }
 
@@ -30,15 +34,15 @@ public class MouseButtonDown extends Event {
 
     public static final class Builder extends EventBuilder<Builder> {
 
-        public int mods;
-        public int button;
+        public List<Modifier> mods;
+        public Button button;
 
-        public Builder mods(int mods) {
+        public Builder mods(List<Modifier> mods) {
             this.mods = mods;
             return this;
         }
 
-        public Builder button(int button) {
+        public Builder button(Button button) {
             this.button = button;
             return this;
         }

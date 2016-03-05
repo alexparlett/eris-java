@@ -4,11 +4,15 @@ import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.annotations.ContextualComponent;
 import org.homonoia.eris.core.exceptions.InitializationException;
-import org.homonoia.eris.events.io.*;
 import org.homonoia.eris.graphics.Graphics;
+import org.homonoia.eris.io.events.*;
 import org.joml.Vector2d;
 import org.lwjgl.glfw.*;
 import org.lwjgl.system.MemoryUtil;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by alexp on 01/03/2016.
@@ -16,11 +20,10 @@ import org.lwjgl.system.MemoryUtil;
 @ContextualComponent
 public class Input extends Contextual {
 
-    private static long renderWindow = MemoryUtil.NULL;
-
     private final Graphics graphics;
 
     private boolean initialized = false;
+    private long renderWindow = MemoryUtil.NULL;
     private Vector2d mouseLastPosition = new Vector2d();
 
     public Input(final Context context, final Graphics graphics) {
@@ -43,6 +46,7 @@ public class Input extends Contextual {
             GLFW.glfwSetMouseButtonCallback(renderWindow, GLFWMouseButtonCallback.create(this::handleGLFWMouseButtonCallback));
             GLFW.glfwSetCursorPosCallback(renderWindow, GLFWCursorPosCallback.create(this::handleGLFWCursorPosCallback));
             GLFW.glfwSetScrollCallback(renderWindow, GLFWScrollCallback.create(this::handleGLFWScrollCallback));
+            GLFW.glfwSetCharCallback(renderWindow, GLFWCharCallback.create(this::handleGLFWCharCallback));
 
             initialized = true;
         }
@@ -65,54 +69,69 @@ public class Input extends Contextual {
         }
     }
 
-    public static boolean isKeyDown(int key) {
-        return GLFW.glfwGetKey(renderWindow, key) == GLFW.GLFW_PRESS;
+    public boolean isKeyDown(Key key) {
+        Objects.requireNonNull(key);
+        return GLFW.glfwGetKey(renderWindow, key.getKeyCode()) == GLFW.GLFW_PRESS;
     }
 
-    public static boolean isMouseButtonDown(int button) {
-        return GLFW.glfwGetMouseButton(renderWindow, button) == GLFW.GLFW_PRESS;
+    public boolean isMouseButtonDown(Button button) {
+        Objects.requireNonNull(button);
+        return GLFW.glfwGetMouseButton(renderWindow, button.getButtonCode()) == GLFW.GLFW_PRESS;
+    }
+
+    public boolean isModifierDown(Modifier modifier) {
+        switch (modifier) {
+            case SHIFT:
+                return isKeyDown(Key.LEFT_SHIFT) || isKeyDown(Key.RIGHT_SHIFT);
+            case CTRL:
+                return isKeyDown(Key.LEFT_CONTROL) || isKeyDown(Key.RIGHT_CONTROL);
+            case ALT:
+                return isKeyDown(Key.LEFT_ALT) || isKeyDown(Key.RIGHT_ALT);
+            case SUPER:
+                return isKeyDown(Key.LEFT_SUPER) || isKeyDown(Key.RIGHT_SUPER);
+        }
+        return false;
     }
 
     private void handleGLFWKeyCallback(long window, int key, int scancode, int action, int mods) {
-        if (window == graphics.getRenderWindow()) {
+        if (window == renderWindow) {
             if (action == GLFW.GLFW_PRESS) {
                 publish(KeyDown.builder()
-                        .key(key)
+                        .key(Key.valueOf(key))
                         .scancode(scancode)
-                        .mods(mods)
+                        .mods(extractModifiers(mods))
                         .repeat(false));
             } else if (action == GLFW.GLFW_REPEAT) {
                 publish(KeyDown.builder()
-                        .key(key)
+                        .key(Key.valueOf(key))
                         .scancode(scancode)
-                        .mods(mods)
+                        .mods(extractModifiers(mods))
                         .repeat(true));
             } else {
                 publish(KeyUp.builder()
-                        .key(key)
+                        .key(Key.valueOf(key))
                         .scancode(scancode)
-                        .mods(mods)
-                        .repeat(true));
+                        .mods(extractModifiers(mods)));
             }
         }
     }
 
     private void handleGLFWMouseButtonCallback(long window, int button, int action, int mods) {
-        if (window == graphics.getRenderWindow()) {
+        if (window == renderWindow) {
             if (action == GLFW.GLFW_PRESS) {
                 publish(MouseButtonDown.builder()
-                        .button(button)
-                        .mods(mods));
+                        .button(Button.valueOf(button))
+                        .mods(extractModifiers(mods)));
             } else {
                 publish(MouseButtonUp.builder()
-                        .button(button)
-                        .mods(mods));
+                        .button(Button.valueOf(button))
+                        .mods(extractModifiers(mods)));
             }
         }
     }
 
     private void handleGLFWCursorPosCallback(long window, double xpos, double ypos) {
-        if (window == graphics.getRenderWindow()) {
+        if (window == renderWindow) {
             Vector2d position = new Vector2d(xpos, ypos);
             Vector2d delta = new Vector2d(mouseLastPosition).sub(position);
 
@@ -131,5 +150,34 @@ public class Input extends Contextual {
             publish(MouseScroll.builder()
                     .delta(delta));
         }
+    }
+
+    private void handleGLFWCharCallback(long window, int codepoint) {
+        if (window == renderWindow) {
+            publish(Text.builder()
+                .string(String.valueOf(Character.toChars(codepoint))));
+        }
+    }
+
+    private List<Modifier> extractModifiers(final int mods) {
+        List<Modifier> modifiers = new ArrayList<>();
+
+        if ((mods & Modifier.SHIFT.getModifierCode()) == Modifier.SHIFT.getModifierCode()) {
+            modifiers.add(Modifier.SHIFT);
+        }
+
+        if ((mods & Modifier.CTRL.getModifierCode()) == Modifier.CTRL.getModifierCode()) {
+            modifiers.add(Modifier.CTRL);
+        }
+
+        if ((mods & Modifier.ALT.getModifierCode()) == Modifier.ALT.getModifierCode()) {
+            modifiers.add(Modifier.ALT);
+        }
+
+        if ((mods & Modifier.SUPER.getModifierCode()) == Modifier.SUPER.getModifierCode()) {
+            modifiers.add(Modifier.SUPER);
+        }
+
+        return modifiers;
     }
 }
