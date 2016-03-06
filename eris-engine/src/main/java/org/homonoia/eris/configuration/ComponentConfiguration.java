@@ -3,19 +3,22 @@ package org.homonoia.eris.configuration;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.annotations.ContextualBean;
 import org.homonoia.eris.core.components.Clock;
-import org.homonoia.eris.io.FileSystem;
 import org.homonoia.eris.engine.Engine;
 import org.homonoia.eris.engine.Locale;
 import org.homonoia.eris.engine.Log;
 import org.homonoia.eris.engine.Settings;
 import org.homonoia.eris.graphics.Graphics;
+import org.homonoia.eris.io.FileSystem;
 import org.homonoia.eris.io.Input;
 import org.homonoia.eris.renderer.Renderer;
 import org.homonoia.eris.resources.cache.ResourceCache;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Created by alexp on 25/02/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexp
+ * @since 25/02/2016
  */
 @Configuration
 public class ComponentConfiguration {

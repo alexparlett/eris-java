@@ -23,7 +23,10 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.when;
 
 /**
- * Created by alexp on 06/03/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexp
+ * @since 06/03/2016
  */
 @RunWith(MockitoJUnitRunner.class)
 public class LocaleTest {

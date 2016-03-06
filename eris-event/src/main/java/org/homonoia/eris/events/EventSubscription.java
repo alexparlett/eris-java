@@ -1,7 +1,10 @@
 package org.homonoia.eris.events;
 
 /**
- * Created by alexparlett on 13/02/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexparlett
+ * @since 13/02/2016
  */
 public class EventSubscription {
 
@@ -16,7 +19,7 @@ public class EventSubscription {
     /**
      * A method to check the equality of the Event Subscription event class without construction.
      *
-     * @param eventClass  the event class
+     * @param eventClass the event class
      * @return Whether the Event Class matches the one contained in the Event Subscription.
      */
     public boolean matches(final Class<?> eventClass) {
@@ -26,7 +29,7 @@ public class EventSubscription {
     /**
      * A method to check the equality of the Event Subscription event source without construction.
      *
-     * @param eventSource  the event source
+     * @param eventSource the event source
      * @return Whether the Event Class matches the one contained in the Event Subscription.
      */
     public boolean matches(final Object eventSource) {

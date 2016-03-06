@@ -20,7 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.IOException;
 
 /**
- * Created by alexp on 25/02/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexp
+ * @since 25/02/2016
  */
 @ContextualComponent
 public class Engine extends Contextual {

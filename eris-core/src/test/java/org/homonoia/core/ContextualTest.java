@@ -11,9 +11,7 @@ import org.mockito.runners.MockitoJUnitRunner;
 import rx.functions.Action1;
 
 import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 /**
  * Contextual Tester.
@@ -82,7 +80,7 @@ public class ContextualTest {
         Contextual subscriber = new Contextual(context) {
         };
 
-        subscriber.subscribe(endFrameHandlerMock,  EndFrame.class, publisher1);
+        subscriber.subscribe(endFrameHandlerMock, EndFrame.class, publisher1);
         publisher1.publish(EndFrame.builder());
         publisher2.publish(EndFrame.builder());
         publisher1.publish(BeginFrame.builder());
@@ -139,9 +137,7 @@ public class ContextualTest {
     }
 
     /**
-     *
      * Method: unsubscribe(final Object eventSource)
-     *
      */
     @Test
     public void testUnsubscribeEventSource() throws Exception {
@@ -154,8 +150,8 @@ public class ContextualTest {
         Contextual subscriber = new Contextual(context) {
         };
 
-        subscriber.subscribe(endFrameHandlerMock,  EndFrame.class, publisher1);
-        subscriber.subscribe(endFrameHandlerMock,  EndFrame.class, publisher2);
+        subscriber.subscribe(endFrameHandlerMock, EndFrame.class, publisher1);
+        subscriber.subscribe(endFrameHandlerMock, EndFrame.class, publisher2);
         subscriber.subscribe(beginFrameFrameHandlerMock, BeginFrame.class, publisher1);
 
         subscriber.unsubscribe(publisher1);
@@ -182,8 +178,8 @@ public class ContextualTest {
         Contextual subscriber = new Contextual(context) {
         };
 
-        subscriber.subscribe(endFrameHandlerMock,  EndFrame.class, publisher1);
-        subscriber.subscribe(endFrameHandlerMock,  EndFrame.class, publisher2);
+        subscriber.subscribe(endFrameHandlerMock, EndFrame.class, publisher1);
+        subscriber.subscribe(endFrameHandlerMock, EndFrame.class, publisher2);
         subscriber.subscribe(beginFrameFrameHandlerMock, BeginFrame.class, publisher1);
 
         subscriber.unsubscribe(EndFrame.class, publisher1);

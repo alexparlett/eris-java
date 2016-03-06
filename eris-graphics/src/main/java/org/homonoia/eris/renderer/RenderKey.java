@@ -1,7 +1,10 @@
 package org.homonoia.eris.renderer;
 
 /**
- * Created by alexparlett on 06/02/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexparlett
+ * @since 06/02/2016
  */
 public class RenderKey {
 
@@ -63,8 +66,7 @@ public class RenderKey {
         public RenderKey build() {
             RenderKey renderKey = new RenderKey();
 
-            if (transparency != 0L)
-            {
+            if (transparency != 0L) {
                 renderKey.key = target << 62
                         | targetLayer << 60
                         | transparency << 58
@@ -72,9 +74,7 @@ public class RenderKey {
                         | extra << 54
                         | material << 24
                         | depth;
-            }
-            else
-            {
+            } else {
                 renderKey.key = target << 62
                         | targetLayer << 60
                         | transparency << 58

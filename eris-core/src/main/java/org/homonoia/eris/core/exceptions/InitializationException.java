@@ -3,7 +3,10 @@ package org.homonoia.eris.core.exceptions;
 import org.homonoia.eris.core.ExitCode;
 
 /**
- * Created by alexparlett on 06/02/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexparlett
+ * @since 06/02/2016
  */
 public class InitializationException extends ErisException {
 

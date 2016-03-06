@@ -10,7 +10,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by alexparlett on 21/02/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexparlett
+ * @since 21/02/2016
  */
 public abstract class Texture extends Resource {
 
@@ -50,10 +53,8 @@ public abstract class Texture extends Resource {
         this.wWrapMode = wWrapMode;
     }
 
-    protected int getFormat(Image image)
-    {
-        switch (image.getComponents())
-        {
+    protected int getFormat(Image image) {
+        switch (image.getComponents()) {
             case 1:
                 return GL11.GL_RED;
             case 2:
@@ -67,15 +68,12 @@ public abstract class Texture extends Resource {
         }
     }
 
-    protected void parseParameters(final JsonObject element)
-    {
-        if (element.has("mipmaps"))
-        {
+    protected void parseParameters(final JsonObject element) {
+        if (element.has("mipmaps")) {
             generateMipMaps = element.get("mipmaps").getAsBoolean();
         }
 
-        if (element.has("wrap"))
-        {
+        if (element.has("wrap")) {
             JsonObject wrap = element.get("wrap").getAsJsonObject();
             uWrapMode = wrapMap.get(wrap.get("u").getAsString());
             vWrapMode = wrapMap.get(wrap.get("v").getAsString());
@@ -83,8 +81,7 @@ public abstract class Texture extends Resource {
         }
     }
 
-    protected void setParameters()
-    {
+    protected void setParameters() {
         if (generateMipMaps) {
             GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
         }

@@ -21,7 +21,10 @@ import java.text.MessageFormat;
 import java.util.Objects;
 
 /**
- * Created by alexparlett on 21/02/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexparlett
+ * @since 21/02/2016
  */
 public class Image extends Resource {
 
@@ -42,7 +45,7 @@ public class Image extends Resource {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         int read = inputStream.read();
-        while(read >= 0) {
+        while (read >= 0) {
             baos.write(read);
             read = inputStream.read();
         }
@@ -118,8 +121,7 @@ public class Image extends Resource {
         ByteBuffer oppositeRowBuffer = ByteBuffer.wrap(new byte[rowSize]);
         int halfRows = height / 2;
 
-        for (int i = 0; i < halfRows; i++)
-        {
+        for (int i = 0; i < halfRows; i++) {
             System.arraycopy(data.array(), getPixelOffset(0, i), rowBuffer.array(), 0, rowSize);
             System.arraycopy(data.array(), getPixelOffset(0, height - i - 1), oppositeRowBuffer.array(), 0, rowSize);
 
@@ -160,8 +162,7 @@ public class Image extends Resource {
         this.data = data;
     }
 
-    public int getPixelOffset(int column, int row)
-    {
+    public int getPixelOffset(int column, int row) {
         return (row * width + column) * components;
     }
 }

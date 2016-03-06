@@ -3,7 +3,10 @@ package org.homonoia.eris.core.exceptions;
 import org.slf4j.helpers.MessageFormatter;
 
 /**
- * Created by alexp on 27/02/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexp
+ * @since 27/02/2016
  */
 public class ErisRuntimeExcecption extends RuntimeException {
     public ErisRuntimeExcecption(final String message) {

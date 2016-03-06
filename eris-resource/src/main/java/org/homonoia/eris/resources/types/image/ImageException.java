@@ -4,7 +4,10 @@ import org.homonoia.eris.resources.exceptions.ResourceException;
 import org.slf4j.helpers.MessageFormatter;
 
 /**
- * Created by alexparlett on 17/02/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexparlett
+ * @since 17/02/2016
  */
 public class ImageException extends ResourceException {
     public ImageException(final String msg) {

@@ -24,7 +24,10 @@ import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 
 /**
- * Created by alexp on 25/02/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexp
+ * @since 25/02/2016
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ImageTest {
@@ -70,7 +73,7 @@ public class ImageTest {
         image.load(resource.getInputStream());
 
         File file = folder.newFile("test.jpg");
-        try(FileOutputStream outputStream = new FileOutputStream(file)) {
+        try (FileOutputStream outputStream = new FileOutputStream(file)) {
             image.save(outputStream);
         }
 
@@ -82,7 +85,7 @@ public class ImageTest {
         Image image = new Image(context);
 
         File file = folder.newFile("test.jpg");
-        try(FileOutputStream outputStream = new FileOutputStream(file)) {
+        try (FileOutputStream outputStream = new FileOutputStream(file)) {
             image.save(outputStream);
         }
     }

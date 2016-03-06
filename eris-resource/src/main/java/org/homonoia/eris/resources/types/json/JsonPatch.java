@@ -8,7 +8,10 @@ import org.springframework.util.StringUtils;
 import java.util.Objects;
 
 /**
- * Created by alexparlett on 14/02/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexparlett
+ * @since 14/02/2016
  */
 public class JsonPatch {
 
@@ -186,7 +189,7 @@ public class JsonPatch {
 
             JsonArray jsonArray = patchableDocument.getAsJsonArray();
             int i = jsonArray.size() - 1;
-            while(i >= 0 && i < jsonArray.size()) {
+            while (i >= 0 && i < jsonArray.size()) {
                 jsonArray.remove(i);
                 i = jsonArray.size() - 1;
             }

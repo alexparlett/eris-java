@@ -8,7 +8,10 @@ import org.joml.Vector4f;
 import static org.lwjgl.opengl.GL11.glClearColor;
 
 /**
- * Created by alexparlett on 13/02/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexparlett
+ * @since 13/02/2016
  */
 public class ClearColorCommand extends RenderCommand {
 
@@ -24,7 +27,9 @@ public class ClearColorCommand extends RenderCommand {
         glClearColor(color.x, color.y, color.z, color.w);
     }
 
-    public static Builder builder() { return new Builder(); }
+    public static Builder builder() {
+        return new Builder();
+    }
 
     public static class Builder extends RenderCommandBuilder<Builder> {
 

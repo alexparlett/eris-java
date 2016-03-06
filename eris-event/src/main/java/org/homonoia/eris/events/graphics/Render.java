@@ -3,7 +3,10 @@ package org.homonoia.eris.events.graphics;
 import org.homonoia.eris.events.Event;
 
 /**
- * Created by alexparlett on 12/12/2015.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexparlett
+ * @since 12/12/2015
  */
 public class Render extends Event {
 

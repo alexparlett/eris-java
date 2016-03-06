@@ -7,7 +7,10 @@ import org.homonoia.eris.io.Modifier;
 import java.util.List;
 
 /**
- * Created by alexp on 05/03/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexp
+ * @since 05/03/2016
  */
 public class MouseButtonUp extends Event {
 

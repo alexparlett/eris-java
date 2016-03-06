@@ -16,7 +16,10 @@ import java.nio.file.Path;
 import java.util.*;
 
 /**
- * Created by alexparlett on 19/02/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexparlett
+ * @since 19/02/2016
  */
 @ContextualComponent
 public class ResourceCache extends Contextual {
@@ -81,10 +84,8 @@ public class ResourceCache extends Contextual {
 
         if (resource != null && resource.getState().equals(Resource.AsyncState.SUCCESS)) {
             return Optional.of(resource);
-        }
-        else if (resource != null && resource.getState().equals(Resource.AsyncState.LOADING))
-        {
-            while (resource.getState().equals(Resource.AsyncState.LOADING));
+        } else if (resource != null && resource.getState().equals(Resource.AsyncState.LOADING)) {
+            while (resource.getState().equals(Resource.AsyncState.LOADING)) ;
             if (resource.getState().equals(Resource.AsyncState.SUCCESS))
                 return Optional.of(resource);
         } else if (resource != null && !resource.getState().equals(Resource.AsyncState.FAILED)) {
@@ -131,10 +132,8 @@ public class ResourceCache extends Contextual {
 
         if (resource != null && resource.getState().equals(Resource.AsyncState.SUCCESS)) {
             return Optional.of(resource);
-        }
-        else if (resource != null && resource.getState().equals(Resource.AsyncState.LOADING))
-        {
-            while (resource.getState().equals(Resource.AsyncState.LOADING));
+        } else if (resource != null && resource.getState().equals(Resource.AsyncState.LOADING)) {
+            while (resource.getState().equals(Resource.AsyncState.LOADING)) ;
             if (resource.getState().equals(Resource.AsyncState.SUCCESS))
                 return Optional.of(resource);
         } else if (resource != null && !resource.getState().equals(Resource.AsyncState.FAILED)) {

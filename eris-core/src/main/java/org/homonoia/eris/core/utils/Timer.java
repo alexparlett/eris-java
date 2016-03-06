@@ -3,7 +3,10 @@ package org.homonoia.eris.core.utils;
 import org.lwjgl.glfw.GLFW;
 
 /**
- * Created by alexparlett on 05/02/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexparlett
+ * @since 05/02/2016
  */
 public class Timer {
 

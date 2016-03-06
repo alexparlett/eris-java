@@ -9,7 +9,10 @@ import org.lwjgl.glfw.GLFW;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * Created by alexparlett on 12/12/2015.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexparlett
+ * @since 12/12/2015
  */
 @ContextualComponent
 public class Clock extends Contextual {

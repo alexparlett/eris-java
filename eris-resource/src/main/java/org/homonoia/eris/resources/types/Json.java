@@ -4,9 +4,9 @@ import com.google.gson.*;
 import com.google.gson.stream.JsonWriter;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.resources.Resource;
+import org.homonoia.eris.resources.types.json.JsonException;
 import org.homonoia.eris.resources.types.json.JsonPatch;
 import org.homonoia.eris.resources.types.json.JsonType;
-import org.homonoia.eris.resources.types.json.JsonException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,7 +17,10 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 /**
- * Created by alexparlett on 14/02/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexparlett
+ * @since 14/02/2016
  */
 public class Json extends Resource {
 

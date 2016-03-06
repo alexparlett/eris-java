@@ -1,14 +1,17 @@
 package org.homonoia.eris.renderer.impl;
 
+import org.homonoia.eris.renderer.RenderCommand;
 import org.homonoia.eris.renderer.RenderQueue;
 import org.homonoia.eris.renderer.Renderer;
-import org.homonoia.eris.renderer.RenderCommand;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by alexparlett on 06/02/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexparlett
+ * @since 06/02/2016
  */
 public class SynchronizedRenderQueue implements RenderQueue {
 

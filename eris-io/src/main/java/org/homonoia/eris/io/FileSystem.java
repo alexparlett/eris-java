@@ -17,7 +17,10 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Created by alexparlett on 29/02/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexparlett
+ * @since 29/02/2016
  */
 @ContextualComponent
 public class FileSystem extends Contextual {

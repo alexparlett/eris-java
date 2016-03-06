@@ -10,7 +10,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by alexparlett on 13/02/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexparlett
+ * @since 13/02/2016
  */
 public abstract class Contextual {
 
@@ -39,7 +42,6 @@ public abstract class Contextual {
      *
      * @param <T>         the type parameter
      * @param eventAction the event action
-     * @return the subscription
      */
     public synchronized <T extends Event> void subscribe(final Action1<T> eventAction) {
         subscribe(eventAction, null, null);
@@ -51,7 +53,6 @@ public abstract class Contextual {
      * @param <T>         the type parameter
      * @param eventAction the event action
      * @param eventClass  the event class
-     * @return the subscription
      */
     public synchronized <T extends Event> void subscribe(final Action1<T> eventAction, final Class<T> eventClass) {
         subscribe(eventAction, eventClass, null);
@@ -64,7 +65,6 @@ public abstract class Contextual {
      * @param eventAction the event action
      * @param eventClass  the event class
      * @param eventSrc    the event src
-     * @return the subscription
      */
     public synchronized <T extends Event> void subscribe(final Action1<T> eventAction, final Class<T> eventClass, final Object eventSrc) {
         Subscription subscription = context.subscribe(eventAction, eventClass, eventSrc);

@@ -15,7 +15,10 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Created by alexp on 01/03/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexp
+ * @since 01/03/2016
  */
 @ContextualComponent
 public class Input extends Contextual {
@@ -155,7 +158,7 @@ public class Input extends Contextual {
     private void handleGLFWCharCallback(long window, int codepoint) {
         if (window == renderWindow) {
             publish(Text.builder()
-                .string(String.valueOf(Character.toChars(codepoint))));
+                    .string(String.valueOf(Character.toChars(codepoint))));
         }
     }
 

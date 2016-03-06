@@ -3,7 +3,10 @@ package org.homonoia.eris.resources.exceptions;
 import org.homonoia.eris.core.exceptions.ErisException;
 
 /**
- * Created by alexp on 27/02/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexp
+ * @since 27/02/2016
  */
 public class ResourceException extends ErisException {
     public ResourceException(final String message, final Throwable cause) {

@@ -1,7 +1,10 @@
 package org.homonoia.eris.events;
 
 /**
- * Created by alexparlett on 08/12/2015.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexparlett
+ * @since 08/12/2015
  */
 public abstract class Event {
 

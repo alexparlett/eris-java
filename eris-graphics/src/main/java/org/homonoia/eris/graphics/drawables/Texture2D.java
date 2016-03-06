@@ -20,7 +20,10 @@ import java.util.Objects;
 import static org.lwjgl.opengl.GL11.*;
 
 /**
- * Created by alexparlett on 21/02/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexparlett
+ * @since 21/02/2016
  */
 public class Texture2D extends Texture {
     public Texture2D(final Context context) {
@@ -56,8 +59,7 @@ public class Texture2D extends Texture {
 
         glGetError();
         glTexImage2D(GL_TEXTURE_2D, 0, format, image.getWidth(), image.getHeight(), 0, format, GL_UNSIGNED_BYTE, image.getData());
-        if (glGetError() != GL_NO_ERROR)
-        {
+        if (glGetError() != GL_NO_ERROR) {
             GLFW.glfwMakeContextCurrent(win);
             glBindTexture(GL_TEXTURE_2D, 0);
             glDeleteTextures(handle);
@@ -75,8 +77,7 @@ public class Texture2D extends Texture {
         throw new UnsupportedOperationException();
     }
 
-    public void use()
-    {
+    public void use() {
         Objects.requireNonNull(handle, "Texture Handle must be set");
         glBindTexture(GL_TEXTURE_2D, handle);
     }

@@ -3,7 +3,10 @@ package org.homonoia.eris.io;
 import static org.lwjgl.glfw.GLFW.*;
 
 /**
- * Created by alexp on 05/03/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexp
+ * @since 05/03/2016
  */
 public enum Button {
 

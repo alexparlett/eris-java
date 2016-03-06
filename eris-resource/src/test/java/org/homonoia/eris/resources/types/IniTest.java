@@ -21,7 +21,10 @@ import static org.hamcrest.core.IsNull.nullValue;
 import static org.junit.Assert.assertThat;
 
 /**
- * Created by alexp on 29/02/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexp
+ * @since 29/02/2016
  */
 @RunWith(MockitoJUnitRunner.class)
 public class IniTest {
@@ -49,7 +52,7 @@ public class IniTest {
 
         assertThat(iniFile.isEmpty(), is(false));
 
-        IniSection section = iniFile.get("Section").orElseThrow(()-> new Exception());
+        IniSection section = iniFile.get("Section").orElseThrow(() -> new Exception());
         assertThat(section, is(not(nullValue())));
         assertThat(section.get("Foo").get(), is("Bar"));
         assertThat(section.contains("Foo2"), is(false));

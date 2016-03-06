@@ -7,7 +7,10 @@ import org.homonoia.eris.renderer.Renderer;
 import static org.lwjgl.opengl.GL11.glEnable;
 
 /**
- * Created by alexparlett on 13/02/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexparlett
+ * @since 13/02/2016
  */
 public class EnableCommand extends RenderCommand {
 
@@ -23,7 +26,9 @@ public class EnableCommand extends RenderCommand {
         glEnable(capability);
     }
 
-    public static Builder builder() { return new Builder(); }
+    public static Builder builder() {
+        return new Builder();
+    }
 
     public static class Builder extends RenderCommandBuilder<Builder> {
 

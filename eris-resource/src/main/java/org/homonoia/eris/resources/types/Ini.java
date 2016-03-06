@@ -16,7 +16,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created by alexp on 27/02/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexp
+ * @since 27/02/2016
  */
 public class Ini extends Resource implements Iterable<Map.Entry<String, IniSection>> {
 
@@ -47,8 +50,7 @@ public class Ini extends Resource implements Iterable<Map.Entry<String, IniSecti
             while ((line = br.readLine()) != null) {
                 if (line.isEmpty() || line.startsWith(COMMENT_START)) {
                     continue;
-                }
-                else if (SECTION_PATTERN.asPredicate().test(line)) {
+                } else if (SECTION_PATTERN.asPredicate().test(line)) {
                     Matcher matcher = SECTION_PATTERN.matcher(line);
                     if (matcher.find()) {
                         String sectionName = matcher.group(1);
@@ -80,7 +82,7 @@ public class Ini extends Resource implements Iterable<Map.Entry<String, IniSecti
             osw.write(SECTION_END);
             osw.write(System.lineSeparator());
 
-            for (Map.Entry<String,String> property : section.getValue()) {
+            for (Map.Entry<String, String> property : section.getValue()) {
                 osw.write(property.getKey());
                 osw.write(PROPERTY_SPLIT);
                 osw.write(property.getValue());

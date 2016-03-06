@@ -19,7 +19,10 @@ import java.util.Objects;
 import java.util.Optional;
 
 /**
- * Created by alexp on 25/02/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexp
+ * @since 25/02/2016
  */
 @ContextualComponent
 public class Settings extends Contextual {
@@ -42,7 +45,7 @@ public class Settings extends Contextual {
         this.fileSystem = fileSystem;
     }
 
-    void load() throws IOException  {
+    void load() throws IOException {
         ini = resourceCache.get(Ini.class, Paths.get("settings.ini")).orElseThrow(() -> new IOException("settings.ini not found in Application Directories."));
     }
 
@@ -97,6 +100,7 @@ public class Settings extends Contextual {
 
         iniSection.set(name, value);
     }
+
     public void setInteger(final String section, final String name, final Integer value) {
         setString(section, name, value.toString());
     }

@@ -10,7 +10,10 @@ import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Created by alexparlett on 05/02/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexparlett
+ * @since 05/02/2016
  */
 public abstract class Resource extends Contextual {
 
@@ -46,5 +49,6 @@ public abstract class Resource extends Contextual {
     }
 
     public abstract void load(InputStream inputStream) throws IOException;
+
     public abstract void save(OutputStream outputStream) throws IOException;
 }

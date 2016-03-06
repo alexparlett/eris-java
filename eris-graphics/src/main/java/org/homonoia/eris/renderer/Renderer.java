@@ -33,7 +33,10 @@ import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL32.GL_TEXTURE_CUBE_MAP_SEAMLESS;
 
 /**
- * Created by alexparlett on 06/02/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexparlett
+ * @since 06/02/2016
  */
 @ContextualComponent
 public class Renderer extends Contextual implements Runnable {

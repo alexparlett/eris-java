@@ -24,7 +24,10 @@ import static org.hamcrest.core.Is.is;
 import static org.mockito.Mockito.when;
 
 /**
- * Created by alexparlett on 21/02/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexparlett
+ * @since 21/02/2016
  */
 @RunWith(MockitoJUnitRunner.class)
 public class ResourceLoaderTest {
@@ -106,7 +109,8 @@ public class ResourceLoaderTest {
 
         resourceLoader.load(resource, path, false);
 
-        while(resource.getState().equals(Resource.AsyncState.QUEUED) || resource.getState().equals(Resource.AsyncState.LOADING));
+        while (resource.getState().equals(Resource.AsyncState.QUEUED) || resource.getState().equals(Resource.AsyncState.LOADING))
+            ;
 
         assertThat(resource.getState(), is(Resource.AsyncState.SUCCESS));
     }
@@ -121,7 +125,8 @@ public class ResourceLoaderTest {
 
         resourceLoader.load(resource, path, false);
 
-        while(resource.getState().equals(Resource.AsyncState.QUEUED) || resource.getState().equals(Resource.AsyncState.LOADING));
+        while (resource.getState().equals(Resource.AsyncState.QUEUED) || resource.getState().equals(Resource.AsyncState.LOADING))
+            ;
 
         assertThat(resource.getState(), is(Resource.AsyncState.FAILED));
     }

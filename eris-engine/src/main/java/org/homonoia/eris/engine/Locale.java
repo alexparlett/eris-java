@@ -20,7 +20,10 @@ import java.text.MessageFormat;
 import java.util.*;
 
 /**
- * Created by alexp on 25/02/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexp
+ * @since 25/02/2016
  */
 @ContextualComponent
 public class Locale extends Contextual {
@@ -54,7 +57,7 @@ public class Locale extends Contextual {
             Optional<Page[]> maybePages = json.fromJson(Page[].class);
             List<Page> pages = maybePages.map(Arrays::asList).orElse(Collections.emptyList());
 
-            for(Page page : pages) {
+            for (Page page : pages) {
                 Page previous = this.pages.putIfAbsent(page.getId(), page);
                 if (previous != null) {
                     throw new IOException(MessageFormat.format("Locale {0} contains duplicates Page {1}", json.getPath(), page.getId()));
@@ -109,7 +112,7 @@ public class Locale extends Contextual {
             public Map<Integer, String> read(final JsonReader in) throws IOException {
                 Map<Integer, String> jsonMap = new HashMap<>();
                 in.beginArray();
-                while(in.peek().equals(JsonToken.BEGIN_OBJECT)) {
+                while (in.peek().equals(JsonToken.BEGIN_OBJECT)) {
                     in.beginObject();
 
                     // Get Id

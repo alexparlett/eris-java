@@ -8,7 +8,10 @@ import org.springframework.context.annotation.Configuration;
 import java.text.DateFormat;
 
 /**
- * Created by alexparlett on 14/02/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexparlett
+ * @since 14/02/2016
  */
 @Configuration
 public class JsonConfiguration {

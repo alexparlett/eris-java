@@ -1,12 +1,15 @@
 package org.homonoia.eris.renderer.impl;
 
+import org.homonoia.eris.renderer.RenderCommand;
 import org.homonoia.eris.renderer.RenderQueue;
 import org.homonoia.eris.renderer.RenderState;
 import org.homonoia.eris.renderer.Renderer;
-import org.homonoia.eris.renderer.RenderCommand;
 
 /**
- * Created by alexparlett on 06/02/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexparlett
+ * @since 06/02/2016
  */
 public class SwappingRenderState implements RenderState {
 
@@ -15,10 +18,10 @@ public class SwappingRenderState implements RenderState {
     private int updateQueue = 1;
 
     public SwappingRenderState(final Renderer renderer) {
-        renderQueues = new RenderQueue[] {
-            new SynchronizedRenderQueue(renderer),
-            new SynchronizedRenderQueue(renderer),
-            new SynchronizedRenderQueue(renderer)
+        renderQueues = new RenderQueue[]{
+                new SynchronizedRenderQueue(renderer),
+                new SynchronizedRenderQueue(renderer),
+                new SynchronizedRenderQueue(renderer)
         };
     }
 

@@ -7,7 +7,10 @@ import java.io.ObjectOutput;
 import java.nio.ByteBuffer;
 
 /**
- * Created by alexparlett on 06/02/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexparlett
+ * @since 06/02/2016
  */
 public class Vector2b implements Externalizable {
 
@@ -18,7 +21,7 @@ public class Vector2b implements Externalizable {
     }
 
     public Vector2b(boolean val) {
-        this(val,val);
+        this(val, val);
     }
 
     public Vector2b(final boolean x, final boolean y) {
@@ -41,7 +44,7 @@ public class Vector2b implements Externalizable {
     }
 
     public Vector2b set(boolean val) {
-        return set(val,val);
+        return set(val, val);
     }
 
     public Vector2b set(final boolean x, final boolean y) {

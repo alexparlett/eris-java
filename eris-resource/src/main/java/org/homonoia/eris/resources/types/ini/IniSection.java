@@ -4,9 +4,12 @@ import java.util.*;
 import java.util.function.Consumer;
 
 /**
- * Created by alexp on 27/02/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexp
+ * @since 27/02/2016
  */
-public class IniSection implements Iterable<Map.Entry<String,String>> {
+public class IniSection implements Iterable<Map.Entry<String, String>> {
 
     private final Map<String, String> keyValues = new HashMap<>();
 

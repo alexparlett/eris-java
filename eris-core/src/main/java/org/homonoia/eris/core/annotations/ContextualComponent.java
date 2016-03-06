@@ -7,7 +7,10 @@ import org.springframework.stereotype.Component;
 import java.lang.annotation.*;
 
 /**
- * Created by alexparlett on 14/02/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexparlett
+ * @since 14/02/2016
  */
 @Inherited
 @Target({ElementType.TYPE})

@@ -28,7 +28,10 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.glGetString;
 
 /**
- * Created by alexparlett on 14/02/2016.
+ * Copyright (c) 2015-2016 the Eris project.
+ *
+ * @author alexparlett
+ * @since 14/02/2016
  */
 @ContextualComponent
 public class Graphics extends Contextual {
@@ -74,7 +77,7 @@ public class Graphics extends Contextual {
         initialized = false;
 
         if (renderWindow != MemoryUtil.NULL) {
-            glfwSetFramebufferSizeCallback(renderWindow,  null);
+            glfwSetFramebufferSizeCallback(renderWindow, null);
             glfwSetWindowCloseCallback(renderWindow, null);
 
             glfwDestroyWindow(renderWindow);
@@ -278,8 +281,7 @@ public class Graphics extends Contextual {
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
         GLFWVidMode desktop = getResolution();
-        if (width.get() <= 0 || height.get() <= 0)
-        {
+        if (width.get() <= 0 || height.get() <= 0) {
             width.set(desktop.width());
             height.set(desktop.height());
         }
@@ -290,8 +292,7 @@ public class Graphics extends Contextual {
             renderWindow = glfwCreateWindow(width.get(), height.get(), title, MemoryUtil.NULL, backgroundWindow);
         }
 
-        if (renderWindow == MemoryUtil.NULL)
-        {
+        if (renderWindow == MemoryUtil.NULL) {
             throw new InitializationException("", ExitCode.WINDOW_CREATE_ERROR);
         }
 
@@ -337,8 +338,7 @@ public class Graphics extends Contextual {
 
         backgroundWindow = glfwCreateWindow(1, 1, title, MemoryUtil.NULL, MemoryUtil.NULL);
 
-        if (backgroundWindow == MemoryUtil.NULL)
-        {
+        if (backgroundWindow == MemoryUtil.NULL) {
             throw new InitializationException("", ExitCode.WINDOW_CREATE_ERROR);
         }
 
