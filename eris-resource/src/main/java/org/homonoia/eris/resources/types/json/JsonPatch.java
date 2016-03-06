@@ -111,7 +111,7 @@ public class JsonPatch {
             } catch (IndexOutOfBoundsException ex) {
                 throw new JsonException("Invalid Replace. {} is not inside the array.", ex, elementName);
             }
-        } else if (origin.isJsonObject()) {
+        } else if (origin.isJsonObject() && origin.getAsJsonObject().has(elementName)) {
             origin.getAsJsonObject().remove(elementName);
         } else {
             throw new JsonException("Invalid Remove. Target element is neither an array or an object.");

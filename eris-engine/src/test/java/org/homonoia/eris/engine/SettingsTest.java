@@ -1,7 +1,7 @@
 package org.homonoia.eris.engine;
 
 import org.homonoia.eris.core.Context;
-import org.homonoia.eris.io.FileSystem;
+import org.homonoia.eris.core.components.FileSystem;
 import org.homonoia.eris.resources.cache.ResourceCache;
 import org.junit.Before;
 import org.junit.Rule;

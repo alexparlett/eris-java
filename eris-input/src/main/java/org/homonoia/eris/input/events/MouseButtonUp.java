@@ -1,8 +1,8 @@
-package org.homonoia.eris.io.events;
+package org.homonoia.eris.input.events;
 
 import org.homonoia.eris.events.Event;
-import org.homonoia.eris.io.Button;
-import org.homonoia.eris.io.Modifier;
+import org.homonoia.eris.input.Button;
+import org.homonoia.eris.input.Modifier;
 
 import java.util.List;
 

@@ -71,7 +71,7 @@ public class Locale extends Contextual {
         return find != null ? find.getLine(line) : null;
     }
 
-    public static String replace(String line, String... values) {
+    public static String replace(String line, Object... values) {
         return MessageFormat.format(line, values);
     }
 

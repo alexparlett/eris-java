@@ -2,7 +2,7 @@ package org.homonoia.eris.engine;
 
 import com.google.gson.Gson;
 import org.homonoia.eris.core.Context;
-import org.homonoia.eris.io.FileSystem;
+import org.homonoia.eris.core.components.FileSystem;
 import org.homonoia.eris.resources.cache.ResourceCache;
 import org.homonoia.eris.resources.types.json.JsonException;
 import org.junit.Before;

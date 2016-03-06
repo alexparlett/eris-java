@@ -1,4 +1,4 @@
-package org.homonoia.eris.io;
+package org.homonoia.eris.input;
 
 import org.lwjgl.glfw.GLFW;
 

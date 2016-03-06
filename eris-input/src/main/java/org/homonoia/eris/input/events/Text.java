@@ -1,4 +1,4 @@
-package org.homonoia.eris.io.events;
+package org.homonoia.eris.input.events;
 
 import org.homonoia.eris.events.Event;
 
@@ -8,13 +8,13 @@ import org.homonoia.eris.events.Event;
  * @author alexp
  * @since 05/03/2016
  */
-public class MouseScroll extends Event {
+public class Text extends Event {
 
-    private final double delta;
+    private final String string;
 
-    protected MouseScroll(final Builder builder) {
+    protected Text(final Builder builder) {
         super(builder);
-        this.delta = builder.delta;
+        this.string = builder.string;
     }
 
     public static Builder builder() {
@@ -23,16 +23,16 @@ public class MouseScroll extends Event {
 
     public static final class Builder extends EventBuilder<Builder> {
 
-        public double delta;
+        public String string;
 
-        public Builder delta(double delta) {
-            this.delta = delta;
+        public Builder string(String string) {
+            this.string = string;
             return this;
         }
 
         @Override
-        public MouseScroll build() {
-            return new MouseScroll(this);
+        public Text build() {
+            return new Text(this);
         }
     }
 }

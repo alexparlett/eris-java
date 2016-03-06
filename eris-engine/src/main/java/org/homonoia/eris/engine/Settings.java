@@ -3,7 +3,7 @@ package org.homonoia.eris.engine;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.annotations.ContextualComponent;
-import org.homonoia.eris.io.FileSystem;
+import org.homonoia.eris.core.components.FileSystem;
 import org.homonoia.eris.resources.cache.ResourceCache;
 import org.homonoia.eris.resources.types.Ini;
 import org.homonoia.eris.resources.types.ini.IniException;

@@ -1,11 +1,11 @@
-package org.homonoia.eris.io;
+package org.homonoia.eris.input;
 
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.annotations.ContextualComponent;
 import org.homonoia.eris.core.exceptions.InitializationException;
 import org.homonoia.eris.graphics.Graphics;
-import org.homonoia.eris.io.events.*;
+import org.homonoia.eris.input.events.*;
 import org.joml.Vector2d;
 import org.lwjgl.glfw.*;
 import org.lwjgl.system.MemoryUtil;
