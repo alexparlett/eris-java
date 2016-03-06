@@ -5,8 +5,8 @@ package org.homonoia.eris.events;
  */
 public class EventSubscription {
 
-    private Class<?> eventClass;
-    private Object eventSource;
+    private final Class<?> eventClass;
+    private final Object eventSource;
 
     private EventSubscription(Builder builder) {
         this.eventClass = builder.eventClass;

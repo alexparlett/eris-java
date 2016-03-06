@@ -8,7 +8,7 @@ import java.util.function.Consumer;
  */
 public class IniSection implements Iterable<Map.Entry<String,String>> {
 
-    private Map<String, String> keyValues = new HashMap<>();
+    private final Map<String, String> keyValues = new HashMap<>();
 
     public void set(final String key, final String value) {
         Objects.requireNonNull(key);

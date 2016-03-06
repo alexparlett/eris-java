@@ -29,6 +29,7 @@ public class EnableCommand extends RenderCommand {
 
         private int capability;
 
+        @Override
         public EnableCommand build() {
             return new EnableCommand(this);
         }

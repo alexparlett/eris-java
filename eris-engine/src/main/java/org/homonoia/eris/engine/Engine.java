@@ -5,14 +5,13 @@ import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.ExitCode;
 import org.homonoia.eris.core.annotations.ContextualComponent;
 import org.homonoia.eris.core.components.Clock;
-import org.homonoia.eris.io.FileSystem;
 import org.homonoia.eris.core.exceptions.InitializationException;
 import org.homonoia.eris.events.core.ExitRequested;
 import org.homonoia.eris.graphics.Graphics;
+import org.homonoia.eris.io.FileSystem;
 import org.homonoia.eris.io.Input;
 import org.homonoia.eris.renderer.Renderer;
 import org.homonoia.eris.resources.cache.ResourceCache;
-import org.homonoia.eris.resources.types.ini.IniException;
 import org.homonoia.eris.resources.types.json.JsonException;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -69,17 +68,17 @@ public class Engine extends Contextual {
         // Initialize Base Components
         initializationLog();
 
-        fileSystem.addPath(fileSystem.getApplicationDataDirectory());
-        fileSystem.addPath(fileSystem.getApplicationDirectory());
-        fileSystem.addPath(fileSystem.getTempDirectory());
+        fileSystem.addPath(FileSystem.getApplicationDataDirectory());
+        fileSystem.addPath(FileSystem.getApplicationDirectory());
+        fileSystem.addPath(FileSystem.getTempDirectory());
 
-        resourceCache.addDirectory(fileSystem.getApplicationDataDirectory());
-        resourceCache.addDirectory(fileSystem.getApplicationDirectory().resolve("Data"));
+        resourceCache.addDirectory(FileSystem.getApplicationDataDirectory());
+        resourceCache.addDirectory(FileSystem.getApplicationDirectory().resolve("Data"));
 
         // Load Settings and Initialize Components
         try {
             settings.load();
-        } catch (IOException | IniException e) {
+        } catch (IOException e) {
             e.printStackTrace();
         }
 

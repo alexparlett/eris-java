@@ -22,7 +22,7 @@ import java.util.Objects;
 @ContextualComponent
 public class FileSystem extends Contextual {
 
-    private List<Path> allowedPaths = new ArrayList<>();
+    private final List<Path> allowedPaths = new ArrayList<>();
 
     @Autowired
     public FileSystem(final Context context) {

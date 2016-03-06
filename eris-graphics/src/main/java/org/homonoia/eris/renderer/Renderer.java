@@ -95,12 +95,12 @@ public class Renderer extends Contextual implements Runnable {
     private final Graphics graphics;
 
     private boolean initialized = false;
-    private AtomicBoolean threadExit = new AtomicBoolean(false);
-    private AtomicBoolean viewportDirty = new AtomicBoolean(false);
+    private final AtomicBoolean threadExit = new AtomicBoolean(false);
+    private final AtomicBoolean viewportDirty = new AtomicBoolean(false);
     private Matrix4f view = new Matrix4f();
     private Matrix4f perspective = new Matrix4f();
-    private Thread thread = new Thread(this);
-    private RenderState state = new SwappingRenderState(this);
+    private final Thread thread = new Thread(this);
+    private final RenderState state = new SwappingRenderState(this);
 
     @Autowired
     public Renderer(final Context context, final Graphics graphics) {

@@ -10,7 +10,7 @@ import org.homonoia.eris.renderer.RenderCommand;
  */
 public class SwappingRenderState implements RenderState {
 
-    private RenderQueue[] renderQueues;
+    private final RenderQueue[] renderQueues;
     private int renderQueue = 0;
     private int updateQueue = 1;
 

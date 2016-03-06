@@ -27,7 +27,7 @@ public class Ini extends Resource implements Iterable<Map.Entry<String, IniSecti
     private static final String PROPERTY_SPLIT = "=";
     private static final String COMMENT_START = ";";
 
-    private Map<String, IniSection> sections = new LinkedHashMap<>();
+    private final Map<String, IniSection> sections = new LinkedHashMap<>();
 
     public Ini(final Context context) {
         super(context);

@@ -7,7 +7,7 @@ import org.homonoia.eris.core.ExitCode;
  */
 public class InitializationException extends ErisException {
 
-    private ExitCode error;
+    private final ExitCode error;
 
     public InitializationException(final String msg) {
         this(msg, ExitCode.UNKNOWN);

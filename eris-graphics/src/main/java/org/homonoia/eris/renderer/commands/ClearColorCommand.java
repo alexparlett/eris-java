@@ -30,6 +30,7 @@ public class ClearColorCommand extends RenderCommand {
 
         private Vector4f color;
 
+        @Override
         public ClearColorCommand build() {
             return new ClearColorCommand(this);
         }

@@ -5,7 +5,7 @@ package org.homonoia.eris.events;
  */
 public abstract class Event {
 
-    private Object source;
+    private final Object source;
 
     protected Event(EventBuilder<?> eventBuilder) {
         this.source = eventBuilder.source;

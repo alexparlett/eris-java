@@ -12,8 +12,8 @@ import java.util.List;
  */
 public class SynchronizedRenderQueue implements RenderQueue {
 
-    private List<RenderCommand> renderCommands = new ArrayList<>();
-    private Renderer renderer;
+    private final List<RenderCommand> renderCommands = new ArrayList<>();
+    private final Renderer renderer;
 
     public SynchronizedRenderQueue(final Renderer renderer) {
         this.renderer = renderer;

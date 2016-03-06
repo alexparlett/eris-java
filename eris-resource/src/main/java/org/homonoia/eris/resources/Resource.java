@@ -23,7 +23,7 @@ public abstract class Resource extends Contextual {
     }
 
     private Path path;
-    private AtomicReference<AsyncState> state = new AtomicReference<>(AsyncState.NEW);
+    private final AtomicReference<AsyncState> state = new AtomicReference<>(AsyncState.NEW);
 
     public Resource(final Context context) {
         super(context);

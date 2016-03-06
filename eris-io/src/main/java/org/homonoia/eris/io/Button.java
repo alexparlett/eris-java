@@ -17,7 +17,7 @@ public enum Button {
     BUTTON_8(GLFW_MOUSE_BUTTON_8),
     UNKNOWN(-1);
 
-    private int buttonCode;
+    private final int buttonCode;
 
     Button(final int buttonCode) {
         this.buttonCode = buttonCode;

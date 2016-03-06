@@ -7,8 +7,8 @@ import org.homonoia.eris.events.Event;
  */
 public class BeginFrame extends Event {
 
-    private int frameNumber;
-    private double timeStep;
+    private final int frameNumber;
+    private final double timeStep;
 
     private BeginFrame(Builder builder) {
         super(builder);

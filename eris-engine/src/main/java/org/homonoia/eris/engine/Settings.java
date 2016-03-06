@@ -42,7 +42,7 @@ public class Settings extends Contextual {
         this.fileSystem = fileSystem;
     }
 
-    void load() throws IOException, IniException  {
+    void load() throws IOException  {
         ini = resourceCache.get(Ini.class, Paths.get("settings.ini")).orElseThrow(() -> new IOException("settings.ini not found in Application Directories."));
     }
 

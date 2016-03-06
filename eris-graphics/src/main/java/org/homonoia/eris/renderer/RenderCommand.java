@@ -5,7 +5,7 @@ package org.homonoia.eris.renderer;
  */
 public abstract class RenderCommand {
 
-    private RenderKey renderKey;
+    private final RenderKey renderKey;
 
     protected RenderCommand(RenderCommandBuilder<?> builder) {
         this.renderKey = builder.renderKey;
@@ -17,7 +17,7 @@ public abstract class RenderCommand {
 
     public abstract void process(final Renderer renderer, final RenderKey renderKey);
 
-    public static class RenderCommandBuilder<T extends RenderCommandBuilder> {
+    public static abstract class RenderCommandBuilder<T extends RenderCommandBuilder> {
 
         private RenderKey renderKey;
 
@@ -25,5 +25,7 @@ public abstract class RenderCommand {
             this.renderKey = renderKey;
             return (T) this;
         }
+
+        public abstract <K extends RenderCommand> K build();
     }
 }

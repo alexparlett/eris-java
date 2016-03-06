@@ -30,7 +30,7 @@ import static org.junit.Assert.assertThat;
 public class ImageTest {
 
     @Rule
-    public TemporaryFolder folder = new TemporaryFolder();
+    public final TemporaryFolder folder = new TemporaryFolder();
 
     @Mock
     private ApplicationContext applicationContext;
@@ -74,7 +74,7 @@ public class ImageTest {
             image.save(outputStream);
         }
 
-        assertThat(file.length(), greaterThan(0l));
+        assertThat(file.length(), greaterThan(0L));
     }
 
     @Test(expected = IOException.class)
@@ -94,9 +94,8 @@ public class ImageTest {
         Image image = new Image(context);
         image.load(resource.getInputStream());
 
-        boolean success = image.resize(1024, 1024);
+        image.resize(1024, 1024);
 
-        assertThat(success, is(true));
         assertThat(image.getWidth(), is(1024));
         assertThat(image.getHeight(), is(1024));
     }
@@ -108,25 +107,20 @@ public class ImageTest {
         Image image = new Image(context);
         image.load(resource.getInputStream());
 
-        boolean success = image.resize(4096, 4096);
+        image.resize(4096, 4096);
 
-        assertThat(success, is(true));
         assertThat(image.getWidth(), is(4096));
         assertThat(image.getHeight(), is(4096));
     }
 
-    @Test
+    @Test(expected = ImageException.class)
     public void testResize_BadSize() throws IOException, ImageException {
         Resource resource = new PathMatchingResourcePatternResolver().getResource("texture.jpg");
 
         Image image = new Image(context);
         image.load(resource.getInputStream());
 
-        boolean success = image.resize(0, 4096);
-
-        assertThat(success, is(false));
-        assertThat(image.getWidth(), is(2048));
-        assertThat(image.getHeight(), is(2048));
+        image.resize(0, 4096);
     }
 
     @Test
@@ -136,9 +130,8 @@ public class ImageTest {
         Image image = new Image(context);
         image.load(resource.getInputStream());
 
-        boolean success = image.resize(2048, 2048);
+        image.resize(2048, 2048);
 
-        assertThat(success, is(false));
         assertThat(image.getWidth(), is(2048));
         assertThat(image.getHeight(), is(2048));
     }

@@ -31,7 +31,7 @@ public class ContextualTest {
     @Mock
     Action1<BeginFrame> beginFrameFrameHandlerMock;
 
-    private Context context = new Context();
+    private final Context context = new Context();
 
     /**
      * Method: subscribe(final Action1<T> eventAction)

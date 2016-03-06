@@ -14,7 +14,7 @@ import java.util.Map;
  */
 public abstract class Texture extends Resource {
 
-    private static Map<String, Integer> wrapMap = new HashMap<>();
+    private static final Map<String, Integer> wrapMap = new HashMap<>();
 
     static {
         wrapMap.put("REPEAT", GL11.GL_REPEAT);

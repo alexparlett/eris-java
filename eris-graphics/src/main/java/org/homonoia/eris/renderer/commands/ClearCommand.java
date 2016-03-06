@@ -29,6 +29,7 @@ public class ClearCommand extends RenderCommand {
 
         private int bitfield;
 
+        @Override
         public ClearCommand build() {
             return new ClearCommand(this);
         }

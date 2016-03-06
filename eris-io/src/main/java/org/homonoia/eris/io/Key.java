@@ -129,7 +129,7 @@ public enum Key {
     RIGHT_SUPER(GLFW.GLFW_KEY_RIGHT_SUPER),
     MENU(GLFW.GLFW_KEY_MENU);
 
-    private int keyCode;
+    private final int keyCode;
 
     Key(final int keyCode) {
         this.keyCode = keyCode;

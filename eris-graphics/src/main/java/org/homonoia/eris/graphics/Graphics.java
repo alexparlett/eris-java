@@ -40,8 +40,8 @@ public class Graphics extends Contextual {
     private boolean resizable = false;
     private boolean borderless = false;
     private boolean vsync = true;
-    private AtomicInteger width = new AtomicInteger(0);
-    private AtomicInteger height = new AtomicInteger(0);
+    private final AtomicInteger width = new AtomicInteger(0);
+    private final AtomicInteger height = new AtomicInteger(0);
     private int samples = 4;
     private float gamma;
     private String title = "Eris";

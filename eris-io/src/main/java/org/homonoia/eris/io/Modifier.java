@@ -12,7 +12,7 @@ public enum Modifier {
     ALT(GLFW.GLFW_MOD_ALT),
     SUPER(GLFW.GLFW_MOD_SUPER);
 
-    private int modifierCode;
+    private final int modifierCode;
 
     Modifier(final int modifierCode) {
         this.modifierCode = modifierCode;
