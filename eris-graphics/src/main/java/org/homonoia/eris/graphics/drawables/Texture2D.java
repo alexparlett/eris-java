@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.MessageFormat;
 import java.util.Objects;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -59,11 +60,13 @@ public class Texture2D extends Texture {
 
         glGetError();
         glTexImage2D(GL_TEXTURE_2D, 0, format, image.getWidth(), image.getHeight(), 0, format, GL_UNSIGNED_BYTE, image.getData());
-        if (glGetError() != GL_NO_ERROR) {
+
+        int glErrorCode = glGetError();
+        if (glErrorCode != GL_NO_ERROR) {
             GLFW.glfwMakeContextCurrent(win);
             glBindTexture(GL_TEXTURE_2D, 0);
             glDeleteTextures(handle);
-            throw new IOException();
+            throw new IOException(MessageFormat.format("Failed to load TextureCube {0}. OpenGL Error {1}", image.getPath(), glErrorCode));
         }
 
         setParameters();
