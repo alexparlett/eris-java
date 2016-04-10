@@ -1,23 +1,27 @@
 package org.homonoia.eris.engine;
 
+
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.ExitCode;
 import org.homonoia.eris.core.annotations.ContextualComponent;
 import org.homonoia.eris.core.components.Clock;
+import org.homonoia.eris.core.components.FileSystem;
 import org.homonoia.eris.core.exceptions.InitializationException;
 import org.homonoia.eris.events.core.ExitRequested;
 import org.homonoia.eris.graphics.Graphics;
-import org.homonoia.eris.core.components.FileSystem;
 import org.homonoia.eris.input.Input;
 import org.homonoia.eris.renderer.Renderer;
 import org.homonoia.eris.resources.cache.ResourceCache;
 import org.homonoia.eris.resources.types.json.JsonException;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Copyright (c) 2015-2016 the Eris project.
@@ -27,6 +31,10 @@ import java.io.IOException;
  */
 @ContextualComponent
 public class Engine extends Contextual {
+
+    private static final Logger LOG = LoggerFactory.getLogger(Engine.class);
+
+    private AtomicBoolean shouldExit = new AtomicBoolean(false);
 
     @Autowired
     private ResourceCache resourceCache;
@@ -82,13 +90,13 @@ public class Engine extends Contextual {
         try {
             settings.load();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new InitializationException("Failed to load Settings.", ExitCode.FATAL_ERROR);
         }
 
         try {
             locale.load(settings.getString("Game", "Language").orElse("en_GB"));
         } catch (IOException | JsonException e) {
-            e.printStackTrace();
+            throw new InitializationException("Failed to load Locale.", ExitCode.FATAL_ERROR);
         }
 
         // Initialize Window
@@ -115,6 +123,11 @@ public class Engine extends Contextual {
     }
 
     public void run() {
+
+        while (!shouldExit.get()) {
+
+        }
+
     }
 
     public void shutdown() {
@@ -134,16 +147,29 @@ public class Engine extends Contextual {
 
     private void initializationLog() {
         log.initialize();
+
+        LOG.info("Initializing...");
+        LOG.info("\tOS: {}", System.getProperty("os.name"));
+        LOG.info("\tArch: {}", System.getProperty("os.arch"));
+        LOG.info("\tCores: {}", Runtime.getRuntime().availableProcessors());
+        LOG.info("\tMemory: {}", FileSystem.readableFileSize(Runtime.getRuntime().totalMemory()));
     }
 
     private void shutdownLog(final double elapsedTime, final int frameNumber) {
+        LOG.info("Terminating...");
+        LOG.info("\tFrames: {}.", frameNumber);
+        LOG.info("\tMilliseconds: {}.", elapsedTime);
+        LOG.info("\tExit Code: {}.", getContext().getExitCode());
+
         log.shutdown();
     }
 
     private void handleExitRequest(final ExitRequested exitRequest) {
+        shouldExit.set(true);
     }
 
     private void handleGLFWError(int error, long description) {
-
+        shouldExit.set(true);
+        getContext().setExitCode(ExitCode.GLFW_RUNTIME_ERROR);
     }
 }

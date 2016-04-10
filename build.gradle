@@ -22,30 +22,31 @@ configure(subprojects) {
 
     repositories {
         mavenCentral()
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
     }
 
     dependencies {
-        testCompile 'junit:junit:4.+'
-        testCompile 'org.mockito:mockito-all:+'
+        testCompile 'junit:junit:4.12'
+        testCompile 'org.mockito:mockito-all:2.0.1'
         testCompile 'org.hamcrest:hamcrest-all:+'
 
         compile 'org.slf4j:jcl-over-slf4j:+'
         compile 'ch.qos.logback:logback-classic:+'
-        compile 'io.reactivex:rxjava:1.+'
+        compile 'io.reactivex:rxjava:+'
 
-        compile 'org.springframework:spring-beans:4.2.+'
-        compile 'org.springframework:spring-context:4.2.+'
-        compile 'org.lwjgl:lwjgl:3.+'
-        compile 'org.lwjgl:lwjgl-platform:3.+:natives-windows'
-        compile 'org.lwjgl:lwjgl-platform:3.+:natives-linux'
-        compile 'org.lwjgl:lwjgl-platform:3.+:natives-osx'
+        compile 'org.springframework:spring-beans:+'
+        compile 'org.springframework:spring-context:+'
+        compile 'org.lwjgl:lwjgl:3.0.0-SNAPSHOT'
+        compile 'org.lwjgl:lwjgl-platform:3.0.0-SNAPSHOT:natives-windows'
+        compile 'org.lwjgl:lwjgl-platform:3.0.0-SNAPSHOT:natives-linux'
+        compile 'org.lwjgl:lwjgl-platform:3.0.0-SNAPSHOT:natives-osx'
 
         compile 'org.joml:joml:+'
 
-        compile 'net.sf.sociaal:jbullet:3.+'
-        compile 'com.badlogicgames.ashley:ashley:1.7.+'
+        compile 'net.sf.sociaal:jbullet:3.0.0'
+        compile 'com.badlogicgames.ashley:ashley:1.7.2'
 
-        compile 'org.luaj:luaj-jse:3.+'
+        compile 'org.luaj:luaj-jse:+'
     }
 
     configurations.all {

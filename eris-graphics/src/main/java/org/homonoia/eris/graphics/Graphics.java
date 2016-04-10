@@ -293,7 +293,7 @@ public class Graphics extends Contextual {
         }
 
         if (renderWindow == MemoryUtil.NULL) {
-            throw new InitializationException("", ExitCode.WINDOW_CREATE_ERROR);
+            throw new InitializationException("Failed to open rendering context.", ExitCode.WINDOW_CREATE_ERROR);
         }
 
         glfwMakeContextCurrent(renderWindow);
@@ -311,7 +311,7 @@ public class Graphics extends Contextual {
         try {
             GL.createCapabilities();
         } catch (IllegalStateException ex) {
-            throw new InitializationException("", ExitCode.GL_CREATE_ERROR);
+            throw new InitializationException("Failed to create OpenGL capabilities.", ExitCode.GL_CREATE_ERROR);
         }
 
         if (!isFullscreen()) {
@@ -339,7 +339,7 @@ public class Graphics extends Contextual {
         backgroundWindow = glfwCreateWindow(1, 1, title, MemoryUtil.NULL, MemoryUtil.NULL);
 
         if (backgroundWindow == MemoryUtil.NULL) {
-            throw new InitializationException("", ExitCode.WINDOW_CREATE_ERROR);
+            throw new InitializationException("Failed to open background loading context.", ExitCode.WINDOW_CREATE_ERROR);
         }
 
         glfwMakeContextCurrent(backgroundWindow);
@@ -347,7 +347,7 @@ public class Graphics extends Contextual {
         try {
             GL.createCapabilities();
         } catch (IllegalStateException ex) {
-            throw new InitializationException("", ExitCode.GL_CREATE_ERROR);
+            throw new InitializationException("Failed to create OpenGL capabilities.", ExitCode.GL_CREATE_ERROR);
         }
 
         glfwSetWindowCloseCallback(backgroundWindow, GLFWWindowCloseCallback.create(this::handleWindowCloseCallback));

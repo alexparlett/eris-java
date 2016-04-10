@@ -21,6 +21,11 @@ public class InitializationException extends ErisException {
         this.error = error;
     }
 
+    public InitializationException(final String msg, final ExitCode error, final Throwable throwable) {
+        super(msg, throwable);
+        this.error = error;
+    }
+
     public ExitCode getError() {
         return error;
     }
