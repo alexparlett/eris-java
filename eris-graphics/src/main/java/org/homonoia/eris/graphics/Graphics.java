@@ -7,8 +7,11 @@ import org.homonoia.eris.core.annotations.ContextualComponent;
 import org.homonoia.eris.core.exceptions.InitializationException;
 import org.homonoia.eris.events.core.ExitRequested;
 import org.homonoia.eris.events.graphics.ScreenMode;
+import org.homonoia.eris.resources.cache.ResourceCache;
+import org.homonoia.eris.resources.types.Image;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
+import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.glfw.GLFWWindowCloseCallback;
 import org.lwjgl.opengl.GL;
@@ -20,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.IntBuffer;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -37,6 +41,8 @@ import static org.lwjgl.opengl.GL11.glGetString;
 public class Graphics extends Contextual {
 
     private static final Logger LOG = LoggerFactory.getLogger(Graphics.class);
+
+    private final ResourceCache resourceCache;
 
     private boolean initialized = false;
     private boolean fullscreen = true;
@@ -58,8 +64,9 @@ public class Graphics extends Contextual {
      * @param context the context
      */
     @Autowired
-    public Graphics(final Context context) {
+    public Graphics(final Context context, final ResourceCache resourceCache) {
         super(context);
+        this.resourceCache = resourceCache;
     }
 
     public void initialize() throws InitializationException {
@@ -258,7 +265,7 @@ public class Graphics extends Contextual {
 
     public List<GLFWVidMode> getResolutions() {
         List<GLFWVidMode> videoModesList = Collections.emptyList();
-        GLFWVidMode.Buffer vidModes = glfwGetVideoModes(glfwGetPrimaryMonitor()).asReadOnlyBuffer();
+        GLFWVidMode.Buffer vidModes = glfwGetVideoModes(glfwGetPrimaryMonitor());
         while (vidModes.hasRemaining()) {
             videoModesList.add(vidModes.get());
         }
@@ -297,6 +304,10 @@ public class Graphics extends Contextual {
         }
 
         glfwMakeContextCurrent(renderWindow);
+
+        resourceCache.get(Image.class, Paths.get(icon))
+                .map(Image::getData)
+                .ifPresent(byteBuffer -> glfwSetWindowIcon(renderWindow, new GLFWImage.Buffer(byteBuffer)));
 
         IntBuffer widthBuffer = BufferUtils.createIntBuffer(1);
         IntBuffer heightBuffer = BufferUtils.createIntBuffer(1);

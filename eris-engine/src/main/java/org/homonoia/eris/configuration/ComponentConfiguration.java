@@ -39,8 +39,8 @@ public class ComponentConfiguration {
     }
 
     @ContextualBean
-    public Graphics graphics(Context context) {
-        return new Graphics(context);
+    public Graphics graphics(Context context, ResourceCache resourceCache) {
+        return new Graphics(context, resourceCache);
     }
 
     @ContextualBean

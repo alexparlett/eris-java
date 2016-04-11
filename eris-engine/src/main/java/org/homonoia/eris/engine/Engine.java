@@ -105,8 +105,8 @@ public class Engine extends Contextual {
             throw new InitializationException("Failed to initialize GLFW.", ExitCode.GLFW_CREATE_ERROR);
         }
 
-        graphics.setTitle("Eris");
-        graphics.setIcon("icon.ico");
+        graphics.setTitle(settings.getString("Game", "Title").orElse(""));
+        graphics.setIcon(settings.getString("Game", "Icon").orElse("icon.ico"));
         graphics.setResizable(settings.getBoolean("Graphics", "Resizable").orElse(false));
         graphics.setSize(settings.getInteger("Graphics", "Width").orElse(1024), settings.getInteger("Graphics", "Height").orElse(768));
         graphics.setBorderless(settings.getBoolean("Graphics", "Borderless").orElse(false));
