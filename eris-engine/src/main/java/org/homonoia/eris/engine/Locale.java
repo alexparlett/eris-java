@@ -7,7 +7,6 @@ import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
-import org.homonoia.eris.core.annotations.ContextualComponent;
 import org.homonoia.eris.resources.cache.ResourceCache;
 import org.homonoia.eris.resources.types.Json;
 import org.homonoia.eris.resources.types.json.JsonException;
@@ -25,7 +24,6 @@ import java.util.*;
  * @author alexp
  * @since 25/02/2016
  */
-@ContextualComponent
 public class Locale extends Contextual {
 
     private static final String LOCALES_PATH = "Locales";

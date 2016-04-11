@@ -6,7 +6,6 @@ import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.util.StatusPrinter;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
-import org.homonoia.eris.core.annotations.ContextualComponent;
 import org.homonoia.eris.core.components.FileSystem;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author alexparlett
  * @since 01/03/2016
  */
-@ContextualComponent
 public class Log extends Contextual {
 
     @Autowired
@@ -40,6 +38,7 @@ public class Log extends Contextual {
             // StatusPrinter will handle this
         }
 
+        context.start();
         StatusPrinter.printInCaseOfErrorsOrWarnings(context);
     }
 

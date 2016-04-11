@@ -2,7 +2,6 @@ package org.homonoia.eris.core.components;
 
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
-import org.homonoia.eris.core.annotations.ContextualComponent;
 import org.lwjgl.system.Platform;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -23,7 +22,6 @@ import java.util.Objects;
  * @author alexparlett
  * @since 29/02/2016
  */
-@ContextualComponent
 public class FileSystem extends Contextual {
 
     private final List<Path> allowedPaths = new ArrayList<>();

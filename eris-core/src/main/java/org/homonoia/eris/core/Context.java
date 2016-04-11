@@ -1,6 +1,5 @@
 package org.homonoia.eris.core;
 
-import org.homonoia.eris.core.annotations.ContextualComponent;
 import org.homonoia.eris.events.Event;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
@@ -18,7 +17,6 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * The type Contextual.
  */
-@ContextualComponent
 public class Context implements ApplicationContextAware {
 
     private final AtomicReference<ExitCode> exitCode = new AtomicReference<>(ExitCode.SUCCESS);

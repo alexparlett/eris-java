@@ -2,7 +2,6 @@ package org.homonoia.eris.engine;
 
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
-import org.homonoia.eris.core.annotations.ContextualComponent;
 import org.homonoia.eris.core.components.FileSystem;
 import org.homonoia.eris.resources.cache.ResourceCache;
 import org.homonoia.eris.resources.types.Ini;
@@ -24,7 +23,6 @@ import java.util.Optional;
  * @author alexp
  * @since 25/02/2016
  */
-@ContextualComponent
 public class Settings extends Contextual {
 
     private static final Logger LOG = LoggerFactory.getLogger(Settings.class);

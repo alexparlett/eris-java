@@ -2,7 +2,6 @@ package org.homonoia.eris.input;
 
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
-import org.homonoia.eris.core.annotations.ContextualComponent;
 import org.homonoia.eris.core.exceptions.InitializationException;
 import org.homonoia.eris.graphics.Graphics;
 import org.homonoia.eris.input.events.*;
@@ -20,7 +19,6 @@ import java.util.Objects;
  * @author alexp
  * @since 01/03/2016
  */
-@ContextualComponent
 public class Input extends Contextual {
 
     private final Graphics graphics;

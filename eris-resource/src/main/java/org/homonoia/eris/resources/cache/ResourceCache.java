@@ -2,7 +2,6 @@ package org.homonoia.eris.resources.cache;
 
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
-import org.homonoia.eris.core.annotations.ContextualComponent;
 import org.homonoia.eris.core.components.FileSystem;
 import org.homonoia.eris.resources.Resource;
 import org.slf4j.Logger;
@@ -21,7 +20,6 @@ import java.util.*;
  * @author alexparlett
  * @since 19/02/2016
  */
-@ContextualComponent
 public class ResourceCache extends Contextual {
 
     private static final Logger LOG = LoggerFactory.getLogger(ResourceCache.class);
@@ -53,6 +51,7 @@ public class ResourceCache extends Contextual {
     }
 
     public boolean addDirectory(final Path path, final int priority) {
+        LOG.debug("Adding Directory {} to Resource Cache Lookup.", path);
         if (fileSystem.isAccessible(path)) {
             if (priority < directories.size()) {
                 directories.add(priority, path);

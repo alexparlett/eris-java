@@ -3,7 +3,6 @@ package org.homonoia.eris.renderer;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.ExitCode;
-import org.homonoia.eris.core.annotations.ContextualComponent;
 import org.homonoia.eris.core.exceptions.InitializationException;
 import org.homonoia.eris.events.graphics.Render;
 import org.homonoia.eris.events.graphics.ScreenMode;
@@ -38,7 +37,6 @@ import static org.lwjgl.opengl.GL32.GL_TEXTURE_CUBE_MAP_SEAMLESS;
  * @author alexparlett
  * @since 06/02/2016
  */
-@ContextualComponent
 public class Renderer extends Contextual implements Runnable {
 
     private static final Logger LOG = LoggerFactory.getLogger(Render.class);

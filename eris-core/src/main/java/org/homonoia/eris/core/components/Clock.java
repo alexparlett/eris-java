@@ -2,7 +2,6 @@ package org.homonoia.eris.core.components;
 
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
-import org.homonoia.eris.core.annotations.ContextualComponent;
 import org.homonoia.eris.events.frame.BeginFrame;
 import org.homonoia.eris.events.frame.EndFrame;
 import org.lwjgl.glfw.GLFW;
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author alexparlett
  * @since 12/12/2015
  */
-@ContextualComponent
 public class Clock extends Contextual {
 
     private double timeStep;

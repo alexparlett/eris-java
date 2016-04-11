@@ -3,7 +3,6 @@ package org.homonoia.eris.graphics;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.ExitCode;
-import org.homonoia.eris.core.annotations.ContextualComponent;
 import org.homonoia.eris.core.exceptions.InitializationException;
 import org.homonoia.eris.events.core.ExitRequested;
 import org.homonoia.eris.events.graphics.ScreenMode;
@@ -37,7 +36,6 @@ import static org.lwjgl.opengl.GL11.glGetString;
  * @author alexparlett
  * @since 14/02/2016
  */
-@ContextualComponent
 public class Graphics extends Contextual {
 
     private static final Logger LOG = LoggerFactory.getLogger(Graphics.class);
