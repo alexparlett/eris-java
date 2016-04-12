@@ -82,28 +82,29 @@ public class Engine extends Contextual {
         fileSystem.addPath(FileSystem.getTempDirectory());
 
         resourceCache.addDirectory(FileSystem.getApplicationDataDirectory());
+        resourceCache.addDirectory(FileSystem.getApplicationDirectory());
         resourceCache.addDirectory(FileSystem.getApplicationDirectory().resolve("Data"));
 
         // Load Settings and Initialize Components
         try {
             settings.load();
         } catch (IOException e) {
-            throw new InitializationException("Failed to load Settings.", ExitCode.FATAL_ERROR);
+            throw new InitializationException("Failed to load Settings.", ExitCode.FATAL_ERROR, e);
         }
 
         try {
             locale.load(settings.getString("Game", "Language").orElse("en_GB"));
         } catch (IOException | JsonException e) {
-            throw new InitializationException("Failed to load Locale.", ExitCode.FATAL_ERROR);
+            throw new InitializationException("Failed to load Locale.", ExitCode.FATAL_ERROR, e);
         }
 
         // Initialize Window
         GLFW.glfwSetErrorCallback(GLFWErrorCallback.create(this::handleGLFWError));
-        if (GLFW.glfwInit() != GLFW.GLFW_TRUE) {
+        if (GLFW.glfwInit() != GLFW.GLFW_TRUE || !getContext().getExitCode().equals(ExitCode.SUCCESS)) {
             throw new InitializationException("Failed to initialize GLFW.", ExitCode.GLFW_CREATE_ERROR);
         }
 
-        graphics.setTitle(settings.getString("Game", "Title").orElse(""));
+        graphics.setTitle(settings.getString("Game", "Title").orElse("Eris"));
         graphics.setIcon(settings.getString("Game", "Icon").orElse("icon.ico"));
         graphics.setResizable(settings.getBoolean("Graphics", "Resizable").orElse(false));
         graphics.setSize(settings.getInteger("Graphics", "Width").orElse(1024), settings.getInteger("Graphics", "Height").orElse(768));
@@ -167,6 +168,7 @@ public class Engine extends Contextual {
     }
 
     private void handleGLFWError(int error, long description) {
+        LOG.error("GLFW Error {} {}", error, description);
         shouldExit.set(true);
         getContext().setExitCode(ExitCode.GLFW_RUNTIME_ERROR);
     }

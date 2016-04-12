@@ -3,11 +3,13 @@ package org.homonoia.eris.graphics;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.ExitCode;
+import org.homonoia.eris.core.components.FileSystem;
 import org.homonoia.eris.core.exceptions.InitializationException;
 import org.homonoia.eris.events.core.ExitRequested;
 import org.homonoia.eris.events.graphics.ScreenMode;
+import org.homonoia.eris.graphics.codec.ico.ICODecoder;
+import org.homonoia.eris.graphics.codec.ico.ICOImage;
 import org.homonoia.eris.resources.cache.ResourceCache;
-import org.homonoia.eris.resources.types.Image;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
 import org.lwjgl.glfw.GLFWImage;
@@ -21,8 +23,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import javax.imageio.ImageIO;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.nio.file.Paths;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -72,8 +80,14 @@ public class Graphics extends Contextual {
             return;
         }
 
-        initalizeBackgroundWindow();
         initializeRenderWindow();
+        initalizeBackgroundWindow();
+
+        try {
+            setIconForGLFWWindow();
+        } catch (IOException e) {
+            throw new InitializationException("Failed to set Window Icons", ExitCode.GLFW_CREATE_ERROR, e);
+        }
 
         initialized = true;
     }
@@ -186,6 +200,14 @@ public class Graphics extends Contextual {
 
     public void setIcon(final String icon) {
         this.icon = icon;
+
+        if (isInitialized() && renderWindow != MemoryUtil.NULL) {
+            try {
+                setIconForGLFWWindow();
+            } catch (IOException e) {
+                LOG.error("Failed to set Window Icons", e);
+            }
+        }
     }
 
     public boolean isFullscreen() {
@@ -292,9 +314,9 @@ public class Graphics extends Contextual {
         }
 
         if (fullscreen) {
-            renderWindow = glfwCreateWindow(width.get(), height.get(), title, glfwGetPrimaryMonitor(), backgroundWindow);
+            renderWindow = glfwCreateWindow(width.get(), height.get(), title, glfwGetPrimaryMonitor(), MemoryUtil.NULL);
         } else {
-            renderWindow = glfwCreateWindow(width.get(), height.get(), title, MemoryUtil.NULL, backgroundWindow);
+            renderWindow = glfwCreateWindow(width.get(), height.get(), title, MemoryUtil.NULL, MemoryUtil.NULL);
         }
 
         if (renderWindow == MemoryUtil.NULL) {
@@ -302,10 +324,6 @@ public class Graphics extends Contextual {
         }
 
         glfwMakeContextCurrent(renderWindow);
-
-        resourceCache.get(Image.class, Paths.get(icon))
-                .map(Image::getData)
-                .ifPresent(byteBuffer -> glfwSetWindowIcon(renderWindow, new GLFWImage.Buffer(byteBuffer)));
 
         IntBuffer widthBuffer = BufferUtils.createIntBuffer(1);
         IntBuffer heightBuffer = BufferUtils.createIntBuffer(1);
@@ -345,7 +363,7 @@ public class Graphics extends Contextual {
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
-        backgroundWindow = glfwCreateWindow(1, 1, title, MemoryUtil.NULL, MemoryUtil.NULL);
+        backgroundWindow = glfwCreateWindow(1, 1, title, MemoryUtil.NULL, renderWindow);
 
         if (backgroundWindow == MemoryUtil.NULL) {
             throw new InitializationException("Failed to open background loading context.", ExitCode.WINDOW_CREATE_ERROR);
@@ -362,6 +380,25 @@ public class Graphics extends Contextual {
         glfwSetWindowCloseCallback(backgroundWindow, GLFWWindowCloseCallback.create(this::handleWindowCloseCallback));
 
         glfwMakeContextCurrent(MemoryUtil.NULL);
+    }
+
+    private void setIconForGLFWWindow() throws IOException {
+        Path iconPath = FileSystem.getApplicationDirectory().resolve(icon);
+        InputStream inputStream = Files.newInputStream(iconPath);
+
+        List<ICOImage> icoImages = ICODecoder.readExt(inputStream);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+        ImageIO.write(icoImages.get(0).getImage(), "bmp", byteArrayOutputStream);
+        ByteBuffer byteBuffer = ByteBuffer.wrap(byteArrayOutputStream.toByteArray());
+
+        if (renderWindow != MemoryUtil.NULL) {
+            glfwSetWindowIcon(renderWindow, new GLFWImage.Buffer(byteBuffer));
+        }
+
+        if (backgroundWindow != MemoryUtil.NULL) {
+            glfwSetWindowIcon(backgroundWindow, new GLFWImage.Buffer(byteBuffer));
+        }
     }
 
     private void handleFramebufferCallback(final long window, final int width, final int height) {
