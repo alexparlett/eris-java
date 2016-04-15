@@ -3,13 +3,11 @@ package org.homonoia.eris.graphics;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.ExitCode;
-import org.homonoia.eris.core.components.FileSystem;
 import org.homonoia.eris.core.exceptions.InitializationException;
 import org.homonoia.eris.events.core.ExitRequested;
 import org.homonoia.eris.events.graphics.ScreenMode;
-import org.homonoia.eris.graphics.codec.ico.ICODecoder;
-import org.homonoia.eris.graphics.codec.ico.ICOImage;
 import org.homonoia.eris.resources.cache.ResourceCache;
+import org.homonoia.eris.resources.types.Image;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
 import org.lwjgl.glfw.GLFWImage;
@@ -23,14 +21,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.imageio.ImageIO;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -349,10 +342,10 @@ public class Graphics extends Contextual {
         glfwSetWindowCloseCallback(renderWindow, GLFWWindowCloseCallback.create(this::handleWindowCloseCallback));
 
         LOG.info("Initializing Graphics...");
-        LOG.info("\tAdapter: %s %s", glGetString(GL11.GL_VENDOR), glGetString(GL11.GL_RENDERER));
-        LOG.info("\tOpen GL: %s", glGetString(GL11.GL_VERSION));
-        LOG.info("\tGLSL: %s", glGetString(GL20.GL_SHADING_LANGUAGE_VERSION));
-        LOG.info("\tGLFW: %s", glfwGetVersionString());
+        LOG.info("Adapter: {} {}", glGetString(GL11.GL_VENDOR), glGetString(GL11.GL_RENDERER));
+        LOG.info("Open GL: {}", glGetString(GL11.GL_VERSION));
+        LOG.info("GLSL: {}", glGetString(GL20.GL_SHADING_LANGUAGE_VERSION));
+        LOG.info("GLFW: {}", glfwGetVersionString());
 
         glfwMakeContextCurrent(MemoryUtil.NULL);
     }
@@ -383,22 +376,22 @@ public class Graphics extends Contextual {
     }
 
     private void setIconForGLFWWindow() throws IOException {
-        Path iconPath = FileSystem.getApplicationDirectory().resolve(icon);
-        InputStream inputStream = Files.newInputStream(iconPath);
-
-        List<ICOImage> icoImages = ICODecoder.readExt(inputStream);
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-
-        ImageIO.write(icoImages.get(0).getImage(), "bmp", byteArrayOutputStream);
-        ByteBuffer byteBuffer = ByteBuffer.wrap(byteArrayOutputStream.toByteArray());
-
-        if (renderWindow != MemoryUtil.NULL) {
-            glfwSetWindowIcon(renderWindow, new GLFWImage.Buffer(byteBuffer));
+        if (icon == null || icon.isEmpty()) {
+            return;
         }
 
-        if (backgroundWindow != MemoryUtil.NULL) {
-            glfwSetWindowIcon(backgroundWindow, new GLFWImage.Buffer(byteBuffer));
-        }
+        resourceCache.get(Image.class, Paths.get(icon)).ifPresent(image ->  {
+            GLFWImage glfwImage = GLFWImage.create().set(image.getWidth(), image.getHeight(), image.getData());
+            GLFWImage.Buffer buffer = GLFWImage.create(1).put(glfwImage);
+
+            if (renderWindow != MemoryUtil.NULL) {
+                glfwSetWindowIcon(renderWindow, buffer);
+            }
+
+            if (backgroundWindow != MemoryUtil.NULL) {
+                glfwSetWindowIcon(backgroundWindow, buffer);
+            }
+        });
     }
 
     private void handleFramebufferCallback(final long window, final int width, final int height) {

@@ -16,6 +16,7 @@ import org.homonoia.eris.renderer.commands.EnableCommand;
 import org.homonoia.eris.renderer.impl.SwappingRenderState;
 import org.joml.*;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -241,12 +242,22 @@ public class Renderer extends Contextual implements Runnable {
         }
     }
 
+    public RenderState getState() {
+        return state;
+    }
+
     private void initializeOpenGl(final long window, final int width, final int height) throws InitializationException {
 
         if (window != MemoryUtil.NULL) {
             glfwMakeContextCurrent(window);
         } else {
             throw new InitializationException("Failed to initialize Renderer.\nAttempting to initialize OpenGL without a Window.", ExitCode.GL_CREATE_ERROR);
+        }
+
+        try {
+            GL.createCapabilities();
+        } catch (IllegalStateException ex) {
+            throw new InitializationException("Failed to initialize Renderer.\nFailed to create OpenGL capabilities.", ExitCode.GL_CREATE_ERROR);
         }
 
         glEnable(GL_MULTISAMPLE);

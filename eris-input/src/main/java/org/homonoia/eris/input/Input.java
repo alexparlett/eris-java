@@ -3,6 +3,7 @@ package org.homonoia.eris.input;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.exceptions.InitializationException;
+import org.homonoia.eris.events.frame.BeginFrame;
 import org.homonoia.eris.graphics.Graphics;
 import org.homonoia.eris.input.events.*;
 import org.joml.Vector2d;
@@ -27,6 +28,12 @@ public class Input extends Contextual {
     private long renderWindow = MemoryUtil.NULL;
     private Vector2d mouseLastPosition = new Vector2d();
 
+    private GLFWKeyCallback glfwKeyCallback;
+    private GLFWMouseButtonCallback glfwMouseButtonCallback;
+    private GLFWCursorPosCallback glfwCursorPosCallback;
+    private GLFWScrollCallback glfwScrollCallback;
+    private GLFWCharCallback glfwCharCallback;
+
     public Input(final Context context, final Graphics graphics) {
         super(context);
         this.graphics = graphics;
@@ -43,11 +50,19 @@ public class Input extends Contextual {
             GLFW.glfwSetInputMode(renderWindow, GLFW.GLFW_STICKY_KEYS, GLFW.GLFW_FALSE);
             GLFW.glfwSetInputMode(renderWindow, GLFW.GLFW_STICKY_MOUSE_BUTTONS, GLFW.GLFW_FALSE);
 
-            GLFW.glfwSetKeyCallback(renderWindow, GLFWKeyCallback.create(this::handleGLFWKeyCallback));
-            GLFW.glfwSetMouseButtonCallback(renderWindow, GLFWMouseButtonCallback.create(this::handleGLFWMouseButtonCallback));
-            GLFW.glfwSetCursorPosCallback(renderWindow, GLFWCursorPosCallback.create(this::handleGLFWCursorPosCallback));
-            GLFW.glfwSetScrollCallback(renderWindow, GLFWScrollCallback.create(this::handleGLFWScrollCallback));
-            GLFW.glfwSetCharCallback(renderWindow, GLFWCharCallback.create(this::handleGLFWCharCallback));
+            glfwKeyCallback = GLFWKeyCallback.create(this::handleGLFWKeyCallback);
+            glfwMouseButtonCallback = GLFWMouseButtonCallback.create(this::handleGLFWMouseButtonCallback);
+            glfwCursorPosCallback = GLFWCursorPosCallback.create(this::handleGLFWCursorPosCallback);
+            glfwScrollCallback = GLFWScrollCallback.create(this::handleGLFWScrollCallback);
+            glfwCharCallback = GLFWCharCallback.create(this::handleGLFWCharCallback);
+
+            GLFW.glfwSetKeyCallback(renderWindow, glfwKeyCallback);
+            GLFW.glfwSetMouseButtonCallback(renderWindow, glfwMouseButtonCallback);
+            GLFW.glfwSetCursorPosCallback(renderWindow, glfwCursorPosCallback);
+            GLFW.glfwSetScrollCallback(renderWindow, glfwScrollCallback);
+            GLFW.glfwSetCharCallback(renderWindow, glfwCharCallback);
+
+            subscribe(this::handleBeginFrame, BeginFrame.class);
 
             initialized = true;
         }
@@ -65,6 +80,8 @@ public class Input extends Contextual {
             GLFW.glfwSetMouseButtonCallback(renderWindow, null);
             GLFW.glfwSetCursorPosCallback(renderWindow, null);
             GLFW.glfwSetScrollCallback(renderWindow, null);
+
+            unsubscribe();
 
             initialized = false;
         }
@@ -92,6 +109,10 @@ public class Input extends Contextual {
                 return isKeyDown(Key.LEFT_SUPER) || isKeyDown(Key.RIGHT_SUPER);
         }
         return false;
+    }
+
+    private void handleBeginFrame(final BeginFrame evt) {
+        update();
     }
 
     private void handleGLFWKeyCallback(long window, int key, int scancode, int action, int mods) {

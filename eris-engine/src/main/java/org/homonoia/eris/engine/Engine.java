@@ -8,6 +8,7 @@ import org.homonoia.eris.core.components.Clock;
 import org.homonoia.eris.core.components.FileSystem;
 import org.homonoia.eris.core.exceptions.InitializationException;
 import org.homonoia.eris.events.core.ExitRequested;
+import org.homonoia.eris.events.graphics.Render;
 import org.homonoia.eris.graphics.Graphics;
 import org.homonoia.eris.input.Input;
 import org.homonoia.eris.renderer.Renderer;
@@ -33,6 +34,7 @@ public class Engine extends Contextual {
     private static final Logger LOG = LoggerFactory.getLogger(Engine.class);
 
     private AtomicBoolean shouldExit = new AtomicBoolean(false);
+    private GLFWErrorCallback glfwErrorCallback;
 
     @Autowired
     private ResourceCache resourceCache;
@@ -99,13 +101,14 @@ public class Engine extends Contextual {
         }
 
         // Initialize Window
-        GLFW.glfwSetErrorCallback(GLFWErrorCallback.create(this::handleGLFWError));
+        glfwErrorCallback = GLFWErrorCallback.create(this::handleGLFWError);
+        GLFW.glfwSetErrorCallback(glfwErrorCallback);
         if (GLFW.glfwInit() != GLFW.GLFW_TRUE || !getContext().getExitCode().equals(ExitCode.SUCCESS)) {
             throw new InitializationException("Failed to initialize GLFW.", ExitCode.GLFW_CREATE_ERROR);
         }
 
         graphics.setTitle(settings.getString("Game", "Title").orElse("Eris"));
-        graphics.setIcon(settings.getString("Game", "Icon").orElse("icon.ico"));
+        graphics.setIcon(settings.getString("Game", "Icon").orElse(null));
         graphics.setResizable(settings.getBoolean("Graphics", "Resizable").orElse(false));
         graphics.setSize(settings.getInteger("Graphics", "Width").orElse(1024), settings.getInteger("Graphics", "Height").orElse(768));
         graphics.setBorderless(settings.getBoolean("Graphics", "Borderless").orElse(false));
@@ -122,11 +125,33 @@ public class Engine extends Contextual {
     }
 
     public void run() {
+        double lastTime = clock.getElapsedTime();
+        double delta = 0.0;
 
-        while (!shouldExit.get()) {
+        while(!shouldExit.get()){
+            double now = clock.getElapsedTime();
+            delta += (now - lastTime);
+            lastTime = now;
+            if (delta >= (1000.0 / 60.0)) {
+                clock.beginFrame(delta);
 
+                {
+                    //TODO Update
+                }
+
+                {
+                    //TODO Post Update
+                }
+
+                {
+                    publish(Render.builder());
+                    renderer.getState().swap();
+                }
+
+                clock.endFrame();
+                delta--;
+            }
         }
-
     }
 
     public void shutdown() {
@@ -148,17 +173,17 @@ public class Engine extends Contextual {
         log.initialize();
 
         LOG.info("Initializing...");
-        LOG.info("\tOS: {}", System.getProperty("os.name"));
-        LOG.info("\tArch: {}", System.getProperty("os.arch"));
-        LOG.info("\tCores: {}", Runtime.getRuntime().availableProcessors());
-        LOG.info("\tMemory: {}", FileSystem.readableFileSize(Runtime.getRuntime().totalMemory()));
+        LOG.info("OS: {}", System.getProperty("os.name"));
+        LOG.info("Arch: {}", System.getProperty("os.arch"));
+        LOG.info("Cores: {}", Runtime.getRuntime().availableProcessors());
+        LOG.info("Memory: {}", FileSystem.readableFileSize(Runtime.getRuntime().totalMemory()));
     }
 
     private void shutdownLog(final double elapsedTime, final int frameNumber) {
         LOG.info("Terminating...");
-        LOG.info("\tFrames: {}.", frameNumber);
-        LOG.info("\tMilliseconds: {}.", elapsedTime);
-        LOG.info("\tExit Code: {}.", getContext().getExitCode());
+        LOG.info("Frames: {}", frameNumber);
+        LOG.info("Milliseconds: {}", elapsedTime);
+        LOG.info("Exit Code: {}", getContext().getExitCode());
 
         log.shutdown();
     }

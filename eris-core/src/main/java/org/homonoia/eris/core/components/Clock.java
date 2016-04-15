@@ -25,6 +25,11 @@ public class Clock extends Contextual {
         frameNumber = 0;
     }
 
+    /**
+     * Starts a new frame.
+     *
+     * @param timeStep The time step in milliseconds.
+     */
     public void beginFrame(final double timeStep) {
         this.frameNumber++;
         this.timeStep = timeStep;
@@ -40,6 +45,9 @@ public class Clock extends Contextual {
         publish(EndFrame.builder());
     }
 
+    /**
+     * @return The time step in milliseconds.
+     */
     public double getTimeStep() {
         return timeStep;
     }
@@ -48,7 +56,10 @@ public class Clock extends Contextual {
         return frameNumber;
     }
 
+    /**
+     * @return The elapsed time in milliseconds.
+     */
     public double getElapsedTime() {
-        return GLFW.glfwGetTime();
+        return GLFW.glfwGetTime() * 1000.0;
     }
 }
