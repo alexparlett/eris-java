@@ -80,8 +80,23 @@ public class Texture2D extends Texture {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void use() {
         Objects.requireNonNull(handle, "Texture Handle must be set");
         glBindTexture(GL_TEXTURE_2D, handle);
+    }
+
+    @Override
+    public int getHandle() {
+        return handle;
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        if (handle != MemoryUtil.NULL) {
+            glDeleteTextures(handle);
+            handle = 0;
+        }
     }
 }

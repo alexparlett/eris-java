@@ -165,4 +165,12 @@ public class Image extends Resource {
     public int getPixelOffset(int column, int row) {
         return (row * width + column) * components;
     }
+
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        if (data != null) {
+            STBImage.stbi_image_free(data);
+        }
+    }
 }

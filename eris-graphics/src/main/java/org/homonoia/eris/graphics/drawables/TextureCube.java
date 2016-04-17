@@ -77,9 +77,24 @@ public class TextureCube extends Texture {
         throw new UnsupportedOperationException();
     }
 
+    @Override
     public void use() {
         Objects.requireNonNull(handle, "Texture Handle must be set");
         glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, handle);
+    }
+
+    @Override
+    public int getHandle() {
+        return handle;
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        if (handle != MemoryUtil.NULL) {
+            glDeleteTextures(handle);
+            handle = 0;
+        }
     }
 
     private int parsePosition(final String pos) throws IOException {

@@ -2,6 +2,7 @@ package org.homonoia.eris.graphics.drawables;
 
 import com.google.gson.JsonObject;
 import org.homonoia.eris.core.Context;
+import org.homonoia.eris.graphics.GPUResource;
 import org.homonoia.eris.resources.Resource;
 import org.homonoia.eris.resources.types.Image;
 import org.lwjgl.opengl.*;
@@ -15,7 +16,7 @@ import java.util.Map;
  * @author alexparlett
  * @since 21/02/2016
  */
-public abstract class Texture extends Resource {
+public abstract class Texture extends Resource implements GPUResource {
 
     private static final Map<String, Integer> wrapMap = new HashMap<>();
 

@@ -80,6 +80,13 @@ public class Input extends Contextual {
             GLFW.glfwSetMouseButtonCallback(renderWindow, null);
             GLFW.glfwSetCursorPosCallback(renderWindow, null);
             GLFW.glfwSetScrollCallback(renderWindow, null);
+            GLFW.glfwSetCharCallback(renderWindow, null);
+
+            glfwKeyCallback.free();
+            glfwMouseButtonCallback.free();
+            glfwCursorPosCallback.free();
+            glfwScrollCallback.free();;
+            glfwCharCallback.free();
 
             unsubscribe();
 

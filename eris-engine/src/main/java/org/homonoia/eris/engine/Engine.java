@@ -164,6 +164,8 @@ public class Engine extends Contextual {
         double elapsedTime = clock.getElapsedTime();
         int frameNumber = clock.getFrameNumber();
 
+        glfwErrorCallback.free();
+
         GLFW.glfwTerminate();
 
         shutdownLog(elapsedTime, frameNumber);
