@@ -31,7 +31,7 @@ public class ShaderProgram extends Resource implements GPUResource {
 
     private static final Logger LOG = LoggerFactory.getLogger(ShaderProgram.class);
     private int handle;
-    private Map<String, ShaderUniform> parameters = new HashMap<>();
+    private Map<String, Uniform> uniforms = new HashMap<>();
 
     public final static class ShaderPreprocessor {
 
@@ -48,11 +48,11 @@ public class ShaderProgram extends Resource implements GPUResource {
             while((line = in.readLine()) != null) {
                 if (line.contains("#include")) {
                     String[] tokens = line.split(" ");
-                    if (tokens.length < 2 || tokens[1].isEmpty()) {
+                    String filename;
+                    if (tokens.length < 2 || (filename = tokens[1].trim()).isEmpty()) {
                         throw new IOException("Failed to process " + shaderFilename + " include statement must specify a file");
                     }
 
-                    String filename = tokens[1].trim();
                     if (includedFiles.contains(filename)) {
                         LOG.warn("Processing {}, {} included multiple times in hierarchy", shaderFilename, filename);
                         continue;
@@ -124,27 +124,27 @@ public class ShaderProgram extends Resource implements GPUResource {
 
         GL20.glUseProgram(handle);
 
-        parameters.forEach((name, uniform) -> {
+        uniforms.forEach((name, uniform) -> {
             if (uniform.getData() != null) {
                 renderer.bindUniform(uniform.getLocation(), uniform.getType(), uniform.getData());
             }
         });
     }
 
-    void setUniform(String uniform, final Object data)
+    public void setUniform(String uniform, final Object data)
     {
-        Optional.ofNullable(parameters.get(uniform))
-                .ifPresent(parameter -> parameter.setData(data));
+        Optional.ofNullable(uniforms.get(uniform))
+                .ifPresent(shaderUniform -> shaderUniform.setData(data));
     }
 
-    Optional<ShaderUniform> getUniform(String uniform)
+    public Optional<Uniform> getUniform(String uniform)
     {
-        return Optional.ofNullable(parameters.get(uniform));
+        return Optional.ofNullable(uniforms.get(uniform));
     }
 
-    void removeUniform(String uniform)
+    public void removeUniform(String uniform)
     {
-        parameters.remove(uniform);
+        uniforms.remove(uniform);
     }
 
     @Override
@@ -241,12 +241,12 @@ public class ShaderProgram extends Resource implements GPUResource {
                 continue;
             }
 
-            ShaderUniform uniform = ShaderUniform.builder()
+            Uniform uniform = Uniform.builder()
                     .type(type.get())
                     .location(i)
                     .build();
 
-            parameters.put(name.asCharBuffer().toString(), uniform);
+            uniforms.put(name.asCharBuffer().toString(), uniform);
         }
 
         glfwMakeContextCurrent(win);

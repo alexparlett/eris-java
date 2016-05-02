@@ -3,14 +3,15 @@ package org.homonoia.eris.graphics.drawables;
 /**
  * Created by alexparlett on 16/04/2016.
  */
-public class ShaderUniform {
+public class Uniform {
     private int type;
     private int location;
     private Object data;
 
-    private ShaderUniform(Builder builder) {
+    private Uniform(Builder builder) {
         this.type = builder.type;
         this.location = builder.location;
+        this.data = builder.data;
     }
 
     public int getType() {
@@ -36,12 +37,13 @@ public class ShaderUniform {
     public static final class Builder {
         private int type;
         private int location;
+        private Object data;
 
         private Builder() {
         }
 
-        public ShaderUniform build() {
-            return new ShaderUniform(this);
+        public Uniform build() {
+            return new Uniform(this);
         }
 
         public Builder type(int type) {
@@ -51,6 +53,11 @@ public class ShaderUniform {
 
         public Builder location(int location) {
             this.location = location;
+            return this;
+        }
+
+        public Builder data(Object data) {
+            this.data = data;
             return this;
         }
     }
