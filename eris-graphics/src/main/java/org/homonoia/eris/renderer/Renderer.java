@@ -7,14 +7,11 @@ import org.homonoia.eris.core.exceptions.InitializationException;
 import org.homonoia.eris.events.graphics.Render;
 import org.homonoia.eris.events.graphics.ScreenMode;
 import org.homonoia.eris.graphics.Graphics;
-import org.homonoia.eris.math.Vector2b;
-import org.homonoia.eris.math.Vector3b;
-import org.homonoia.eris.math.Vector4b;
+import org.homonoia.eris.math.*;
 import org.homonoia.eris.renderer.commands.ClearColorCommand;
 import org.homonoia.eris.renderer.commands.ClearCommand;
 import org.homonoia.eris.renderer.commands.EnableCommand;
 import org.homonoia.eris.renderer.impl.SwappingRenderState;
-import org.joml.*;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryUtil;
@@ -31,6 +28,7 @@ import static org.lwjgl.opengl.GL13.GL_MULTISAMPLE;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE_CUBE_MAP;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL32.GL_TEXTURE_CUBE_MAP_SEAMLESS;
+import static org.lwjgl.opengl.GL40.*;
 
 /**
  * Copyright (c) 2015-2016 the Eris project.
@@ -132,7 +130,7 @@ public class Renderer extends Contextual implements Runnable {
         } catch (InitializationException e) {
             LOG.error("Initialization Error in Renderer", e);
             getContext().setExitCode(e.getError());
-            glfwSetWindowShouldClose(graphics.getRenderWindow(), GLFW_TRUE);
+            glfwSetWindowShouldClose(graphics.getRenderWindow(), true);
         }
 
         while (!threadExit.get()) {
@@ -196,6 +194,22 @@ public class Renderer extends Contextual implements Runnable {
             case GL_FLOAT_VEC4:
                 Vector4f v4fData = (Vector4f) data;
                 glUniform4f(location, v4fData.x, v4fData.y, v4fData.z, v4fData.w);
+                break;
+            case GL_DOUBLE:
+                Double dData = (Double) data;
+                glUniform1d(location, dData);
+                break;
+            case GL_DOUBLE_VEC2:
+                Vector2d v2dData = (Vector2d) data;
+                glUniform2d(location, v2dData.x, v2dData.y);
+                break;
+            case GL_DOUBLE_VEC3:
+                Vector3d v3dData = (Vector3d) data;
+                glUniform3d(location, v3dData.x, v3dData.y, v3dData.z);
+                break;
+            case GL_DOUBLE_VEC4:
+                Vector4d v4dData = (Vector4d) data;
+                glUniform4d(location, v4dData.x, v4dData.y, v4dData.z, v4dData.w);
                 break;
             case GL_INT:
                 Integer iData = (Integer) data;
@@ -282,6 +296,6 @@ public class Renderer extends Contextual implements Runnable {
     private void handleRenderingThreadException(final Thread thread, final Throwable throwable) {
         LOG.error("Uncaught Exception in Rendering Thread", throwable);
         getContext().setExitCode(ExitCode.RUNTIME);
-        glfwSetWindowShouldClose(graphics.getRenderWindow(), GLFW_TRUE);
+        glfwSetWindowShouldClose(graphics.getRenderWindow(), true);
     }
 }

@@ -1,9 +1,9 @@
 package org.homonoia.eris.renderer.commands;
 
+import org.homonoia.eris.math.Vector4f;
 import org.homonoia.eris.renderer.RenderCommand;
 import org.homonoia.eris.renderer.RenderKey;
 import org.homonoia.eris.renderer.Renderer;
-import org.joml.Vector4f;
 
 import static org.lwjgl.opengl.GL11.glClearColor;
 

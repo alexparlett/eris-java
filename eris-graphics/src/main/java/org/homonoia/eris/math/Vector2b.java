@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.nio.ByteBuffer;
+import java.text.ParseException;
 
 /**
  * Copyright (c) 2015-2016 the Eris project.
@@ -98,5 +99,15 @@ public class Vector2b implements Externalizable {
         int result = (x ? 1 : 0);
         result = 31 * result + (y ? 1 : 0);
         return result;
+    }
+
+    public static Vector2b parse(final String asString) throws ParseException {
+        String[] tokens = asString.split(" ");
+        if (tokens.length != 2) {
+            throw new ParseException("Cannot parse Vector2b from " + asString + " invalid number of arguments", 0);
+        }
+
+        return new Vector2b(Boolean.parseBoolean(tokens[0]),
+                Boolean.parseBoolean(tokens[1]));
     }
 }

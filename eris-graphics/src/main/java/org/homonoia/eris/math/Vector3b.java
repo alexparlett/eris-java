@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
 import java.nio.ByteBuffer;
+import java.text.ParseException;
 
 /**
  * Copyright (c) 2015-2016 the Eris project.
@@ -109,5 +110,16 @@ public class Vector3b implements Externalizable {
         result = 31 * result + (y ? 1 : 0);
         result = 31 * result + (z ? 1 : 0);
         return result;
+    }
+
+    public static Vector3b parse(final String asString) throws ParseException {
+        String[] tokens = asString.split(" ");
+        if (tokens.length != 3) {
+            throw new ParseException("Cannot parse Vector3b from " + asString + " invalid number of arguments", 0);
+        }
+
+        return new Vector3b(Boolean.parseBoolean(tokens[0]),
+                Boolean.parseBoolean(tokens[1]),
+                Boolean.parseBoolean(tokens[2]));
     }
 }
