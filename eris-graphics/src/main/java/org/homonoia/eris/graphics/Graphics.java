@@ -141,7 +141,7 @@ public class Graphics extends Contextual {
 
     public void close() {
         if (isInitialized() && renderWindow != MemoryUtil.NULL) {
-            glfwSetWindowShouldClose(renderWindow, GLFW_TRUE);
+            glfwSetWindowShouldClose(renderWindow, true);
         }
 
     }

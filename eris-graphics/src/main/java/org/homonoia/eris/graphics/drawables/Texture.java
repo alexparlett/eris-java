@@ -6,9 +6,12 @@ import org.homonoia.eris.graphics.GPUResource;
 import org.homonoia.eris.resources.Resource;
 import org.homonoia.eris.resources.types.Image;
 import org.lwjgl.opengl.*;
+import org.lwjgl.system.MemoryUtil;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.lwjgl.opengl.GL11.glDeleteTextures;
 
 /**
  * Copyright (c) 2015-2016 the Eris project.
@@ -38,6 +41,20 @@ public abstract class Texture extends Resource implements GPUResource {
         super(context);
     }
 
+    @Override
+    public int getHandle() {
+        return handle;
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        super.finalize();
+        if (handle != MemoryUtil.NULL) {
+            glDeleteTextures(handle);
+            handle = 0;
+        }
+    }
+
     public void setGenerateMipMaps(final boolean generateMipMaps) {
         this.generateMipMaps = generateMipMaps;
     }
@@ -52,6 +69,22 @@ public abstract class Texture extends Resource implements GPUResource {
 
     public void setWWrapMode(final int wWrapMode) {
         this.wWrapMode = wWrapMode;
+    }
+
+    public int getwWrapMode() {
+        return wWrapMode;
+    }
+
+    public int getvWrapMode() {
+        return vWrapMode;
+    }
+
+    public int getuWrapMode() {
+        return uWrapMode;
+    }
+
+    public boolean isGenerateMipMaps() {
+        return generateMipMaps;
     }
 
     protected int getFormat(Image image) {

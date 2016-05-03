@@ -103,7 +103,7 @@ public class Engine extends Contextual {
         // Initialize Window
         glfwErrorCallback = GLFWErrorCallback.create(this::handleGLFWError);
         GLFW.glfwSetErrorCallback(glfwErrorCallback);
-        if (GLFW.glfwInit() != GLFW.GLFW_TRUE || !getContext().getExitCode().equals(ExitCode.SUCCESS)) {
+        if (!GLFW.glfwInit() || !getContext().getExitCode().equals(ExitCode.SUCCESS)) {
             throw new InitializationException("Failed to initialize GLFW.", ExitCode.GLFW_CREATE_ERROR);
         }
 
