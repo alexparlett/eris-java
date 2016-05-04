@@ -2,6 +2,7 @@ package org.homonoia.eris.graphics.drawables;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.graphics.GPUResource;
 import org.homonoia.eris.graphics.Graphics;
@@ -89,12 +90,12 @@ public class ShaderProgram extends Resource implements GPUResource {
                 .map(JsonElement::getAsJsonObject)
                 .orElseThrow(() -> new IOException("No root found"));
 
-        String frag = Optional.ofNullable(root.getAsJsonObject("frag"))
-                .map(JsonObject::getAsString)
+        String frag = Optional.ofNullable(root.getAsJsonPrimitive("frag"))
+                .map(JsonPrimitive::getAsString)
                 .orElseThrow(() -> new IOException("No 'frag' element found"));
 
-        String vert = Optional.ofNullable(root.getAsJsonObject("vert"))
-                .map(JsonObject::getAsString)
+        String vert = Optional.ofNullable(root.getAsJsonPrimitive("vert"))
+                .map(JsonPrimitive::getAsString)
                 .orElseThrow(() -> new IOException("No 'vert' element found"));
 
         ShaderPreprocessor shaderPreprocessor = new ShaderPreprocessor();

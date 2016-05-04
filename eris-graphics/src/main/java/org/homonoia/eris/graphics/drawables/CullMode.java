@@ -20,7 +20,7 @@ public enum CullMode {
         return glCull;
     }
 
-    public static CullMode fromString(final String string) {
+    public static CullMode parse(final String string) {
         switch (string.toLowerCase()) {
             case "back":
                 return CullMode.Back;

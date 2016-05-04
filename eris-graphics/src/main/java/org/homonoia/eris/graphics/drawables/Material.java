@@ -47,8 +47,8 @@ public class Material extends Resource implements GPUResource {
 
         ResourceCache resourceCache = getContext().getComponent(ResourceCache.class);
 
-        shaderProgram = Optional.ofNullable(root.getAsJsonObject("program"))
-                .map(JsonObject::getAsString)
+        shaderProgram = Optional.ofNullable(root.getAsJsonPrimitive("program"))
+                .map(JsonPrimitive::getAsString)
                 .map(prg -> Paths.get(prg))
                 .map(prg -> resourceCache.get(ShaderProgram.class, prg))
                 .orElseThrow(() -> new IOException("no program found"))
@@ -60,24 +60,24 @@ public class Material extends Resource implements GPUResource {
                 jsonElements.forEach(jsonElement -> {
                     JsonObject object = jsonElement.getAsJsonObject();
 
-                    String type = Optional.ofNullable(object.getAsJsonObject("type"))
-                            .map(JsonObject::getAsString)
+                    String type = Optional.ofNullable(object.getAsJsonPrimitive("type"))
+                            .map(JsonPrimitive::getAsString)
                             .orElseThrow(() -> new JsonIOException("type element missing"));
 
-                    String uniform = Optional.ofNullable(object.getAsJsonObject("uniform"))
-                            .map(JsonObject::getAsString)
+                    String uniform = Optional.ofNullable(object.getAsJsonPrimitive("uniform"))
+                            .map(JsonPrimitive::getAsString)
                             .orElseThrow(() -> new JsonIOException("type element missing"));
 
-                    int unit = Optional.ofNullable(object.getAsJsonObject("unit"))
-                            .map(JsonObject::getAsInt)
+                    int unit = Optional.ofNullable(object.getAsJsonPrimitive("unit"))
+                            .map(JsonPrimitive::getAsInt)
                             .orElseThrow(() -> new JsonIOException("unit element missing"));
 
                     if (unit < 0 || unit > 31) {
                         throw new JsonIOException("invalid texture unit arg, accepet vals between 0 and 31 inclusive");
                     }
 
-                    Texture texture = Optional.ofNullable(object.getAsJsonObject("file"))
-                            .map(JsonObject::getAsString)
+                    Texture texture = Optional.ofNullable(object.getAsJsonPrimitive("file"))
+                            .map(JsonPrimitive::getAsString)
                             .map(Paths::get)
                             .map(getTexture(resourceCache, type))
                             .orElseThrow(() -> new JsonIOException("type element missing"));
@@ -99,53 +99,53 @@ public class Material extends Resource implements GPUResource {
             maybeUniforms.ifPresent(ues -> ues.forEach(ue -> {
                 JsonObject object = ue.getAsJsonObject();
 
-                String type = Optional.ofNullable(object.getAsJsonObject("type"))
-                        .map(JsonObject::getAsString)
+                String type = Optional.ofNullable(object.getAsJsonPrimitive("type"))
+                        .map(JsonPrimitive::getAsString)
                         .orElseThrow(() -> new JsonIOException("type element missing"));
 
-                String name = Optional.ofNullable(object.getAsJsonObject("name"))
-                        .map(JsonObject::getAsString)
+                String name = Optional.ofNullable(object.getAsJsonPrimitive("name"))
+                        .map(JsonPrimitive::getAsString)
                         .orElseThrow(() -> new JsonIOException("name element missing"));
 
-                Object data = Optional.ofNullable(object.getAsJsonObject("value"))
-                        .map(jsonObject -> {
+                Object data = Optional.ofNullable(object.getAsJsonPrimitive("value"))
+                        .map(jsonPrimitive -> {
                             try {
                                 if (type == "float") {
-                                    return jsonObject.getAsFloat();
+                                    return jsonPrimitive.getAsFloat();
                                 } else if (type.equals("vec2")) {
-                                    return Vector2f.parse(jsonObject.getAsString());
+                                    return Vector2f.parse(jsonPrimitive.getAsString());
                                 } else if (type.equals("vec3")) {
-                                    return Vector3f.parse(jsonObject.getAsString());
+                                    return Vector3f.parse(jsonPrimitive.getAsString());
                                 } else if (type.equals("vec4")) {
-                                    return Vector4f.parse(jsonObject.getAsString());
+                                    return Vector4f.parse(jsonPrimitive.getAsString());
                                 } else if (type.equals("int")) {
-                                    return jsonObject.getAsInt();
+                                    return jsonPrimitive.getAsInt();
                                 } else if (type.equals("ivec2")) {
-                                    return Vector2i.parse(jsonObject.getAsString());
+                                    return Vector2i.parse(jsonPrimitive.getAsString());
                                 } else if (type.equals("ivec3")) {
-                                    return Vector3i.parse(jsonObject.getAsString());
+                                    return Vector3i.parse(jsonPrimitive.getAsString());
                                 } else if (type.equals("ivec4")) {
-                                    return Vector4i.parse(jsonObject.getAsString());
+                                    return Vector4i.parse(jsonPrimitive.getAsString());
                                 } else if (type.equals("bool")) {
-                                    return jsonObject.getAsBoolean();
+                                    return jsonPrimitive.getAsBoolean();
                                 } else if (type.equals("bvec2")) {
-                                    return Vector2b.parse(jsonObject.getAsString());
+                                    return Vector2b.parse(jsonPrimitive.getAsString());
                                 } else if (type.equals("bvec3")) {
-                                    return Vector3b.parse(jsonObject.getAsString());
+                                    return Vector3b.parse(jsonPrimitive.getAsString());
                                 } else if (type.equals("bvec4")) {
-                                    return Vector4b.parse(jsonObject.getAsString());
+                                    return Vector4b.parse(jsonPrimitive.getAsString());
                                 } else if (type.equals("mat3")) {
-                                    return Matrix3f.parse(jsonObject.getAsString());
+                                    return Matrix3f.parse(jsonPrimitive.getAsString());
                                 } else if (type.equals("mat4")) {
-                                    return Matrix4f.parse(jsonObject.getAsString());
+                                    return Matrix4f.parse(jsonPrimitive.getAsString());
                                 } else if (type.equals("double")) {
-                                    return jsonObject.getAsDouble();
+                                    return jsonPrimitive.getAsDouble();
                                 } else if (type.equals("dvec2")) {
-                                    return Vector2d.parse(jsonObject.getAsString());
+                                    return Vector2d.parse(jsonPrimitive.getAsString());
                                 } else if (type.equals("dvec3")) {
-                                    return Vector3d.parse(jsonObject.getAsString());
+                                    return Vector3d.parse(jsonPrimitive.getAsString());
                                 } else if (type.equals("dvec4")) {
-                                    return Vector4d.parse(jsonObject.getAsString());
+                                    return Vector4d.parse(jsonPrimitive.getAsString());
                                 } else {
                                     throw new JsonIOException("invalid value arg, type is not supported");
                                 }
@@ -162,9 +162,9 @@ public class Material extends Resource implements GPUResource {
             throw new IOException("Parsing Uniform failed.", ex);
         }
 
-        cullMode = Optional.ofNullable(root.getAsJsonObject("cullMode"))
-                .map(JsonObject::getAsString)
-                .map(CullMode::fromString)
+        cullMode = Optional.ofNullable(root.getAsJsonPrimitive("cullMode"))
+                .map(JsonPrimitive::getAsString)
+                .map(CullMode::parse)
                 .orElse(CullMode.Back);
     }
 
