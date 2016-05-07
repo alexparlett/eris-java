@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Path;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -16,6 +17,8 @@ import java.util.concurrent.atomic.AtomicReference;
  * @since 05/02/2016
  */
 public abstract class Resource extends Contextual {
+
+    private AtomicInteger refCount = new AtomicInteger(1);
 
     public enum AsyncState {
         NEW,
@@ -47,6 +50,20 @@ public abstract class Resource extends Contextual {
     public void setState(final AsyncState state) {
         this.state.set(state);
     }
+
+    public <T extends Resource> T hold() {
+        this.refCount.getAndIncrement();
+        return (T) this;
+    }
+
+    public void release() {
+        int refCount = this.refCount.decrementAndGet();
+        if (refCount <= 0) {
+            reset();
+        }
+    }
+
+    public void reset() {}
 
     public abstract void load(InputStream inputStream) throws IOException;
 

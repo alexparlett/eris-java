@@ -201,6 +201,17 @@ public class Material extends Resource implements GPUResource {
         return handle;
     }
 
+    @Override
+    public void reset() {
+        if (Objects.nonNull(shaderProgram)) {
+            shaderProgram.release();
+            shaderProgram = null;
+        }
+
+        textureUnits.stream().map(TextureUnit::getTexture).forEach(Texture::release);
+        textureUnits.clear();
+    }
+
     public CullMode getCullMode() {
         return cullMode;
     }

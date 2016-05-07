@@ -82,11 +82,11 @@ public class ResourceCache extends Contextual {
         });
 
         if (resource != null && resource.getState().equals(Resource.AsyncState.SUCCESS)) {
-            return Optional.of(resource);
+            return Optional.of(resource.hold());
         } else if (resource != null && resource.getState().equals(Resource.AsyncState.LOADING)) {
             while (resource.getState().equals(Resource.AsyncState.LOADING)) ;
             if (resource.getState().equals(Resource.AsyncState.SUCCESS))
-                return Optional.of(resource);
+                return Optional.of(resource.hold());
         } else if (resource != null && !resource.getState().equals(Resource.AsyncState.FAILED)) {
             try {
                 Path fullPath = findFile(path).orElseThrow(() -> new IOException("Resource does not exist."));
@@ -130,11 +130,11 @@ public class ResourceCache extends Contextual {
         });
 
         if (resource != null && resource.getState().equals(Resource.AsyncState.SUCCESS)) {
-            return Optional.of(resource);
+            return Optional.of(resource.hold());
         } else if (resource != null && resource.getState().equals(Resource.AsyncState.LOADING)) {
             while (resource.getState().equals(Resource.AsyncState.LOADING)) ;
             if (resource.getState().equals(Resource.AsyncState.SUCCESS))
-                return Optional.of(resource);
+                return Optional.of(resource.hold());
         } else if (resource != null && !resource.getState().equals(Resource.AsyncState.FAILED)) {
             try {
                 Path fullPath = findFile(path).orElseThrow(() -> new IOException("Resource does not exist."));
@@ -154,17 +154,23 @@ public class ResourceCache extends Contextual {
 
         Map<Path, ? extends Resource> group = groups.get(clazz);
         if (group != null) {
-            group.remove(path);
+            Resource remove = group.remove(path);
+            if (Objects.nonNull(remove)) {
+                remove.release();
+            }
         }
     }
 
     public synchronized void remove(final Class<? extends Resource> clazz) {
         Objects.requireNonNull(clazz);
-        groups.remove(clazz);
+        Map<Path, Resource> remove = groups.remove(clazz);
+        if (Objects.nonNull(remove)) {
+            remove.values().forEach(Resource::release);
+        }
     }
 
     public synchronized void clear() {
-        groups.clear();
+        groups.forEach((aClass, pathResourceMap) -> remove(aClass));
     }
 
     public void add(final Class<? extends Resource> clazz, final Path path, final boolean immediate) {

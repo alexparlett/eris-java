@@ -167,10 +167,11 @@ public class Image extends Resource {
     }
 
     @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
+    public void reset() {
         if (data != null) {
             STBImage.stbi_image_free(data);
+            data.clear();
+            data = null;
         }
     }
 }

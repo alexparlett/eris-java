@@ -47,8 +47,7 @@ public abstract class Texture extends Resource implements GPUResource {
     }
 
     @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
+    public void reset() {
         if (handle != MemoryUtil.NULL) {
             glDeleteTextures(handle);
             handle = 0;

@@ -154,8 +154,7 @@ public class ShaderProgram extends Resource implements GPUResource {
     }
 
     @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
+    public void reset() {
         if (handle != MemoryUtil.NULL) {
             GL20.glDeleteProgram(handle);
             handle = 0;
