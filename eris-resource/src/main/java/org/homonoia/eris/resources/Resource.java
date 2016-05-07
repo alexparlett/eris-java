@@ -65,6 +65,10 @@ public abstract class Resource extends Contextual {
 
     public void reset() {}
 
+    public int getRefCount() {
+        return refCount.get();
+    }
+
     public abstract void load(InputStream inputStream) throws IOException;
 
     public abstract void save(OutputStream outputStream) throws IOException;

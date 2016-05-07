@@ -43,7 +43,7 @@ public class ResourceCache extends Contextual {
 
     public void shutdown() {
         loader.shutdown();
-        clear();
+        clear(true);
     }
 
     public boolean addDirectory(final Path path) {
@@ -148,29 +148,51 @@ public class ResourceCache extends Contextual {
         return Optional.empty();
     }
 
-    public synchronized void remove(final Class<? extends Resource> clazz, final Path path) {
+    public synchronized void remove(final Class<? extends Resource> clazz, final Path path, boolean force) {
         Objects.requireNonNull(path);
         Objects.requireNonNull(clazz);
 
         Map<Path, ? extends Resource> group = groups.get(clazz);
         if (group != null) {
-            Resource remove = group.remove(path);
-            if (Objects.nonNull(remove)) {
+            Resource remove = group.get(path);
+            if (Objects.nonNull(remove) && (remove.getRefCount() <= 1 || force)) {
                 remove.release();
+                group.remove(path);
             }
         }
     }
 
-    public synchronized void remove(final Class<? extends Resource> clazz) {
+    public synchronized void remove(final Class<? extends Resource> clazz, boolean force) {
         Objects.requireNonNull(clazz);
-        Map<Path, Resource> remove = groups.remove(clazz);
-        if (Objects.nonNull(remove)) {
-            remove.values().forEach(Resource::release);
+        Map<Path, Resource> group = groups.get(clazz);
+        if (Objects.nonNull(group)) {
+            Iterator<Map.Entry<Path, Resource>> iterator = group.entrySet().iterator();
+            iterator.forEachRemaining(entry -> {
+                if (Objects.nonNull(entry.getValue()) && (entry.getValue().getRefCount() <= 1 || force)) {
+                    entry.getValue().release();
+                    iterator.remove();
+                }
+            });
+        }
+        if (group.isEmpty()) {
+            groups.remove(clazz);
         }
     }
 
-    public synchronized void clear() {
-        groups.forEach((aClass, pathResourceMap) -> remove(aClass));
+    public synchronized void clear(boolean force) {
+        Iterator<Map.Entry<Class<? extends Resource>, Map<Path, Resource>>> groupsIterator = groups.entrySet().iterator();
+        groupsIterator.forEachRemaining(classMapEntry ->  {
+            Iterator<Map.Entry<Path, Resource>> groupIterator = classMapEntry.getValue().entrySet().iterator();
+            groupIterator.forEachRemaining(entry -> {
+                if (Objects.nonNull(entry.getValue()) && (entry.getValue().getRefCount() <= 1 || force)) {
+                    entry.getValue().release();
+                    groupIterator.remove();
+                }
+            });
+            if (classMapEntry.getValue().isEmpty()) {
+                groupsIterator.remove();
+            }
+        });
     }
 
     public void add(final Class<? extends Resource> clazz, final Path path, final boolean immediate) {
