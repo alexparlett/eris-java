@@ -130,11 +130,11 @@ public class ResourceCache extends Contextual {
         });
 
         if (resource != null && resource.getState().equals(Resource.AsyncState.SUCCESS)) {
-            return Optional.of(resource.hold());
+            return Optional.of(resource);
         } else if (resource != null && resource.getState().equals(Resource.AsyncState.LOADING)) {
             while (resource.getState().equals(Resource.AsyncState.LOADING)) ;
             if (resource.getState().equals(Resource.AsyncState.SUCCESS))
-                return Optional.of(resource.hold());
+                return Optional.of(resource);
         } else if (resource != null && !resource.getState().equals(Resource.AsyncState.FAILED)) {
             try {
                 Path fullPath = findFile(path).orElseThrow(() -> new IOException("Resource does not exist."));

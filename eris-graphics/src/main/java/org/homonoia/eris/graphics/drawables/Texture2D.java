@@ -47,32 +47,37 @@ public class Texture2D extends Texture {
         ResourceCache resourceCache = getContext().getComponent(ResourceCache.class);
         Image image = resourceCache.getTemporary(Image.class, file)
                 .orElseThrow(() -> new IOException("Failed to load Texture2D. Metadata Json doesn't contain valid file"));
-        image.flip();
 
-        int format = getFormat(image);
+        try {
+            image.flip();
 
-        long win = GLFW.glfwGetCurrentContext();
-        Graphics graphics = getContext().getComponent(Graphics.class);
-        GLFW.glfwMakeContextCurrent(win != MemoryUtil.NULL ? win : graphics.getBackgroundWindow());
+            int format = getFormat(image);
 
-        handle = glGenTextures();
-        glBindTexture(handle, GL_TEXTURE_2D);
+            long win = GLFW.glfwGetCurrentContext();
+            Graphics graphics = getContext().getComponent(Graphics.class);
+            GLFW.glfwMakeContextCurrent(win != MemoryUtil.NULL ? win : graphics.getBackgroundWindow());
 
-        glGetError();
-        glTexImage2D(GL_TEXTURE_2D, 0, format, image.getWidth(), image.getHeight(), 0, format, GL_UNSIGNED_BYTE, image.getData());
+            handle = glGenTextures();
+            glBindTexture(handle, GL_TEXTURE_2D);
 
-        int glErrorCode = glGetError();
-        if (glErrorCode != GL_NO_ERROR) {
-            GLFW.glfwMakeContextCurrent(win);
+            glGetError();
+            glTexImage2D(GL_TEXTURE_2D, 0, format, image.getWidth(), image.getHeight(), 0, format, GL_UNSIGNED_BYTE, image.getData());
+
+            int glErrorCode = glGetError();
+            if (glErrorCode != GL_NO_ERROR) {
+                GLFW.glfwMakeContextCurrent(win);
+                glBindTexture(GL_TEXTURE_2D, 0);
+                glDeleteTextures(handle);
+                throw new IOException(MessageFormat.format("Failed to load TextureCube {0}. OpenGL Error {1}", image.getPath(), glErrorCode));
+            }
+
+            setParameters();
+
             glBindTexture(GL_TEXTURE_2D, 0);
-            glDeleteTextures(handle);
-            throw new IOException(MessageFormat.format("Failed to load TextureCube {0}. OpenGL Error {1}", image.getPath(), glErrorCode));
+            GLFW.glfwMakeContextCurrent(win);
+        } finally {
+             image.release();
         }
-
-        setParameters();
-
-        glBindTexture(GL_TEXTURE_2D, 0);
-        GLFW.glfwMakeContextCurrent(win);
     }
 
     @Override

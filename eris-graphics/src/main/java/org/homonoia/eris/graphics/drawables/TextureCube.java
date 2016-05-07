@@ -49,27 +49,35 @@ public class TextureCube extends Texture {
                 .orElseThrow(() -> new IOException("Failed to load Texture2D. Metadata Json invalid."));
 
         Map<Integer, Image> faces = new HashMap<>();
-        for (JsonElement face : root.getAsJsonArray("faces")) {
-            JsonObject asJsonObject = face.getAsJsonObject();
+        try {
+            for (JsonElement face : root.getAsJsonArray("faces")) {
+                JsonObject asJsonObject = face.getAsJsonObject();
 
-            int pos = parsePosition(asJsonObject.get("pos").getAsString());
-            Path file = Paths.get(asJsonObject.get("file").getAsString());
-            Path fullPath;
-            if (file.getParent() == null) {
-                fullPath = getPath().getParent().resolve(file);
-            } else {
-                fullPath = file;
+                int pos = parsePosition(asJsonObject.get("pos").getAsString());
+                Path file = Paths.get(asJsonObject.get("file").getAsString());
+                Path fullPath;
+                if (file.getParent() == null) {
+                    fullPath = getPath().getParent().resolve(file);
+                } else {
+                    fullPath = file;
+                }
+
+                Image image = resourceCache.getTemporary(Image.class, fullPath)
+                        .orElseThrow(() -> new IOException(MessageFormat.format("Failed to load TextureCube. Face {0} at {1} does not exist.", pos, file)));
+                image.flip();
+
+                faces.put(pos, image);
             }
 
-            Image image = resourceCache.getTemporary(Image.class, fullPath)
-                    .orElseThrow(() -> new IOException(MessageFormat.format("Failed to load TextureCube. Face {0} at {1} does not exist.", pos, file)));
-            image.flip();
-
-            faces.put(pos,image);
+            parseParameters(root);
+            compile(faces);
+        } finally {
+            faces.forEach((face, image) -> {
+                if (Objects.nonNull(image)) {
+                    image.release();
+                }
+            });
         }
-
-        parseParameters(root);
-        compile(faces);
     }
 
     @Override
