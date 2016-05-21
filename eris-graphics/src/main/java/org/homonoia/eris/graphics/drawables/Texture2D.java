@@ -46,7 +46,7 @@ public class Texture2D extends Texture {
 
         ResourceCache resourceCache = getContext().getComponent(ResourceCache.class);
         Image image = resourceCache.getTemporary(Image.class, file)
-                .orElseThrow(() -> new IOException("Failed to load Texture2D. Metadata Json doesn't contain valid file"));
+                .orElseThrow(() -> new IOException("Failed to load Texture2D. Metadata Json doesn't contain valid file: " + file));
 
         try {
             image.flip();

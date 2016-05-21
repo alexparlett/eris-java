@@ -116,18 +116,7 @@ public class Image extends Resource {
     }
 
     public void flip() {
-        int rowSize = components * width;
-        ByteBuffer rowBuffer = ByteBuffer.wrap(new byte[rowSize]);
-        ByteBuffer oppositeRowBuffer = ByteBuffer.wrap(new byte[rowSize]);
-        int halfRows = height / 2;
-
-        for (int i = 0; i < halfRows; i++) {
-            System.arraycopy(data.array(), getPixelOffset(0, i), rowBuffer.array(), 0, rowSize);
-            System.arraycopy(data.array(), getPixelOffset(0, height - i - 1), oppositeRowBuffer.array(), 0, rowSize);
-
-            System.arraycopy(oppositeRowBuffer.array(), 0, data.array(), getPixelOffset(0, i), rowSize);
-            System.arraycopy(rowBuffer.array(), 0, data.array(), getPixelOffset(0, height - i - 1), rowSize);
-        }
+        data.flip();
     }
 
     public int getComponents() {

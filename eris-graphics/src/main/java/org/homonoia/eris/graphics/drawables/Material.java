@@ -3,6 +3,9 @@ package org.homonoia.eris.graphics.drawables;
 import com.google.gson.*;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.graphics.GPUResource;
+import org.homonoia.eris.graphics.drawables.material.CullMode;
+import org.homonoia.eris.graphics.drawables.material.TextureUnit;
+import org.homonoia.eris.graphics.drawables.sp.Uniform;
 import org.homonoia.eris.math.*;
 import org.homonoia.eris.renderer.Renderer;
 import org.homonoia.eris.resources.Resource;
@@ -91,6 +94,7 @@ public class Material extends Resource implements GPUResource {
                 });
             });
         } catch (JsonParseException ex) {
+            reset();
             throw new IOException("Parsing Texture Unit failed.", ex);
         }
 
@@ -159,6 +163,7 @@ public class Material extends Resource implements GPUResource {
 
             }));
         } catch (JsonParseException ex) {
+            reset();
             throw new IOException("Parsing Uniform failed.", ex);
         }
 

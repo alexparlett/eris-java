@@ -46,8 +46,8 @@ public class Vector3i extends org.joml.Vector3i {
 
     public static Vector3i parse(final String asString) throws ParseException {
         String[] tokens = asString.split(" ");
-        if (tokens.length != 2) {
-            throw new ParseException("Cannot parse Vector2d from " + asString + " invalid number of arguments", 0);
+        if (tokens.length != 3) {
+            throw new ParseException("Cannot parse Vector3i from " + asString + " invalid number of arguments", 0);
         }
 
         return new Vector3i(Integer.parseInt(tokens[0]),

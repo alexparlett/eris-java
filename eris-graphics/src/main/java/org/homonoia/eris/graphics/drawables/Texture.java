@@ -1,6 +1,7 @@
 package org.homonoia.eris.graphics.drawables;
 
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.graphics.GPUResource;
 import org.homonoia.eris.resources.Resource;
@@ -10,6 +11,7 @@ import org.lwjgl.system.MemoryUtil;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.lwjgl.opengl.GL11.glDeleteTextures;
 
@@ -35,7 +37,7 @@ public abstract class Texture extends Resource implements GPUResource {
     protected int uWrapMode = GL11.GL_REPEAT;
     protected int vWrapMode = GL11.GL_REPEAT;
     protected int wWrapMode = GL11.GL_REPEAT;
-    protected Integer handle;
+    protected int handle;
 
     public Texture(final Context context) {
         super(context);
@@ -108,9 +110,17 @@ public abstract class Texture extends Resource implements GPUResource {
 
         if (element.has("wrap")) {
             JsonObject wrap = element.get("wrap").getAsJsonObject();
-            uWrapMode = wrapMap.get(wrap.get("u").getAsString());
-            vWrapMode = wrapMap.get(wrap.get("v").getAsString());
-            wWrapMode = wrapMap.get(wrap.get("w").getAsString());
+            uWrapMode = wrapMap.get(Optional.ofNullable(wrap.getAsJsonPrimitive("u"))
+                    .map(JsonPrimitive::getAsString)
+                    .orElse("REPEAT"));
+
+            vWrapMode = wrapMap.get(Optional.ofNullable(wrap.getAsJsonPrimitive("v"))
+                    .map(JsonPrimitive::getAsString)
+                    .orElse("REPEAT"));
+
+            wWrapMode = wrapMap.get(Optional.ofNullable(wrap.getAsJsonPrimitive("w"))
+                    .map(JsonPrimitive::getAsString)
+                    .orElse("REPEAT"));
         }
     }
 

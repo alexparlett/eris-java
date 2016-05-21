@@ -6,9 +6,12 @@ import com.google.gson.JsonPrimitive;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.graphics.GPUResource;
 import org.homonoia.eris.graphics.Graphics;
+import org.homonoia.eris.graphics.drawables.sp.Uniform;
 import org.homonoia.eris.renderer.Renderer;
 import org.homonoia.eris.resources.Resource;
+import org.homonoia.eris.resources.cache.ResourceCache;
 import org.homonoia.eris.resources.types.Json;
+import org.homonoia.eris.resources.types.StreamResource;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL20;
@@ -17,7 +20,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -83,6 +85,8 @@ public class ShaderProgram extends Resource implements GPUResource {
     @Override
     public void load(final InputStream inputStream) throws IOException {
 
+        ResourceCache resourceCache = getContext().getComponent(ResourceCache.class);
+
         Json json = new Json(getContext());
         json.load(inputStream);
 
@@ -101,13 +105,19 @@ public class ShaderProgram extends Resource implements GPUResource {
         ShaderPreprocessor shaderPreprocessor = new ShaderPreprocessor();
 
         StringBuffer fragBuffer, vertBuffer;
-        try (InputStream fragStream = Files.newInputStream(Paths.get(frag))) {
+        try (InputStream fragStream = resourceCache.get(StreamResource.class, Paths.get(frag))
+                .map(StreamResource::asInputStream)
+                .orElseThrow(() -> new IOException(frag + " not found."))) {
+
             fragBuffer = shaderPreprocessor.process(fragStream, frag);
         }
 
         shaderPreprocessor.reset();
 
-        try (InputStream vertStream = Files.newInputStream(Paths.get(vert))) {
+        try (InputStream vertStream = resourceCache.get(StreamResource.class, Paths.get(vert))
+                .map(StreamResource::asInputStream)
+                .orElseThrow(() -> new IOException(vert + " not found."))) {
+
             vertBuffer = shaderPreprocessor.process(vertStream, vert);
         }
 
@@ -146,6 +156,10 @@ public class ShaderProgram extends Resource implements GPUResource {
     public void removeUniform(String uniform)
     {
         uniforms.remove(uniform);
+    }
+
+    public Map<String, Uniform> getUniforms() {
+        return uniforms;
     }
 
     @Override
@@ -188,7 +202,7 @@ public class ShaderProgram extends Resource implements GPUResource {
         GL20.glShaderSource(fragment, fragBuffer.toString());
         GL20.glCompileShader(fragment);
 
-        success.reset();
+        success.clear();
         GL20.glGetShaderiv(fragment, GL20.GL_COMPILE_STATUS, success);
         if (success.get() < 1) {
             String shaderInfoLog = GL20.glGetShaderInfoLog(fragment);
@@ -205,7 +219,7 @@ public class ShaderProgram extends Resource implements GPUResource {
         GL20.glAttachShader(handle, fragment);
         GL20.glLinkProgram(handle);
 
-        success.reset();
+        success.clear();
         GL20.glGetProgramiv(handle, GL20.GL_LINK_STATUS, success);
         if (success.get() < 1) {
             String programInfoLog = GL20.glGetProgramInfoLog(handle);
@@ -223,21 +237,15 @@ public class ShaderProgram extends Resource implements GPUResource {
         GL20.glDeleteShader(vertex);
         GL20.glDeleteShader(fragment);
 
-        IntBuffer uniformCount = BufferUtils.createIntBuffer(1);
         IntBuffer type = BufferUtils.createIntBuffer(1);
         IntBuffer size = BufferUtils.createIntBuffer(1);
-        IntBuffer length = BufferUtils.createIntBuffer(1);
-        ByteBuffer name = BufferUtils.createByteBuffer(64);
-        GL20.glGetProgramiv(handle, GL20.GL_ACTIVE_UNIFORMS, uniformCount);
-        for (int i = 0; i < uniformCount.get(); i++) {
-            type.reset();
-            size.reset();
-            name.reset();
-            length.reset();
+        for (int i = 0; i < GL20.glGetProgrami(handle, GL20.GL_ACTIVE_UNIFORMS); i++) {
+            type.clear();
+            size.clear();
 
-            GL20.glGetActiveUniform(handle, i, length, size, type, name);
+            String name = GL20.glGetActiveUniform(handle, i, size, type);
 
-            if (type.get() == GL20.GL_SAMPLER_2D || type.get() == GL20.GL_SAMPLER_CUBE) {
+            if (type.get(0) == GL20.GL_SAMPLER_2D || type.get(0) == GL20.GL_SAMPLER_CUBE) {
                 continue;
             }
 
@@ -246,7 +254,7 @@ public class ShaderProgram extends Resource implements GPUResource {
                     .location(i)
                     .build();
 
-            uniforms.put(name.asCharBuffer().toString(), uniform);
+            uniforms.put(name, uniform);
         }
 
         glfwMakeContextCurrent(win);

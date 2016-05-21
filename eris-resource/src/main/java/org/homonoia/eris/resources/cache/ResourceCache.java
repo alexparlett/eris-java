@@ -92,7 +92,7 @@ public class ResourceCache extends Contextual {
                 Path fullPath = findFile(path).orElseThrow(() -> new IOException("Resource does not exist."));
                 loader.load(resource, fullPath, true);
             } catch (IOException ex) {
-
+                LOG.error("Failed to load Resource", ex);
             }
         }
 
@@ -139,6 +139,8 @@ public class ResourceCache extends Contextual {
             try {
                 Path fullPath = findFile(path).orElseThrow(() -> new IOException("Resource does not exist."));
                 loader.load(resource, fullPath, true);
+                if (resource.getState().equals(Resource.AsyncState.SUCCESS))
+                    return Optional.of(resource);
             } catch (IOException ex) {
 
             }

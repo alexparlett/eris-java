@@ -95,7 +95,7 @@ public class Engine extends Contextual {
         }
 
         try {
-            locale.load(settings.getString("Game", "Language").orElse("en_GB"));
+            locale.load(settings.getString("Game", "Language").orElse("enGB"));
         } catch (IOException | JsonException e) {
             throw new InitializationException("Failed to load Locale.", ExitCode.FATAL_ERROR, e);
         }

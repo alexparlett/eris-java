@@ -2,4 +2,5 @@ dependencies {
     compile project(':eris-event')
     compile project(':eris-core')
     compile project(':eris-resource')
+    compile project(':eris-math')
 }

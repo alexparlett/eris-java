@@ -29,6 +29,7 @@ configure(subprojects) {
         testCompile 'junit:junit:4.+'
         testCompile 'org.mockito:mockito-all:+'
         testCompile 'org.hamcrest:hamcrest-all:+'
+        testCompile 'org.springframework:spring-test:+'
 
         compile 'org.slf4j:jcl-over-slf4j:+'
         compile 'ch.qos.logback:logback-classic:+'

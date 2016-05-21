@@ -1,4 +1,6 @@
-package org.homonoia.eris.graphics.drawables;
+package org.homonoia.eris.graphics.drawables.material;
+
+import org.homonoia.eris.graphics.drawables.Texture;
 
 /**
  * Created by alexparlett on 01/05/2016.

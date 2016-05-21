@@ -43,7 +43,7 @@ public class Vector2f extends org.joml.Vector2f {
     public static Vector2f parse(final String asString) throws ParseException {
         String[] tokens = asString.split(" ");
         if (tokens.length != 2) {
-            throw new ParseException("Cannot parse Vector2d from " + asString + " invalid number of arguments", 0);
+            throw new ParseException("Cannot parse Vector2f from " + asString + " invalid number of arguments", 0);
         }
 
         return new Vector2f(Float.parseFloat(tokens[0]),

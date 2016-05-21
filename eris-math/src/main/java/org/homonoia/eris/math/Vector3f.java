@@ -9,6 +9,8 @@ import java.text.ParseException;
  */
 public class Vector3f extends org.joml.Vector3f {
 
+    public static final Vector3f ZERO = new Vector3f(0f, 0f, 0f);
+
     public Vector3f() {
     }
 
@@ -46,8 +48,8 @@ public class Vector3f extends org.joml.Vector3f {
 
     public static Vector3f parse(final String asString) throws ParseException {
         String[] tokens = asString.split(" ");
-        if (tokens.length != 2) {
-            throw new ParseException("Cannot parse Vector2d from " + asString + " invalid number of arguments", 0);
+        if (tokens.length != 3) {
+            throw new ParseException("Cannot parse Vector3f from " + asString + " invalid number of arguments, found " + tokens.length, 0);
         }
 
         return new Vector3f(Float.parseFloat(tokens[0]),

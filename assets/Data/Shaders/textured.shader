@@ -1,4 +1,4 @@
 {
-	"frag": "Shaders/textured.frag",
-	"vert": "Shaders/textured.vert"
+  "frag": "Shaders/textured.frag",
+  "vert": "Shaders/textured.vert"
 }

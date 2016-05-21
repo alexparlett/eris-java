@@ -1,4 +1,4 @@
-package org.homonoia.eris.graphics.drawables;
+package org.homonoia.eris.graphics.drawables.material;
 
 import org.lwjgl.opengl.GL11;
 

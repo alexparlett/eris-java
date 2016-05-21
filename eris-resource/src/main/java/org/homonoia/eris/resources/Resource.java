@@ -3,6 +3,7 @@ package org.homonoia.eris.resources;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -16,7 +17,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * @author alexparlett
  * @since 05/02/2016
  */
-public abstract class Resource extends Contextual {
+public abstract class Resource extends Contextual implements Closeable {
 
     private AtomicInteger refCount = new AtomicInteger(1);
 
@@ -69,7 +70,14 @@ public abstract class Resource extends Contextual {
         return refCount.get();
     }
 
+    @Override
+    public void close() throws IOException {
+        release();
+    }
+
     public abstract void load(InputStream inputStream) throws IOException;
 
     public abstract void save(OutputStream outputStream) throws IOException;
+
+
 }

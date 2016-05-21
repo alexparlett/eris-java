@@ -1,4 +1,4 @@
-package org.homonoia.eris.graphics.drawables;
+package org.homonoia.eris.graphics.drawables.sp;
 
 /**
  * Created by alexparlett on 16/04/2016.
