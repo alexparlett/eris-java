@@ -7,16 +7,14 @@ import java.util.Arrays;
  */
 public class Vertex {
     // Vertex data
-    private float[] position = new float[] {0f, 0f, 0f, 1f};
+    private float[] position = new float[] {0f, 0f, 0f};
     private float[] normal = new float[] {1f, 1f, 1f};
     private float[] texCoords = new float[] {0f, 0f};
 
     // The amount of elements that a vertex has
     public static final int COUNT = 9;
-    // The amount of bytes an element has
-    public static final int BYTE_SIZE = 4;
     // The size of a vertex in bytes, like in C/C++: sizeof(Vertex)
-    public static final int SIZE_OF = BYTE_SIZE * COUNT;
+    public static final int SIZE_OF = Float.BYTES * COUNT;
 
     private Vertex(Builder builder) {
         this.position = builder.position;
@@ -26,7 +24,7 @@ public class Vertex {
 
     // Getters
     public float[] getPosition() {
-        return Arrays.copyOf(position, 4);
+        return Arrays.copyOf(position, 3);
     }
 
     public float[] getNormal() {

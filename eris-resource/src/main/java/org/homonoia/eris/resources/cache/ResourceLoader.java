@@ -43,12 +43,12 @@ public class ResourceLoader extends Contextual {
         executorService.shutdown();
     }
 
-    public void load(final Resource resource, final Path fullPath, final boolean immediate) throws IOException {
+    public void load(final Resource resource, final boolean immediate) throws IOException {
         Objects.requireNonNull(resource, MessageFormat.format("Failed to load {0} resource cannot be null", resource.getPath()));
-        Objects.requireNonNull(fullPath, MessageFormat.format("Failed to load {0} path cannot be null", resource.getPath()));
+        Objects.requireNonNull(resource.getPath(), MessageFormat.format("Failed to load {0} path cannot be null", resource.getPath()));
 
-        if (!fileSystem.isAccessible(fullPath)) {
-            throw new IOException(fullPath.toString() + " is not accessible.");
+        if (!fileSystem.isAccessible(resource.getPath())) {
+            throw new IOException(resource.getPath().toString() + " is not accessible.");
         }
 
         if (resource.getState().equals(Resource.AsyncState.FAILED) ||
@@ -59,7 +59,7 @@ public class ResourceLoader extends Contextual {
 
         LoadingTask task = new LoadingTask();
         task.resource = resource;
-        task.path = fullPath;
+        task.path = resource.getPath();
 
         if (!immediate) {
             if (!resource.getState().equals(Resource.AsyncState.QUEUED)) {

@@ -186,10 +186,6 @@ public class Material extends Resource implements GPUResource {
 
         shaderProgram.use();
 
-        uniforms.values().stream()
-                .filter(uniform -> uniform.getData() != null)
-                .forEach(uniform -> renderer.bindUniform(uniform.getLocation(), uniform.getType(), uniform.getData()));
-
         textureUnits.stream()
                 .filter(textureUnit -> textureUnit.getTexture() != null)
                 .forEach(textureUnit -> {
@@ -198,7 +194,9 @@ public class Material extends Resource implements GPUResource {
                     renderer.bindUniform(GL20.glGetUniformLocation(shaderProgram.getHandle(), textureUnit.getUniform()), GL11.GL_INT, textureUnit.getUnit());
                 });
 
-        GL13.glActiveTexture(GL13.GL_TEXTURE0);
+        uniforms.values().stream()
+                .filter(uniform -> Objects.nonNull(uniform.getData()))
+                .forEach(uniform -> renderer.bindUniform(uniform.getLocation(), uniform.getType(), uniform.getData()));
     }
 
     @Override

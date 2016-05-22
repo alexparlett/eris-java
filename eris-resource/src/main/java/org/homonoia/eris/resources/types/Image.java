@@ -20,6 +20,8 @@ import java.nio.IntBuffer;
 import java.text.MessageFormat;
 import java.util.Objects;
 
+import static org.lwjgl.stb.STBImage.*;
+
 /**
  * Copyright (c) 2015-2016 the Eris project.
  *
@@ -44,10 +46,9 @@ public class Image extends Resource {
         Objects.requireNonNull(inputStream, "Input Stream must not be null.");
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        int read = inputStream.read();
-        while (read >= 0) {
+        int read;
+        while ((read = inputStream.read()) >= 0) {
             baos.write(read);
-            read = inputStream.read();
         }
 
         if (baos.size() <= 0) {
@@ -56,20 +57,26 @@ public class Image extends Resource {
 
         ByteBuffer byteBuffer = BufferUtils.createByteBuffer(baos.size());
         byteBuffer.put(baos.toByteArray());
-        byteBuffer.rewind();
+        byteBuffer.flip();
 
-        IntBuffer width = BufferUtils.createIntBuffer(1);
-        IntBuffer height = BufferUtils.createIntBuffer(1);
-        IntBuffer components = BufferUtils.createIntBuffer(1);
+        IntBuffer w = BufferUtils.createIntBuffer(1);
+        IntBuffer h = BufferUtils.createIntBuffer(1);
+        IntBuffer comp = BufferUtils.createIntBuffer(1);
 
-        data = STBImage.stbi_load_from_memory(byteBuffer, width, height, components, 0);
-        this.width = width.get();
-        this.height = height.get();
-        this.components = components.get();
-        if (data == null || this.width <= 0 || this.height <= 0 || this.components <= 0) {
-            LOG.error("Failed to load Image {}. {}", getPath(), STBImage.stbi_failure_reason());
-            throw new IOException(MessageFormat.format("Failed to load Image {0}. {1}", getPath(), Objects.toString(STBImage.stbi_failure_reason(), "")));
+        // Use info to read image metadata without decoding the entire image.
+        if (stbi_info_from_memory(byteBuffer, w, h, comp) == 0)
+            throw new IOException("Failed to read image information: " + stbi_failure_reason());
+
+        stbi_set_flip_vertically_on_load(1);
+        data = stbi_load_from_memory(byteBuffer, w, h, comp, 0);
+        if (data == null) {
+            LOG.error("Failed to load Image {}. {}", getPath(), stbi_failure_reason());
+            throw new IOException(MessageFormat.format("Failed to load Image {0}. {1}", getPath(), stbi_failure_reason()));
         }
+
+        this.width = w.get(0);
+        this.height = h.get(0);
+        this.components = comp.get(0);
     }
 
     @Override

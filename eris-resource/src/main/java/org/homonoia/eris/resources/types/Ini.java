@@ -114,7 +114,7 @@ public class Ini extends Resource implements Iterable<Map.Entry<String, IniSecti
     public IniSection add(final String name) throws IniException {
         Objects.requireNonNull(name);
         if (StringUtils.isEmpty(name)) {
-            throw new IniException("Cannot add a section with an empty name.", getPath());
+            throw new IniException("Cannot add a section with an empty name.");
         }
         IniSection iniSection = sections.get(name);
         if (iniSection != null) {

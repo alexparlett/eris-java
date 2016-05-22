@@ -11,7 +11,6 @@ import java.text.ParseException;
 public class Matrix4f extends org.joml.Matrix4f {
 
     public Matrix4f() {
-        super();
     }
 
     public Matrix4f(final Matrix3f mat) {

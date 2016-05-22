@@ -10,7 +10,9 @@ import org.homonoia.eris.resources.types.Image;
 import org.homonoia.eris.resources.types.Json;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 
 import java.io.IOException;
@@ -23,7 +25,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
+import static org.lwjgl.opengl.GL11.glBindTexture;
 
 /**
  * Copyright (c) 2015-2016 the Eris project.
@@ -55,16 +58,9 @@ public class TextureCube extends Texture {
 
                 int pos = parsePosition(asJsonObject.get("pos").getAsString());
                 Path file = Paths.get(asJsonObject.get("file").getAsString());
-                Path fullPath;
-                if (file.getParent() == null) {
-                    fullPath = getPath().getParent().resolve(file);
-                } else {
-                    fullPath = file;
-                }
 
-                Image image = resourceCache.getTemporary(Image.class, fullPath)
+                Image image = resourceCache.getTemporary(Image.class, file)
                         .orElseThrow(() -> new IOException(MessageFormat.format("Failed to load TextureCube. Face {0} at {1} does not exist.", pos, file)));
-                image.flip();
 
                 faces.put(pos, image);
             }
@@ -116,6 +112,13 @@ public class TextureCube extends Texture {
         handle = GL11.glGenTextures();
         GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, handle);
 
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, generateMipMaps ? GL11.GL_LINEAR_MIPMAP_LINEAR : GL11.GL_LINEAR);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+
+        GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_WRAP_S, uWrapMode);
+        GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_WRAP_T, vWrapMode);
+        GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL12.GL_TEXTURE_WRAP_R, vWrapMode);
+
         for (Map.Entry<Integer, Image> face : faces.entrySet())
         {
             int unit = face.getKey();
@@ -134,7 +137,9 @@ public class TextureCube extends Texture {
             }
         }
 
-        setParameters();
+        if (generateMipMaps) {
+            GL30.glGenerateMipmap(GL13.GL_TEXTURE_CUBE_MAP);
+        }
 
         GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, 0);
         GLFW.glfwMakeContextCurrent(win);

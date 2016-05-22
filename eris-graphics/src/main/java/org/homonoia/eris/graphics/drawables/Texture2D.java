@@ -8,6 +8,8 @@ import org.homonoia.eris.resources.cache.ResourceCache;
 import org.homonoia.eris.resources.types.Image;
 import org.homonoia.eris.resources.types.Json;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 
 import java.io.IOException;
@@ -49,8 +51,6 @@ public class Texture2D extends Texture {
                 .orElseThrow(() -> new IOException("Failed to load Texture2D. Metadata Json doesn't contain valid file: " + file));
 
         try {
-            image.flip();
-
             int format = getFormat(image);
 
             long win = GLFW.glfwGetCurrentContext();
@@ -58,7 +58,13 @@ public class Texture2D extends Texture {
             GLFW.glfwMakeContextCurrent(win != MemoryUtil.NULL ? win : graphics.getBackgroundWindow());
 
             handle = glGenTextures();
-            glBindTexture(handle, GL_TEXTURE_2D);
+            glBindTexture(GL_TEXTURE_2D, handle);
+
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, generateMipMaps ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, uWrapMode);
+            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, vWrapMode);
 
             glGetError();
             glTexImage2D(GL_TEXTURE_2D, 0, format, image.getWidth(), image.getHeight(), 0, format, GL_UNSIGNED_BYTE, image.getData());
@@ -71,7 +77,9 @@ public class Texture2D extends Texture {
                 throw new IOException(MessageFormat.format("Failed to load TextureCube {0}. OpenGL Error {1}", image.getPath(), glErrorCode));
             }
 
-            setParameters();
+            if (generateMipMaps) {
+                GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
+            }
 
             glBindTexture(GL_TEXTURE_2D, 0);
             GLFW.glfwMakeContextCurrent(win);

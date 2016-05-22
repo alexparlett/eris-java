@@ -30,7 +30,6 @@ public abstract class Texture extends Resource implements GPUResource {
         wrapMap.put("MIRRORED_REPEAT", GL14.GL_MIRRORED_REPEAT);
         wrapMap.put("CLAMP_TO_BORDER", GL12.GL_CLAMP_TO_EDGE);
         wrapMap.put("CLAMP_TO_EDGE", GL13.GL_CLAMP_TO_BORDER);
-        wrapMap.put("CLAMP", GL11.GL_CLAMP);
     }
 
     protected boolean generateMipMaps = true;
@@ -118,22 +117,9 @@ public abstract class Texture extends Resource implements GPUResource {
                     .map(JsonPrimitive::getAsString)
                     .orElse("REPEAT"));
 
-            wWrapMode = wrapMap.get(Optional.ofNullable(wrap.getAsJsonPrimitive("w"))
+            wWrapMode = wrapMap.get(Optional.ofNullable(wrap.getAsJsonPrimitive("u"))
                     .map(JsonPrimitive::getAsString)
                     .orElse("REPEAT"));
         }
-    }
-
-    protected void setParameters() {
-        if (generateMipMaps) {
-            GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
-        }
-
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, generateMipMaps ? GL11.GL_LINEAR_MIPMAP_LINEAR : GL11.GL_LINEAR);
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
-
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, uWrapMode);
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, vWrapMode);
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL12.GL_TEXTURE_WRAP_R, wWrapMode);
     }
 }

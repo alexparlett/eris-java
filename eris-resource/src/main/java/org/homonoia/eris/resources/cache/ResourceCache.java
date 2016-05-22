@@ -89,8 +89,7 @@ public class ResourceCache extends Contextual {
                 return Optional.of(resource.hold());
         } else if (resource != null && !resource.getState().equals(Resource.AsyncState.FAILED)) {
             try {
-                Path fullPath = findFile(path).orElseThrow(() -> new IOException("Resource does not exist."));
-                loader.load(resource, fullPath, true);
+                loader.load(resource, true);
             } catch (IOException ex) {
                 LOG.error("Failed to load Resource", ex);
             }
@@ -120,10 +119,11 @@ public class ResourceCache extends Contextual {
 
         T resource = find(clazz, relativePath).map(res -> (T) res).orElseGet(() -> {
             try {
+                Path fullPath = findFile(path).orElseThrow(() -> new IOException("Resource does not exist."));
                 T newResource = clazz.getConstructor(Context.class).newInstance(getContext());
-                newResource.setPath(path);
+                newResource.setPath(fullPath);
                 return newResource;
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | IOException e) {
                 LOG.error("Failed to create new {} {}.", clazz, path, e);
                 return null;
             }
@@ -137,8 +137,7 @@ public class ResourceCache extends Contextual {
                 return Optional.of(resource);
         } else if (resource != null && !resource.getState().equals(Resource.AsyncState.FAILED)) {
             try {
-                Path fullPath = findFile(path).orElseThrow(() -> new IOException("Resource does not exist."));
-                loader.load(resource, fullPath, true);
+                loader.load(resource, true);
                 if (resource.getState().equals(Resource.AsyncState.SUCCESS))
                     return Optional.of(resource);
             } catch (IOException ex) {
@@ -206,8 +205,10 @@ public class ResourceCache extends Contextual {
                 return;
             }
 
+            Path fullPath = findFile(path).orElseThrow(() -> new IOException("Resource does not exist."));
+
             Resource resource = clazz.getConstructor(Context.class).newInstance(getContext());
-            resource.setPath(path);
+            resource.setPath(fullPath);
 
             synchronized (this) {
                 Map<Path, Resource> group = groups.get(clazz);
@@ -220,8 +221,7 @@ public class ResourceCache extends Contextual {
                 }
             }
 
-            Path fullPath = findFile(path).orElseThrow(() -> new IOException("Resource does not exist."));
-            loader.load(resource, fullPath, immediate);
+            loader.load(resource, immediate);
         } catch (IOException | InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             LOG.error("Failed to add {} {} to Resource Cache", clazz.getSimpleName(), path, e);
         }

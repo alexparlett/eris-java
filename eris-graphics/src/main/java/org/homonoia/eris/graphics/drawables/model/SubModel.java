@@ -10,6 +10,7 @@ import org.homonoia.eris.resources.types.Mesh;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
@@ -22,9 +23,7 @@ import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL15.*;
 import static org.lwjgl.opengl.GL20.glVertexAttribPointer;
-import static org.lwjgl.opengl.GL30.glBindVertexArray;
-import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
-import static org.lwjgl.opengl.GL30.glGenVertexArrays;
+import static org.lwjgl.opengl.GL30.*;
 
 /**
  * Created by alexparlett on 07/05/2016.
@@ -179,23 +178,42 @@ public class SubModel extends Contextual {
         ebo = glGenBuffers();
 
         glBindVertexArray(vao);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
+
+        glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
+        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW);
+
+        glVertexAttribPointer(0, 4, GL_FLOAT, false, Vertex.SIZE_OF, 0);
+        glVertexAttribPointer(1, 3, GL_FLOAT, false, Vertex.SIZE_OF, Float.BYTES * 4);
+        glVertexAttribPointer(2, 2, GL_FLOAT, false, Vertex.SIZE_OF, Float.BYTES * 7);
+
         GL20.glEnableVertexAttribArray(0);
         GL20.glEnableVertexAttribArray(1);
         GL20.glEnableVertexAttribArray(2);
 
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
-        glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
-        glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-        glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW);
-        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-        glVertexAttribPointer(0, 4, GL_FLOAT, false, Vertex.SIZE_OF, 0);
-        glVertexAttribPointer(1, 3, GL_FLOAT, false, Vertex.SIZE_OF, Vertex.BYTE_SIZE * 4);
-        glVertexAttribPointer(2, 2, GL_FLOAT, false, Vertex.SIZE_OF, Vertex.BYTE_SIZE * 7);
-
         glBindVertexArray(0);
+
+        vao = GL30.glGenVertexArrays();
+        GL30.glBindVertexArray(vao);
+        {
+            vbo = GL15.glGenBuffers();
+            GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vbo);
+            GL15.glBufferData(GL15.GL_ARRAY_BUFFER, vertices, GL15.GL_STATIC_DRAW);
+
+            ebo = GL15.glGenBuffers();
+            GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, ebo);
+            GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, indices, GL15.GL_STATIC_DRAW);
+
+            GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, Vertex.SIZE_OF, 0);
+            GL20.glVertexAttribPointer(1, 3, GL11.GL_FLOAT, false, Vertex.SIZE_OF, 3 * Float.BYTES);
+            GL20.glVertexAttribPointer(2, 2, GL11.GL_FLOAT, false, Vertex.SIZE_OF, 6 * Float.BYTES);
+
+            GL20.glEnableVertexAttribArray(0);
+            GL20.glEnableVertexAttribArray(1);
+            GL20.glEnableVertexAttribArray(2);
+        }
+        GL30.glBindVertexArray(0);
     }
 
     public static Builder builder() {
@@ -272,8 +290,8 @@ public class SubModel extends Contextual {
             for(int i = 0; i < mesh.getGeometry().size(); i++) {
 
                 Vector3f position = (Vector3f) mesh.getGeometry().get(i)
-                        .mul(scale)
-                        .add(origin);
+                        .add(origin)
+                        .mul(scale);
 
                 Vector3f normal = mesh.getNormals().get(i);
 
@@ -285,7 +303,7 @@ public class SubModel extends Contextual {
                 }
 
                 vertices.add(Vertex.builder()
-                        .position(new float[] { position.x, position.y, position.z, 1.f })
+                        .position(new float[] { position.x, position.y, position.z })
                         .normal(new float[] { normal.x, normal.y, normal.z })
                         .texCoords(new float[] { texCoord.x, texCoord.y })
                         .build());

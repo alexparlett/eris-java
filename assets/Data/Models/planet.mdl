@@ -3,7 +3,7 @@
     "material": "Materials/planet.mat",
     "mesh": "Meshes/sphere.obj",
     "origin": "0 0 0",
-    "scale": 1.0,
+    "scale": 1,
     "animations": [],
     "uniforms": []
   }

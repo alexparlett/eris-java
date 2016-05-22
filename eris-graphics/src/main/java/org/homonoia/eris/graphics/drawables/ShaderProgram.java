@@ -26,6 +26,8 @@ import java.nio.file.Paths;
 import java.util.*;
 
 import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
+import static org.lwjgl.opengl.GL20.glGetActiveUniform;
+import static org.lwjgl.opengl.GL20.glGetUniformLocation;
 
 /**
  * Created by alexparlett on 16/04/2016.
@@ -48,7 +50,7 @@ public class ShaderProgram extends Resource implements GPUResource {
             StringBuffer out = new StringBuffer();
 
             String line;
-            while((line = in.readLine()) != null) {
+            while ((line = in.readLine()) != null) {
                 if (line.contains("#include")) {
                     String[] tokens = line.split(" ");
                     String filename;
@@ -135,26 +137,22 @@ public class ShaderProgram extends Resource implements GPUResource {
 
         GL20.glUseProgram(handle);
 
-        uniforms.forEach((name, uniform) -> {
-            if (uniform.getData() != null) {
-                renderer.bindUniform(uniform.getLocation(), uniform.getType(), uniform.getData());
-            }
-        });
+        uniforms.values()
+                .stream()
+                .filter(uniform -> Objects.nonNull(uniform.getData()))
+                .forEach(uniform -> renderer.bindUniform(uniform.getLocation(), uniform.getType(), uniform.getData()));
     }
 
-    public void setUniform(String uniform, final Object data)
-    {
+    public void setUniform(String uniform, final Object data) {
         Optional.ofNullable(uniforms.get(uniform))
                 .ifPresent(shaderUniform -> shaderUniform.setData(data));
     }
 
-    public Optional<Uniform> getUniform(String uniform)
-    {
+    public Optional<Uniform> getUniform(String uniform) {
         return Optional.ofNullable(uniforms.get(uniform));
     }
 
-    public void removeUniform(String uniform)
-    {
+    public void removeUniform(String uniform) {
         uniforms.remove(uniform);
     }
 
@@ -243,15 +241,17 @@ public class ShaderProgram extends Resource implements GPUResource {
             type.clear();
             size.clear();
 
-            String name = GL20.glGetActiveUniform(handle, i, size, type);
+            String name = glGetActiveUniform(handle, i, size, type);
 
             if (type.get(0) == GL20.GL_SAMPLER_2D || type.get(0) == GL20.GL_SAMPLER_CUBE) {
                 continue;
             }
 
+            int location = glGetUniformLocation(handle, name);
+
             Uniform uniform = Uniform.builder()
                     .type(type.get())
-                    .location(i)
+                    .location(location)
                     .build();
 
             uniforms.put(name, uniform);
