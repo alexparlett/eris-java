@@ -5,6 +5,7 @@ import org.homonoia.eris.math.Vector2f;
 import org.homonoia.eris.math.Vector3f;
 import org.homonoia.eris.resources.Resource;
 import org.homonoia.eris.resources.types.mesh.Face;
+import org.homonoia.eris.resources.types.mesh.Vertex;
 
 import java.io.*;
 import java.text.ParseException;
@@ -27,7 +28,7 @@ public class Mesh extends Resource {
     public static final Pattern OBJ_FACE_PATTERN = Pattern.compile("(\\/)");
 
     private List<Vector3f> geometry = new ArrayList<>();
-    private List<Vector3f> textureCoords = new ArrayList<>();
+    private List<Vector2f> textureCoords = new ArrayList<>();
     private List<Vector3f> normals = new ArrayList<>();
     private List<Face> faces = new ArrayList<>();
 
@@ -52,10 +53,10 @@ public class Mesh extends Resource {
                     textureCoords.add(processTextureCoord(line));
                 } else if (line.startsWith(OBJ_NORMAL)) {
                     normals.add(processNormal(line));
-                } else if (line.startsWith(OBJ_FACE)) {
-                    faces.add(processFace(line));
                 } else if (line.startsWith(OBJ_GEOMETRY_VERTEX)) {
                     geometry.add(processGeometry(line));
+                } else if (line.startsWith(OBJ_FACE)) {
+                    faces.add(processFace(line));
                 }
             }
         } catch (ParseException | IndexOutOfBoundsException ex) {
@@ -88,11 +89,11 @@ public class Mesh extends Resource {
         this.geometry = geometry;
     }
 
-    public List<Vector3f> getTextureCoords() {
+    public List<Vector2f> getTextureCoords() {
         return textureCoords;
     }
 
-    public void setTextureCoords(final List<Vector3f> textureCoords) {
+    public void setTextureCoords(final List<Vector2f> textureCoords) {
         this.textureCoords = textureCoords;
     }
 
@@ -125,22 +126,43 @@ public class Mesh extends Resource {
             String[] indices = OBJ_FACE_PATTERN.split(group);
             if (indicesCounts == 0) {
                 int geometryIndex = Integer.parseInt(indices[0]) - 1;
-                face.getIndicies().add(geometryIndex);
-            } else if (indicesCounts == 1) {
-                int geometryIndex = Integer.parseInt(indices[0]) - 1;
-                face.getIndicies().add(geometryIndex);
 
+                Vector3f position = geometry.get(geometryIndex);
+
+                Vertex vertex = Vertex.builder()
+                        .position(position)
+                        .build();
+
+                face.addVertex(vertex);
+             } else if (indicesCounts == 1) {
+                int geometryIndex = Integer.parseInt(indices[0]) - 1;
                 int textureCoordsIndex = Integer.parseInt(indices[1]) - 1;
-                face.getTextureCoordsIds().add(textureCoordsIndex);
-            } else if (indicesCounts == 2) {
+
+                Vector3f position = geometry.get(geometryIndex);
+                Vector2f texCoord = textureCoords.get(textureCoordsIndex);
+
+                Vertex vertex = Vertex.builder()
+                        .position(position)
+                        .texCoords(texCoord)
+                        .build();
+
+                face.addVertex(vertex);
+             } else if (indicesCounts == 2) {
                 int geometryIndex = Integer.parseInt(indices[0]) - 1;
-                face.getIndicies().add(geometryIndex);
+                int textureCoordsIndex = Integer.parseInt(indices[1]) - 1;
+                int normalIndex = Integer.parseInt(indices[2]) - 1;
 
-                int textureCoordsId = Integer.parseInt(indices[1]) - 1;
-                face.getTextureCoordsIds().add(textureCoordsId);
+                Vector3f position = geometry.get(geometryIndex);
+                Vector3f normal = normals.get(normalIndex);
+                Vector2f texCoord = textureCoords.get(textureCoordsIndex);
 
-                int normalId = Integer.parseInt(indices[2]) - 1;
-                face.getNormalIds().add(normalId);
+                Vertex vertex = Vertex.builder()
+                        .position(position)
+                        .normal(normal)
+                        .texCoords(texCoord)
+                        .build();
+
+                face.addVertex(vertex);
             }
         }
 
@@ -155,14 +177,9 @@ public class Mesh extends Resource {
         return Vector3f.parse(line.substring(OBJ_NORMAL.length() + 1));
     }
 
-    private Vector3f processTextureCoord(String line) throws ParseException {
+    private Vector2f processTextureCoord(String line) throws ParseException {
         String substring = line.substring(OBJ_TEXTURE_COORDS.length() + 1);
-        int delimiters = countCharacterOccurence(substring, " ");
-        if (delimiters == 2) {
-            return Vector3f.parse(substring);
-        } else {
-            return new Vector3f(Vector2f.parse(substring), 1.f);
-        }
+        return Vector2f.parse(substring);
     }
 
     private Vector3f processGeometry(String line) throws ParseException {

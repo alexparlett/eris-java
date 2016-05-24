@@ -159,8 +159,6 @@ public class Model extends Resource implements GPUResource {
             reset();
             throw new IOException(ex);
         }
-
-        subModels.forEach(SubModel::compile);
     }
 
     @Override
