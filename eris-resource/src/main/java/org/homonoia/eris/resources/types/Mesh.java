@@ -1,8 +1,10 @@
 package org.homonoia.eris.resources.types;
 
 import org.homonoia.eris.core.Context;
-import org.homonoia.eris.math.Vector2f;
-import org.homonoia.eris.math.Vector3f;
+import org.homonoia.eris.core.parsers.Vector2fParser;
+import org.homonoia.eris.core.parsers.Vector3fParser;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 import org.homonoia.eris.resources.Resource;
 import org.homonoia.eris.resources.types.mesh.Face;
 import org.homonoia.eris.resources.types.mesh.Vertex;
@@ -174,16 +176,16 @@ public class Mesh extends Resource {
     }
 
     private Vector3f processNormal(String line) throws ParseException {
-        return Vector3f.parse(line.substring(OBJ_NORMAL.length() + 1));
+        return Vector3fParser.parse(line.substring(OBJ_NORMAL.length() + 1));
     }
 
     private Vector2f processTextureCoord(String line) throws ParseException {
         String substring = line.substring(OBJ_TEXTURE_COORDS.length() + 1);
-        return Vector2f.parse(substring);
+        return Vector2fParser.parse(substring);
     }
 
     private Vector3f processGeometry(String line) throws ParseException {
-        return Vector3f.parse(line.substring(OBJ_GEOMETRY_VERTEX.length() + 1));
+        return Vector3fParser.parse(line.substring(OBJ_GEOMETRY_VERTEX.length() + 1));
     }
 
     private void generateNormals() {

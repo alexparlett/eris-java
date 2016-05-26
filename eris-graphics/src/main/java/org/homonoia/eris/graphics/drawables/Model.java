@@ -1,19 +1,18 @@
 package org.homonoia.eris.graphics.drawables;
 
 import com.google.gson.*;
+import org.homonoia.eris.core.Constants;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.exceptions.ParseException;
+import org.homonoia.eris.core.parsers.*;
 import org.homonoia.eris.graphics.GPUResource;
 import org.homonoia.eris.graphics.drawables.model.SubModel;
 import org.homonoia.eris.graphics.drawables.sp.Uniform;
-import org.homonoia.eris.math.*;
-import org.homonoia.eris.renderer.RenderKey;
-import org.homonoia.eris.renderer.Renderer;
-import org.homonoia.eris.renderer.commands.Draw3dCommand;
 import org.homonoia.eris.resources.Resource;
 import org.homonoia.eris.resources.cache.ResourceCache;
 import org.homonoia.eris.resources.types.Json;
 import org.homonoia.eris.resources.types.Mesh;
+import org.joml.Vector3f;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,7 +40,7 @@ public class Model extends Resource implements GPUResource {
         JsonArray root = json.getRoot().map(JsonElement::getAsJsonArray)
                 .orElseThrow(() -> new IOException("no root found"));
 
-        ResourceCache resourceCache = getContext().getComponent(ResourceCache.class);
+        ResourceCache resourceCache = getContext().getBean(ResourceCache.class);
 
         try {
             root.forEach(jsonElement -> {
@@ -62,12 +61,12 @@ public class Model extends Resource implements GPUResource {
                         .map(JsonPrimitive::getAsString)
                         .map(string -> {
                             try {
-                                return Vector3f.parse(string);
+                                return Vector3fParser.parse(string);
                             } catch (java.text.ParseException e) {
                                 throw new ParseException(e);
                             }
                         })
-                        .orElse(Vector3f.ZERO);
+                        .orElse(Constants.VectorConstants.ZERO);
 
                 Mesh mesh = Optional.ofNullable(subModelJson.getAsJsonPrimitive("mesh"))
                         .map(JsonPrimitive::getAsString)
@@ -96,39 +95,33 @@ public class Model extends Resource implements GPUResource {
                                         if (type == "float") {
                                             return jsonPrimitive.getAsFloat();
                                         } else if (type.equals("vec2")) {
-                                            return Vector2f.parse(jsonPrimitive.getAsString());
+                                            return Vector2fParser.parse(jsonPrimitive.getAsString());
                                         } else if (type.equals("vec3")) {
-                                            return Vector3f.parse(jsonPrimitive.getAsString());
+                                            return Vector3fParser.parse(jsonPrimitive.getAsString());
                                         } else if (type.equals("vec4")) {
-                                            return Vector4f.parse(jsonPrimitive.getAsString());
+                                            return Vector4fParser.parse(jsonPrimitive.getAsString());
                                         } else if (type.equals("int")) {
                                             return jsonPrimitive.getAsInt();
                                         } else if (type.equals("ivec2")) {
-                                            return Vector2i.parse(jsonPrimitive.getAsString());
+                                            return Vector2iParser.parse(jsonPrimitive.getAsString());
                                         } else if (type.equals("ivec3")) {
-                                            return Vector3i.parse(jsonPrimitive.getAsString());
+                                            return Vector3iParser.parse(jsonPrimitive.getAsString());
                                         } else if (type.equals("ivec4")) {
-                                            return Vector4i.parse(jsonPrimitive.getAsString());
+                                            return Vector4iParser.parse(jsonPrimitive.getAsString());
                                         } else if (type.equals("bool")) {
                                             return jsonPrimitive.getAsBoolean();
-                                        } else if (type.equals("bvec2")) {
-                                            return Vector2b.parse(jsonPrimitive.getAsString());
-                                        } else if (type.equals("bvec3")) {
-                                            return Vector3b.parse(jsonPrimitive.getAsString());
-                                        } else if (type.equals("bvec4")) {
-                                            return Vector4b.parse(jsonPrimitive.getAsString());
                                         } else if (type.equals("mat3")) {
-                                            return Matrix3f.parse(jsonPrimitive.getAsString());
+                                            return Matrix3fParser.parse(jsonPrimitive.getAsString());
                                         } else if (type.equals("mat4")) {
-                                            return Matrix4f.parse(jsonPrimitive.getAsString());
+                                            return Matrix4fParser.parse(jsonPrimitive.getAsString());
                                         } else if (type.equals("double")) {
                                             return jsonPrimitive.getAsDouble();
                                         } else if (type.equals("dvec2")) {
-                                            return Vector2d.parse(jsonPrimitive.getAsString());
+                                            return Vector2dParser.parse(jsonPrimitive.getAsString());
                                         } else if (type.equals("dvec3")) {
-                                            return Vector3d.parse(jsonPrimitive.getAsString());
+                                            return Vector3dParser.parse(jsonPrimitive.getAsString());
                                         } else if (type.equals("dvec4")) {
-                                            return Vector4d.parse(jsonPrimitive.getAsString());
+                                            return Vector4dParser.parse(jsonPrimitive.getAsString());
                                         } else {
                                             throw new JsonIOException("invalid value arg, type is not supported");
                                         }
@@ -174,20 +167,7 @@ public class Model extends Resource implements GPUResource {
 
     @Override
     public void use() {
-        Renderer renderer = getContext().getComponent(Renderer.class);
-        subModels.forEach(subModel -> renderer.getState()
-                .add(Draw3dCommand.builder()
-                    .model(subModel)
-                        .renderKey(RenderKey.builder()
-                            .command(2)
-                            .depth(1)
-                            .transparency(0)
-                            .extra(0)
-                            .material(subModel.getMaterial().getHandle())
-                            .target(getHandle())
-                            .targetLayer(1)
-                            .build())
-                    .build()));
+        subModels.forEach(SubModel::draw);
     }
 
     @Override

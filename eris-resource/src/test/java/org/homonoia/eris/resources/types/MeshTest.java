@@ -29,15 +29,15 @@ public class MeshTest {
 
     @Test
     public void testLoad_Successful() throws IOException {
-        Resource resource = new PathMatchingResourcePatternResolver().getResource("sphere.obj");
+        Resource resource = new PathMatchingResourcePatternResolver().getResource("cube.obj");
 
         Mesh mesh = new Mesh(context);
         mesh.load(resource.getInputStream());
 
-        assertThat(mesh.getFaces().size(), is(40));
-        assertThat(mesh.getGeometry().size(), is(26));
-        assertThat(mesh.getTextureCoords().size(), is(26));
-        assertThat(mesh.getNormals().size(), is(26));
+        assertThat(mesh.getFaces().size(), is(12));
+        assertThat(mesh.getGeometry().size(), is(8));
+        assertThat(mesh.getTextureCoords().size(), is(4));
+        assertThat(mesh.getNormals().size(), is(6));
     }
 
 }

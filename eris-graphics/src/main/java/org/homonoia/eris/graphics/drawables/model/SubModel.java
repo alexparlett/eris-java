@@ -1,14 +1,16 @@
 package org.homonoia.eris.graphics.drawables.model;
 
+import org.homonoia.eris.core.Constants;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.graphics.Graphics;
 import org.homonoia.eris.graphics.drawables.Material;
 import org.homonoia.eris.graphics.drawables.sp.Uniform;
-import org.homonoia.eris.math.Vector3f;
+import org.homonoia.eris.renderer.Renderer;
 import org.homonoia.eris.resources.types.Mesh;
 import org.homonoia.eris.resources.types.mesh.Face;
 import org.homonoia.eris.resources.types.mesh.Vertex;
+import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
@@ -36,7 +38,7 @@ public class SubModel extends Contextual {
     private FloatBuffer vertices;
     private Mesh mesh;
     private float scale = 1.f;
-    private Vector3f origin = Vector3f.ZERO;
+    private Vector3f origin = Constants.VectorConstants.ZERO;
     private Map<String, Uniform> uniforms;
     private int vao = 0;
     private int vbo = 0;
@@ -132,7 +134,7 @@ public class SubModel extends Contextual {
 
     public void compile() {
         long win = GLFW.glfwGetCurrentContext();
-        Graphics graphics = getContext().getComponent(Graphics.class);
+        Graphics graphics = getContext().getBean(Graphics.class);
         glfwMakeContextCurrent(win != MemoryUtil.NULL ? win : graphics.getBackgroundWindow());
 
         if (win != MemoryUtil.NULL && win == graphics.getRenderWindow()) {
@@ -182,10 +184,16 @@ public class SubModel extends Contextual {
     }
 
     public void draw() {
+        Renderer renderer = getContext().getBean(Renderer.class);
+
         if (!generationState.equals(GenerationState.RENDERER)) {
             compileInternal();
             generationState = GenerationState.RENDERER;
         }
+
+        uniforms.values().stream()
+                .filter(uniform -> Objects.nonNull(uniform.getData()))
+                .forEach(uniform -> renderer.bindUniform(uniform.getLocation(), uniform.getType(), uniform.getData()));
 
         // Bind to the VAO that has all the information about the vertices
         GL30.glBindVertexArray(vao);
@@ -234,7 +242,7 @@ public class SubModel extends Contextual {
         private Material material;
         private Mesh mesh;
         private float scale = 1.f;
-        private Vector3f origin = Vector3f.ZERO;
+        private Vector3f origin = Constants.VectorConstants.ZERO;
         private Context context;
         private Map<String, Uniform> uniforms;
 

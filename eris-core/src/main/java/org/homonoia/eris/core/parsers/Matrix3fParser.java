@@ -1,32 +1,12 @@
-package org.homonoia.eris.math;
+package org.homonoia.eris.core.parsers;
 
-import java.nio.FloatBuffer;
-import java.text.ParseException;
+import org.homonoia.eris.core.exceptions.ParseException;
+import org.joml.Matrix3f;
 
 /**
  * Created by alexparlett on 02/05/2016.
  */
-public class Matrix3f extends org.joml.Matrix3f {
-
-    public Matrix3f() {
-    }
-
-    public Matrix3f(final Matrix3f mat) {
-        super(mat);
-    }
-
-    public Matrix3f(final Matrix4f mat) {
-        super(mat);
-    }
-
-    public Matrix3f(final float m00, final float m01, final float m02, final float m10, final float m11, final float m12, final float m20, final float m21, final float m22) {
-        super(m00, m01, m02, m10, m11, m12, m20, m21, m22);
-    }
-
-    public Matrix3f(final FloatBuffer buffer) {
-        super(buffer);
-    }
-
+public class Matrix3fParser {
     public static Matrix3f parse(final String asString) throws ParseException {
         String[] tokens = asString.split(" \n\r");
         if (tokens.length != 9) {

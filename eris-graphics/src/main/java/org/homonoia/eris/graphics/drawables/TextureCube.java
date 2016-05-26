@@ -42,7 +42,7 @@ public class TextureCube extends Texture {
 
     @Override
     public void load(final InputStream inputStream) throws IOException {
-        ResourceCache resourceCache = getContext().getComponent(ResourceCache.class);
+        ResourceCache resourceCache = getContext().getBean(ResourceCache.class);
 
         Json json = new Json(getContext());
         json.load(inputStream);
@@ -107,7 +107,7 @@ public class TextureCube extends Texture {
 
     private void compile(final Map<Integer, Image> faces) throws IOException {
         long win = GLFW.glfwGetCurrentContext();
-        GLFW.glfwMakeContextCurrent(win != MemoryUtil.NULL ? win : getContext().getComponent(Graphics.class).getBackgroundWindow());
+        GLFW.glfwMakeContextCurrent(win != MemoryUtil.NULL ? win : getContext().getBean(Graphics.class).getBackgroundWindow());
 
         handle = GL11.glGenTextures();
         GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, handle);

@@ -21,7 +21,7 @@ public class StreamResource extends Resource {
 
     public StreamResource(final Context context) {
         super(context);
-        fileSystem = context.getComponent(FileSystem.class);
+        fileSystem = context.getBean(FileSystem.class);
     }
 
     @Override

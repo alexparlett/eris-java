@@ -87,7 +87,7 @@ public class ShaderProgram extends Resource implements GPUResource {
     @Override
     public void load(final InputStream inputStream) throws IOException {
 
-        ResourceCache resourceCache = getContext().getComponent(ResourceCache.class);
+        ResourceCache resourceCache = getContext().getBean(ResourceCache.class);
 
         Json json = new Json(getContext());
         json.load(inputStream);
@@ -133,7 +133,7 @@ public class ShaderProgram extends Resource implements GPUResource {
 
     @Override
     public void use() {
-        Renderer renderer = getContext().getComponent(Renderer.class);
+        Renderer renderer = getContext().getBean(Renderer.class);
 
         GL20.glUseProgram(handle);
 
@@ -178,7 +178,7 @@ public class ShaderProgram extends Resource implements GPUResource {
         Objects.requireNonNull(vertBuffer);
 
         long win = GLFW.glfwGetCurrentContext();
-        Graphics graphics = getContext().getComponent(Graphics.class);
+        Graphics graphics = getContext().getBean(Graphics.class);
         glfwMakeContextCurrent(win != MemoryUtil.NULL ? win : graphics.getBackgroundWindow());
 
         int vertex = GL20.glCreateShader(GL20.GL_VERTEX_SHADER);

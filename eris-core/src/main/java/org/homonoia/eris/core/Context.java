@@ -78,7 +78,7 @@ public class Context implements ApplicationContextAware {
         return applicationContext;
     }
 
-    public <T extends Contextual> T getComponent(Class<T> clazz) {
+    public <T extends Contextual> T getBean(Class<T> clazz) {
         return applicationContext.getBean(clazz);
     }
 }

@@ -11,8 +11,6 @@ import org.homonoia.eris.renderer.Renderer;
 import java.util.HashMap;
 import java.util.Objects;
 
-import static com.oracle.tools.packager.RelativeFileSet.Type.data;
-
 /**
  * Copyright (c) 2015-2016 the Eris project.
  *
@@ -40,7 +38,7 @@ public class Draw3dCommand extends RenderCommand {
                 return Uniform.builder()
                         .location(shaderUniform.getLocation())
                         .type(shaderUniform.getType())
-                        .data(data)
+                        .data(renderer.getCurrentView())
                         .build();
             }).setData(renderer.getCurrentView());
 
@@ -49,7 +47,7 @@ public class Draw3dCommand extends RenderCommand {
                 return Uniform.builder()
                         .location(shaderUniform.getLocation())
                         .type(shaderUniform.getType())
-                        .data(data)
+                        .data(renderer.getCurrentPerspective())
                         .build();
             }).setData(renderer.getCurrentPerspective());
 

@@ -46,7 +46,7 @@ public class Texture2D extends Texture {
 
         Path file = Paths.get(root.get("file").getAsString());
 
-        ResourceCache resourceCache = getContext().getComponent(ResourceCache.class);
+        ResourceCache resourceCache = getContext().getBean(ResourceCache.class);
         Image image = resourceCache.getTemporary(Image.class, file)
                 .orElseThrow(() -> new IOException("Failed to load Texture2D. Metadata Json doesn't contain valid file: " + file));
 
@@ -54,7 +54,7 @@ public class Texture2D extends Texture {
             int format = getFormat(image);
 
             long win = GLFW.glfwGetCurrentContext();
-            Graphics graphics = getContext().getComponent(Graphics.class);
+            Graphics graphics = getContext().getBean(Graphics.class);
             GLFW.glfwMakeContextCurrent(win != MemoryUtil.NULL ? win : graphics.getBackgroundWindow());
 
             handle = glGenTextures();

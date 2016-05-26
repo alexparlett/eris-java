@@ -59,8 +59,9 @@ public class ResourceLoaderTest {
         fileSystem.addPath(path.getParent());
 
         Resource resource = new Json(context);
+        resource.setPath(path);
 
-        resourceLoader.load(resource, path, true);
+        resourceLoader.load(resource, true);
 
         assertThat(resource.getState(), is(Resource.AsyncState.SUCCESS));
     }
@@ -73,8 +74,9 @@ public class ResourceLoaderTest {
 
         Path path = Paths.get(ClassLoader.getSystemClassLoader().getResource("bad.json").toURI());
         Resource resource = new Json(context);
+        resource.setPath(path);
 
-        resourceLoader.load(resource, path, true);
+        resourceLoader.load(resource, true);
 
         assertThat(resource.getState(), is(Resource.AsyncState.FAILED));
     }
@@ -86,7 +88,7 @@ public class ResourceLoaderTest {
 
         Resource resource = new Json(context);
 
-        resourceLoader.load(resource, null, true);
+        resourceLoader.load(resource, true);
     }
 
     @Test(expected = NullPointerException.class)
@@ -94,9 +96,7 @@ public class ResourceLoaderTest {
 
         when(applicationContext.getBean(Gson.class)).thenReturn(new Gson());
 
-        Path path = Paths.get(ClassLoader.getSystemClassLoader().getResource("test.json").toURI());
-
-        resourceLoader.load(null, path, true);
+        resourceLoader.load(null, true);
     }
 
     @Test(timeout = 5000L)
@@ -106,8 +106,9 @@ public class ResourceLoaderTest {
 
         Path path = Paths.get(ClassLoader.getSystemClassLoader().getResource("test.json").toURI());
         Resource resource = new Json(context);
+        resource.setPath(path);
 
-        resourceLoader.load(resource, path, false);
+        resourceLoader.load(resource, false);
 
         while (resource.getState().equals(Resource.AsyncState.QUEUED) || resource.getState().equals(Resource.AsyncState.LOADING))
             ;
@@ -122,8 +123,9 @@ public class ResourceLoaderTest {
 
         Path path = Paths.get(ClassLoader.getSystemClassLoader().getResource("bad.json").toURI());
         Resource resource = new Json(context);
+        resource.setPath(path);
 
-        resourceLoader.load(resource, path, false);
+        resourceLoader.load(resource, false);
 
         while (resource.getState().equals(Resource.AsyncState.QUEUED) || resource.getState().equals(Resource.AsyncState.LOADING))
             ;

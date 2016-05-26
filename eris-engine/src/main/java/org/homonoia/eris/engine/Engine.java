@@ -8,6 +8,7 @@ import org.homonoia.eris.core.components.Clock;
 import org.homonoia.eris.core.components.FileSystem;
 import org.homonoia.eris.core.exceptions.InitializationException;
 import org.homonoia.eris.events.core.ExitRequested;
+import org.homonoia.eris.events.frame.Update;
 import org.homonoia.eris.events.graphics.Render;
 import org.homonoia.eris.graphics.Graphics;
 import org.homonoia.eris.input.Input;
@@ -128,6 +129,9 @@ public class Engine extends Contextual {
         double lastTime = clock.getElapsedTime();
         double delta = 0.0;
 
+        Update.Builder updateBuilder = Update.builder();
+        Render.Builder renderBuilder = Render.builder();
+
         while(!shouldExit.get()){
             double now = clock.getElapsedTime();
             delta += (now - lastTime);
@@ -136,7 +140,7 @@ public class Engine extends Contextual {
                 clock.beginFrame(delta);
 
                 {
-                    //TODO Update
+                    publish(updateBuilder.timeStep(delta));
                 }
 
                 {
@@ -144,7 +148,11 @@ public class Engine extends Contextual {
                 }
 
                 {
-                    publish(Render.builder());
+                    publish(renderBuilder);
+                }
+
+                {
+                    //TODO Post Render
                     renderer.getState().swap();
                 }
 

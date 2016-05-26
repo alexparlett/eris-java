@@ -1,7 +1,7 @@
 package org.homonoia.eris.resources.types.mesh;
 
-import org.homonoia.eris.math.Vector2f;
-import org.homonoia.eris.math.Vector3f;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 
 /**
  * Created by alexparlett on 07/05/2016.
