@@ -1,8 +1,6 @@
 package org.homonoia.eris.graphics.drawables.model;
 
 import org.homonoia.eris.core.Constants;
-import org.homonoia.eris.core.Context;
-import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.graphics.Graphics;
 import org.homonoia.eris.graphics.drawables.Material;
 import org.homonoia.eris.graphics.drawables.sp.Uniform;
@@ -30,7 +28,7 @@ import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
 /**
  * Created by alexparlett on 07/05/2016.
  */
-public class SubModel extends Contextual {
+public class SubModel {
 
     private GenerationState generationState = GenerationState.LOADER;
     private Material material;
@@ -45,14 +43,11 @@ public class SubModel extends Contextual {
     private int ebo = 0;
 
     private SubModel(Builder builder) {
-        super(builder.context);
         this.material = builder.material;
         this.mesh = builder.mesh;
         this.scale = builder.scale;
         this.origin = builder.origin;
         this.uniforms = builder.uniforms;
-
-        compile();
     }
 
     public Material getMaterial() {
@@ -132,9 +127,8 @@ public class SubModel extends Contextual {
         uniforms.remove(uniform);
     }
 
-    public void compile() {
+    public void compile(Graphics graphics) {
         long win = GLFW.glfwGetCurrentContext();
-        Graphics graphics = getContext().getBean(Graphics.class);
         glfwMakeContextCurrent(win != MemoryUtil.NULL ? win : graphics.getBackgroundWindow());
 
         if (win != MemoryUtil.NULL && win == graphics.getRenderWindow()) {
@@ -183,9 +177,7 @@ public class SubModel extends Contextual {
         glfwMakeContextCurrent(win);
     }
 
-    public void draw() {
-        Renderer renderer = getContext().getBean(Renderer.class);
-
+    public void draw(Renderer renderer) {
         if (!generationState.equals(GenerationState.RENDERER)) {
             compileInternal();
             generationState = GenerationState.RENDERER;
@@ -243,7 +235,6 @@ public class SubModel extends Contextual {
         private Mesh mesh;
         private float scale = 1.f;
         private Vector3f origin = Constants.VectorConstants.ZERO;
-        private Context context;
         private Map<String, Uniform> uniforms;
 
         private Builder() {
@@ -251,11 +242,6 @@ public class SubModel extends Contextual {
 
         public Builder material(Material material) {
             this.material = material;
-            return this;
-        }
-
-        public Builder context(Context context) {
-            this.context = context;
             return this;
         }
 
@@ -280,7 +266,6 @@ public class SubModel extends Contextual {
         }
 
         public SubModel build() {
-            Objects.requireNonNull(context);
             Objects.requireNonNull(mesh);
             Objects.requireNonNull(material);
             return new SubModel(this);

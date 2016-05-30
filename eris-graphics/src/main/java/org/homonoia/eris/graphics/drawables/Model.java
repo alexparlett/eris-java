@@ -6,8 +6,10 @@ import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.exceptions.ParseException;
 import org.homonoia.eris.core.parsers.*;
 import org.homonoia.eris.graphics.GPUResource;
+import org.homonoia.eris.graphics.Graphics;
 import org.homonoia.eris.graphics.drawables.model.SubModel;
 import org.homonoia.eris.graphics.drawables.sp.Uniform;
+import org.homonoia.eris.renderer.Renderer;
 import org.homonoia.eris.resources.Resource;
 import org.homonoia.eris.resources.cache.ResourceCache;
 import org.homonoia.eris.resources.types.Json;
@@ -145,13 +147,15 @@ public class Model extends Resource implements GPUResource {
                         .scale(scale)
                         .origin(origin)
                         .uniforms(uniforms)
-                        .context(getContext())
                         .build());
             });
         } catch (ParseException | IllegalStateException ex) {
             reset();
             throw new IOException(ex);
         }
+
+        Graphics graphics = getContext().getBean(Graphics.class);
+        subModels.forEach(subModel -> subModel.compile(graphics));
     }
 
     @Override
@@ -167,7 +171,8 @@ public class Model extends Resource implements GPUResource {
 
     @Override
     public void use() {
-        subModels.forEach(SubModel::draw);
+        Renderer renderer = getContext().getBean(Renderer.class);
+        subModels.forEach(subModel -> subModel.draw(renderer));
     }
 
     @Override
