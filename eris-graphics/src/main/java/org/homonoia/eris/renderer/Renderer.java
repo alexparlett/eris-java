@@ -7,11 +7,10 @@ import org.homonoia.eris.core.exceptions.InitializationException;
 import org.homonoia.eris.events.graphics.Render;
 import org.homonoia.eris.events.graphics.ScreenMode;
 import org.homonoia.eris.graphics.Graphics;
-import org.homonoia.eris.math.*;
 import org.homonoia.eris.renderer.commands.ClearColorCommand;
 import org.homonoia.eris.renderer.commands.ClearCommand;
-import org.homonoia.eris.renderer.commands.EnableCommand;
 import org.homonoia.eris.renderer.impl.SwappingRenderState;
+import org.joml.*;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryUtil;
@@ -29,7 +28,6 @@ import static org.lwjgl.opengl.GL13.GL_TEXTURE_CUBE_MAP;
 import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL32.GL_TEXTURE_CUBE_MAP_SEAMLESS;
 import static org.lwjgl.opengl.GL40.*;
-
 /**
  * Copyright (c) 2015-2016 the Eris project.
  *
@@ -39,32 +37,6 @@ import static org.lwjgl.opengl.GL40.*;
 public class Renderer extends Contextual implements Runnable {
 
     private static final Logger LOG = LoggerFactory.getLogger(Render.class);
-
-    private static final EnableCommand ENABLE_CULL_COMMAND = EnableCommand.builder()
-            .renderKey(RenderKey.builder()
-                    .command(1)
-                    .depth(0)
-                    .extra(0)
-                    .material(0)
-                    .target(0)
-                    .targetLayer(1)
-                    .transparency(0)
-                    .build())
-            .capability(GL_CULL_FACE)
-            .build();
-
-    private static final EnableCommand ENABLE_DEPTH_COMMAND = EnableCommand.builder()
-            .renderKey(RenderKey.builder()
-                    .command(1)
-                    .depth(0)
-                    .extra(0)
-                    .material(0)
-                    .target(0)
-                    .targetLayer(1)
-                    .transparency(0)
-                    .build())
-            .capability(GL_DEPTH_TEST)
-            .build();
 
     private static final ClearCommand CLEAR_COMMAND = ClearCommand.builder()
             .renderKey(RenderKey.builder()
@@ -216,32 +188,23 @@ public class Renderer extends Contextual implements Runnable {
                 glUniform1i(location, iData);
                 break;
             case GL_INT_VEC2:
+            case GL_BOOL_VEC2:
                 Vector2i v2iData = (Vector2i) data;
                 glUniform2i(location, v2iData.x, v2iData.y);
                 break;
             case GL_INT_VEC3:
+            case GL_BOOL_VEC3:
                 Vector3i v3iData = (Vector3i) data;
                 glUniform3i(location, v3iData.x, v3iData.y, v3iData.z);
                 break;
             case GL_INT_VEC4:
+            case GL_BOOL_VEC4:
                 Vector4i v4iData = (Vector4i) data;
                 glUniform4i(location, v4iData.x, v4iData.y, v4iData.z, v4iData.w);
                 break;
             case GL_BOOL:
                 Boolean bData = (Boolean) data;
                 glUniform1i(location, bData ? 1 : 0);
-                break;
-            case GL_BOOL_VEC2:
-                Vector2b v2bData = (Vector2b) data;
-                glUniform2i(location, v2bData.x ? 1 : 0, v2bData.y ? 1 : 0);
-                break;
-            case GL_BOOL_VEC3:
-                Vector3b v3bData = (Vector3b) data;
-                glUniform3i(location, v3bData.x ? 1 : 0, v3bData.y ? 1 : 0, v3bData.z ? 1 : 0);
-                break;
-            case GL_BOOL_VEC4:
-                Vector4b v4bData = (Vector4b) data;
-                glUniform4i(location, v4bData.x ? 1 : 0, v4bData.y ? 1 : 0, v4bData.z ? 1 : 0, v4bData.w ? 1 : 0);
                 break;
             case GL_FLOAT_MAT3:
                 Matrix3f m3f = (Matrix3f) data;
@@ -275,7 +238,6 @@ public class Renderer extends Contextual implements Runnable {
         }
 
         glEnable(GL_MULTISAMPLE);
-        glEnable(GL_TEXTURE_2D);
         glEnable(GL_TEXTURE_CUBE_MAP);
         glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
@@ -285,8 +247,6 @@ public class Renderer extends Contextual implements Runnable {
     private void handleRenderEvent(final Render evt) {
         state.add(CLEAR_COLOR_COMMAND);
         state.add(CLEAR_COMMAND);
-        state.add(ENABLE_DEPTH_COMMAND);
-        state.add(ENABLE_CULL_COMMAND);
     }
 
     private void handleScreenMode(final ScreenMode evt) {
