@@ -12,6 +12,10 @@ import org.homonoia.eris.core.components.FileSystem;
 import org.homonoia.eris.input.Input;
 import org.homonoia.eris.renderer.Renderer;
 import org.homonoia.eris.resources.cache.ResourceCache;
+import org.homonoia.eris.ecs.EntityComponentSystem;
+import org.homonoia.eris.ecs.EntityManager;
+import org.homonoia.eris.ecs.EntitySystemManager;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -77,4 +81,13 @@ public class ComponentConfiguration {
     public Input input(Context context, Graphics graphics) {
         return new Input(context, graphics);
     }
+
+    @ContextualBean
+    public EntitySystemManager entitySystemManager(Context context) { return new EntitySystemManager(context); }
+
+    @Bean
+    public EntityManager entityManager(Context context) { return new EntityManager(context); }
+
+    @ContextualBean
+    public EntityComponentSystem entityComponentSystem(Context context, EntitySystemManager entitySystemManager, EntityManager entityManager) { return new EntityComponentSystem(context, entitySystemManager, entityManager); }
 }

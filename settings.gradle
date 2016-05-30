@@ -5,7 +5,6 @@ include 'eris-event'
 include 'eris-resource'
 include 'eris-graphics'
 include 'eris-engine'
-include 'eris-io'
 include 'eris-input'
-include 'eris-math'
+include 'eris-scene'
 

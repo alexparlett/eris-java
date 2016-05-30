@@ -7,6 +7,7 @@ import org.homonoia.eris.core.ExitCode;
 import org.homonoia.eris.core.components.Clock;
 import org.homonoia.eris.core.components.FileSystem;
 import org.homonoia.eris.core.exceptions.InitializationException;
+import org.homonoia.eris.core.utils.Timer;
 import org.homonoia.eris.events.core.ExitRequested;
 import org.homonoia.eris.events.frame.Update;
 import org.homonoia.eris.events.graphics.Render;
@@ -126,16 +127,14 @@ public class Engine extends Contextual {
     }
 
     public void run() {
-        double lastTime = clock.getElapsedTime();
         double delta = 0.0;
 
         Update.Builder updateBuilder = Update.builder();
         Render.Builder renderBuilder = Render.builder();
+        Timer timer = new Timer();
 
         while(!shouldExit.get()){
-            double now = clock.getElapsedTime();
-            delta += (now - lastTime);
-            lastTime = now;
+            delta += timer.getElapsedTime(true);
             if (delta >= (1000.0 / 60.0)) {
                 clock.beginFrame(delta);
 

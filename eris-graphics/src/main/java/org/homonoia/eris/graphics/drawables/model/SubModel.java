@@ -226,6 +226,43 @@ public class SubModel {
         GL30.glBindVertexArray(0);
     }
 
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        SubModel subModel = (SubModel) o;
+
+        if (Float.compare(subModel.scale, scale) != 0) return false;
+        if (vao != subModel.vao) return false;
+        if (vbo != subModel.vbo) return false;
+        if (ebo != subModel.ebo) return false;
+        if (generationState != subModel.generationState) return false;
+        if (material != null ? !material.equals(subModel.material) : subModel.material != null) return false;
+        if (indices != null ? !indices.equals(subModel.indices) : subModel.indices != null) return false;
+        if (vertices != null ? !vertices.equals(subModel.vertices) : subModel.vertices != null) return false;
+        if (mesh != null ? !mesh.equals(subModel.mesh) : subModel.mesh != null) return false;
+        if (origin != null ? !origin.equals(subModel.origin) : subModel.origin != null) return false;
+        return uniforms != null ? uniforms.equals(subModel.uniforms) : subModel.uniforms == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = generationState != null ? generationState.hashCode() : 0;
+        result = 31 * result + (material != null ? material.hashCode() : 0);
+        result = 31 * result + (indices != null ? indices.hashCode() : 0);
+        result = 31 * result + (vertices != null ? vertices.hashCode() : 0);
+        result = 31 * result + (mesh != null ? mesh.hashCode() : 0);
+        result = 31 * result + (scale != +0.0f ? Float.floatToIntBits(scale) : 0);
+        result = 31 * result + (origin != null ? origin.hashCode() : 0);
+        result = 31 * result + (uniforms != null ? uniforms.hashCode() : 0);
+        result = 31 * result + vao;
+        result = 31 * result + vbo;
+        result = 31 * result + ebo;
+        return result;
+    }
+
     public static Builder builder() {
         return new Builder();
     }

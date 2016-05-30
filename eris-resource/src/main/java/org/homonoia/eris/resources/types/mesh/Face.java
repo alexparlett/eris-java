@@ -23,4 +23,20 @@ public class Face {
         Objects.requireNonNull(vertex);
         vertices.add(vertex);
     }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Face face = (Face) o;
+
+        return vertices != null ? vertices.equals(face.vertices) : face.vertices == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return vertices != null ? vertices.hashCode() : 0;
+    }
 }

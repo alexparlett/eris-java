@@ -64,10 +64,6 @@ public class Mesh extends Resource {
         } catch (ParseException | IndexOutOfBoundsException ex) {
             throw new IOException("Failed to parse obj", ex);
         }
-
-        if (normals.isEmpty()) {
-            generateNormals();
-        }
     }
 
     @Override
@@ -117,8 +113,8 @@ public class Mesh extends Resource {
 
     private Face processFace(String line) throws ParseException {
         String[] groups = OBJ_FACE_POINT_PATTERN.split(line.substring(OBJ_FACE.length() + 1));
-        if (groups.length < 3) {
-            throw new ParseException("Invalid Face, not enough indicie groups", 0);
+        if (groups.length != 3) {
+            throw new ParseException("Invalid Face, obj must be in triangle format", 0);
         }
 
         Face face = new Face();
@@ -133,6 +129,7 @@ public class Mesh extends Resource {
 
                 Vertex vertex = Vertex.builder()
                         .position(position)
+                        .texCoords(new Vector2f(0,0))
                         .build();
 
                 face.addVertex(vertex);
@@ -168,6 +165,10 @@ public class Mesh extends Resource {
             }
         }
 
+        if (normals.isEmpty()) {
+            generateNormals(face);
+        }
+
         return face;
     }
 
@@ -188,7 +189,31 @@ public class Mesh extends Resource {
         return Vector3fParser.parse(line.substring(OBJ_GEOMETRY_VERTEX.length() + 1));
     }
 
-    private void generateNormals() {
+    private void generateNormals(Face face) {
 
+    }
+
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Mesh mesh = (Mesh) o;
+
+        if (geometry != null ? !geometry.equals(mesh.geometry) : mesh.geometry != null) return false;
+        if (textureCoords != null ? !textureCoords.equals(mesh.textureCoords) : mesh.textureCoords != null)
+            return false;
+        if (normals != null ? !normals.equals(mesh.normals) : mesh.normals != null) return false;
+        return faces != null ? faces.equals(mesh.faces) : mesh.faces == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = geometry != null ? geometry.hashCode() : 0;
+        result = 31 * result + (textureCoords != null ? textureCoords.hashCode() : 0);
+        result = 31 * result + (normals != null ? normals.hashCode() : 0);
+        result = 31 * result + (faces != null ? faces.hashCode() : 0);
+        return result;
     }
 }

@@ -184,6 +184,25 @@ public class Model extends Resource implements GPUResource {
         return subModels;
     }
 
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Model model = (Model) o;
+
+        if (handle != model.handle) return false;
+        return subModels != null ? subModels.equals(model.subModels) : model.subModels == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = handle;
+        result = 31 * result + (subModels != null ? subModels.hashCode() : 0);
+        return result;
+    }
+
     private void buildUniform(final String uniform, final Object data, final Map<String, Uniform> uniforms, ShaderProgram shaderProgram)
     {
         Uniform uniformOptional = uniforms.get(uniform);
