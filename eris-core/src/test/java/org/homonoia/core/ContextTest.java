@@ -29,7 +29,7 @@ public class ContextTest {
         Context publisher = new Context();
 
         List<Event> events = new ArrayList<>();
-        publisher.subscribe(endFrame -> events.add(endFrame), null, null);
+        publisher.subscribe(endFrame -> events.add(endFrame), Context.eventClassPredicate(null).and(Context.eventSourcePredicate(null)));
         publisher.publish(EndFrame.builder().build());
 
         Assert.assertThat(events.size(), CoreMatchers.is(1));
@@ -41,7 +41,7 @@ public class ContextTest {
         Context publisher = new Context();
 
         List<Event> events = new ArrayList<>();
-        publisher.subscribe(endFrame -> events.add(endFrame), EndFrame.class, null);
+        publisher.subscribe(endFrame -> events.add(endFrame), Context.eventClassPredicate(EndFrame.class).and(Context.eventSourcePredicate(null)));
         publisher.publish(EndFrame.builder().build());
 
         Assert.assertThat(events.size(), CoreMatchers.is(1));
@@ -53,7 +53,7 @@ public class ContextTest {
         Context publisher = new Context();
 
         List<Event> events = new ArrayList<>();
-        publisher.subscribe(endFrame -> events.add(endFrame), EndFrame.class, new Clock(publisher));
+        publisher.subscribe(endFrame -> events.add(endFrame), Context.eventClassPredicate(EndFrame.class).and(Context.eventSourcePredicate(new Clock(publisher))));
         publisher.publish(EndFrame.builder().source(new Object()).build());
 
         Assert.assertThat(events.size(), CoreMatchers.is(0));
@@ -66,7 +66,7 @@ public class ContextTest {
         Clock eventSrc = new Clock(publisher);
 
         List<Event> events = new ArrayList<>();
-        publisher.subscribe(endFrame -> events.add(endFrame), EndFrame.class, eventSrc);
+        publisher.subscribe(endFrame -> events.add(endFrame), Context.eventClassPredicate(EndFrame.class).and(Context.eventSourcePredicate(eventSrc)));
         publisher.publish(EndFrame.builder().source(eventSrc).build());
 
         Assert.assertThat(events.size(), CoreMatchers.is(1));
@@ -78,8 +78,8 @@ public class ContextTest {
         Context publisher = new Context();
 
         List<Event> events = new ArrayList<>();
-        publisher.subscribe(endFrame -> events.add(endFrame), null, null);
-        publisher.subscribe(endFrame -> events.add(endFrame), null, null);
+        publisher.subscribe(endFrame -> events.add(endFrame), Context.eventClassPredicate(null).and(Context.eventSourcePredicate(null)));
+        publisher.subscribe(endFrame -> events.add(endFrame), Context.eventClassPredicate(null).and(Context.eventSourcePredicate(null)));
         publisher.publish(EndFrame.builder().build());
 
         Assert.assertThat(events.size(), CoreMatchers.is(2));

@@ -8,6 +8,10 @@ import rx.functions.Action1;
 import javax.annotation.PreDestroy;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Predicate;
+
+import static org.homonoia.eris.core.Context.eventClassPredicate;
+import static org.homonoia.eris.core.Context.eventSourcePredicate;
 
 /**
  * Copyright (c) 2015-2016 the Eris project.
@@ -67,7 +71,29 @@ public abstract class Contextual {
      * @param eventSrc    the event src
      */
     public synchronized <T extends Event> void subscribe(final Action1<T> eventAction, final Class<T> eventClass, final Object eventSrc) {
-        Subscription subscription = context.subscribe(eventAction, eventClass, eventSrc);
+        Predicate<T> predicate = (Predicate<T>) eventSourcePredicate(eventSrc).and(eventClassPredicate(eventClass));
+        Subscription subscription = context.subscribe(eventAction, predicate);
+        EventSubscription eventSubscription = EventSubscription.builder()
+                .eventClass(eventClass)
+                .eventSource(eventSrc)
+                .build();
+        subscriptions.put(eventSubscription, subscription);
+    }
+
+    /**
+     * Subscribe to an event filtering by class and source.
+     *
+     * @param <T>         the type parameter
+     * @param eventAction the event action
+     * @param eventClass  the event class
+     * @param eventSrc    the event src
+     * @param filter      the filter
+     */
+    public synchronized <T extends Event> void subscribe(final Action1<T> eventAction, final Class<T> eventClass, final Object eventSrc, final Predicate<T> filter) {
+        Predicate<T> predicate = filter.and(eventSourcePredicate(eventSrc))
+                .and(eventClassPredicate(eventClass));
+
+        Subscription subscription = context.subscribe(eventAction, predicate);
         EventSubscription eventSubscription = EventSubscription.builder()
                 .eventClass(eventClass)
                 .eventSource(eventSrc)

@@ -13,11 +13,24 @@ import rx.subjects.Subject;
 import javax.annotation.PreDestroy;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Predicate;
 
 /**
  * The type Contextual.
  */
 public class Context implements ApplicationContextAware {
+
+    public final static <T extends Event> Predicate<T> eventClassPredicate(Class eventClass) {
+        return event -> Optional.ofNullable(eventClass)
+                .map(ec -> ec.equals(event.getClass()))
+                .orElse(true);
+    }
+
+    public final static <T extends Event> Predicate<T> eventSourcePredicate(Object eventSource) {
+        return event -> Optional.ofNullable(eventSource)
+                .map(es -> es.equals(event.getSource()))
+                .orElse(true);
+    }
 
     private final AtomicReference<ExitCode> exitCode = new AtomicReference<>(ExitCode.SUCCESS);
     private final Subject<Event, Event> subject = new SerializedSubject<>(PublishSubject.create());
@@ -32,23 +45,16 @@ public class Context implements ApplicationContextAware {
     }
 
     /**
-     * Register for an event filtering by class and source.
+     * Register for an event filtering by class, source and a custom predicate.
      *
      * @param <T>         the type parameter
-     * @param eventClass  the event class
      * @param eventAction the event action
-     * @param eventSrc    the event source
+     * @param filter      the event filter
      * @return the subscription
      */
-    public <T extends Event> Subscription subscribe(final Action1<T> eventAction, final Class<T> eventClass, final Object eventSrc) {
-        return subject
-                .filter(event -> Optional.ofNullable(eventClass)
-                        .map(ec -> ec.equals(event.getClass()))
-                        .orElse(true))
-                .filter(event -> Optional.ofNullable(eventSrc)
-                        .map(es -> es.equals(event.getSource()))
-                        .orElse(true))
-                .map(obj -> (T) obj)
+    public <T extends Event> Subscription subscribe(final Action1<T> eventAction, final Predicate<T> filter) {
+        return subject.map(obj -> (T) obj)
+                .filter(filter::test)
                 .subscribe(eventAction);
     }
 
