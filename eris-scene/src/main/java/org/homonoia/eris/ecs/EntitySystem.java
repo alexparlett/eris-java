@@ -9,7 +9,9 @@ import org.homonoia.eris.events.frame.Update;
  */
 public abstract class EntitySystem extends Contextual implements Comparable<EntitySystem> {
 
-    private boolean enable;
+    public static final int MAX_PRIORITY = 0;
+
+    private boolean enabled;
     private int priority;
 
     /**
@@ -18,7 +20,7 @@ public abstract class EntitySystem extends Contextual implements Comparable<Enti
      * @param context the context
      */
     public EntitySystem(final Context context) {
-        this(context, 0);
+        this(context, MAX_PRIORITY);
     }
 
     /**
@@ -29,17 +31,17 @@ public abstract class EntitySystem extends Contextual implements Comparable<Enti
     public EntitySystem(final Context context, final int priority) {
         super(context);
         this.priority = priority;
-        this.enable = true;
+        this.enabled = true;
     }
 
     public abstract void update(final Update update);
 
-    public boolean isEnable() {
-        return enable;
+    public boolean isEnabled() {
+        return enabled;
     }
 
-    public void setEnable(final boolean enable) {
-        this.enable = enable;
+    public void setEnabled(final boolean enabled) {
+        this.enabled = enabled;
     }
 
     public int getPriority() {
@@ -57,14 +59,14 @@ public abstract class EntitySystem extends Contextual implements Comparable<Enti
 
         EntitySystem that = (EntitySystem) o;
 
-        if (enable != that.enable) return false;
+        if (enabled != that.enabled) return false;
         return priority == that.priority;
 
     }
 
     @Override
     public int hashCode() {
-        int result = (enable ? 1 : 0);
+        int result = (enabled ? 1 : 0);
         result = 31 * result + priority;
         return result;
     }

@@ -44,8 +44,7 @@ configure(subprojects) {
 
         compile 'org.joml:joml:+'
 
-        compile 'net.sf.sociaal:jbullet:3.0.+'
-        //compile 'com.badlogicgames.ashley:ashley:+'
+        compile 'net.sf.sociaal:jbullet:+'
 
         compile 'org.luaj:luaj-jse:+'
     }

@@ -63,7 +63,7 @@ public class Draw3dCommand extends RenderCommand {
                 .filter(uniform -> Objects.nonNull(uniform.getData()))
                 .forEach(uniform -> renderer.bindUniform(uniform.getLocation(), uniform.getType(), uniform.getData()));
 
-        model.draw();
+        model.draw(renderer);
     }
 
     public static Builder builder() {

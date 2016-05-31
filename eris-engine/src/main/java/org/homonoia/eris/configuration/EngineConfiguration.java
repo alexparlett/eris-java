@@ -3,19 +3,17 @@ package org.homonoia.eris.configuration;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.annotations.ContextualBean;
 import org.homonoia.eris.core.components.Clock;
+import org.homonoia.eris.core.components.FileSystem;
+import org.homonoia.eris.ecs.EntityManager;
+import org.homonoia.eris.ecs.EntitySystemManager;
 import org.homonoia.eris.engine.Engine;
 import org.homonoia.eris.engine.Locale;
 import org.homonoia.eris.engine.Log;
 import org.homonoia.eris.engine.Settings;
 import org.homonoia.eris.graphics.Graphics;
-import org.homonoia.eris.core.components.FileSystem;
 import org.homonoia.eris.input.Input;
 import org.homonoia.eris.renderer.Renderer;
 import org.homonoia.eris.resources.cache.ResourceCache;
-import org.homonoia.eris.ecs.EntityComponentSystem;
-import org.homonoia.eris.ecs.EntityManager;
-import org.homonoia.eris.ecs.EntitySystemManager;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -25,7 +23,7 @@ import org.springframework.context.annotation.Configuration;
  * @since 25/02/2016
  */
 @Configuration
-public class ComponentConfiguration {
+public class EngineConfiguration {
 
     @ContextualBean
     public Context context() {
@@ -85,9 +83,6 @@ public class ComponentConfiguration {
     @ContextualBean
     public EntitySystemManager entitySystemManager(Context context) { return new EntitySystemManager(context); }
 
-    @Bean
-    public EntityManager entityManager(Context context) { return new EntityManager(context); }
-
     @ContextualBean
-    public EntityComponentSystem entityComponentSystem(Context context, EntitySystemManager entitySystemManager, EntityManager entityManager) { return new EntityComponentSystem(context, entitySystemManager, entityManager); }
+    public EntityManager entityManager(Context context) { return new EntityManager(context); }
 }
