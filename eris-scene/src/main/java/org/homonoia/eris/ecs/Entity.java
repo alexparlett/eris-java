@@ -2,6 +2,8 @@ package org.homonoia.eris.ecs;
 
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
+import org.homonoia.eris.ecs.annotations.Requires;
+import org.homonoia.eris.ecs.exceptions.MissingRequiredComponentException;
 import org.homonoia.eris.events.ComponentAdded;
 import org.homonoia.eris.events.ComponentRemoved;
 
@@ -31,8 +33,24 @@ public final class Entity extends Contextual {
         return id;
     }
 
-    public Entity add(final Component component) {
+    public Entity add(final Component component) throws MissingRequiredComponentException {
         Objects.requireNonNull(component);
+
+        if (component.getClass().isAnnotationPresent(Requires.class)) {
+            Requires requires = component.getClass().getAnnotation(Requires.class);
+            for(Class<? extends Component> require : requires.classes()) {
+                boolean has = has(require);
+                if (!has && ! requires.autoAdd()) {
+                    throw new MissingRequiredComponentException(require, this, component);
+                } else if (!has) {
+                    try {
+                        add(require.newInstance());
+                    } catch (InstantiationException | IllegalAccessException e) {
+                        throw new RuntimeException("Cannot add " + require.getName() + " automatically to entity when required as it does not have a valid no args constructor");
+                    }
+                }
+            }
+        }
 
         remove(component.getClass());
 

@@ -37,10 +37,10 @@ configure(subprojects) {
 
         compile 'org.springframework:spring-beans:+'
         compile 'org.springframework:spring-context:+'
-        compile 'org.lwjgl:lwjgl:3.0.0-SNAPSHOT'
-        compile 'org.lwjgl:lwjgl-platform:3.0.0-SNAPSHOT:natives-windows'
-        compile 'org.lwjgl:lwjgl-platform:3.0.0-SNAPSHOT:natives-linux'
-        compile 'org.lwjgl:lwjgl-platform:3.0.0-SNAPSHOT:natives-osx'
+        compile 'org.lwjgl:lwjgl:3.0.1-SNAPSHOT'
+        compile 'org.lwjgl:lwjgl-platform:3.0.1-SNAPSHOT:natives-windows'
+        compile 'org.lwjgl:lwjgl-platform:3.0.1-SNAPSHOT:natives-linux'
+        compile 'org.lwjgl:lwjgl-platform:3.0.1-SNAPSHOT:natives-osx'
 
         compile 'org.joml:joml:+'
 

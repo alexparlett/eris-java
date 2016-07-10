@@ -4,7 +4,6 @@ import org.homonoia.eris.ecs.Component;
 import org.joml.Matrix4d;
 import org.joml.Quaterniond;
 import org.joml.Vector3d;
-import org.joml.Vector3f;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -12,18 +11,22 @@ import java.util.Set;
 import static java.util.Objects.nonNull;
 
 /**
- * Created by alexparlett on 31/05/2016.
+ * Copyright (c) 2015-2016 Homonoia Studios.
+ *
+ * @author alexparlett
+ * @since 09/07/2016
  */
 public class Transform implements Component {
 
-    public static final Vector3f Up = new Vector3f(0.f, 1.f, 0.f);
-    public static final Vector3f Forward = new Vector3f(0.f, 0.f, -1.f);
-    public static final Vector3f Right = new Vector3f(1.f, 0.f, 0.f);
+    public static final Vector3d Up = new Vector3d(0.f, 1.f, 0.f);
+    public static final Vector3d Forward = new Vector3d(0.f, 0.f, -1.f);
+    public static final Vector3d Right = new Vector3d(1.f, 0.f, 0.f);
 
     private static final ThreadLocal<Matrix4d> tempTransform = ThreadLocal.withInitial(() -> new Matrix4d());
 
     private Transform parent;
     private Set<Transform> children = new HashSet<>();
+    private int layer = 0;
 
     private Matrix4d transform = new Matrix4d()
             .identity()
@@ -124,5 +127,25 @@ public class Transform implements Component {
 
     public Transform rotation(double x, double y, double z) {
         return set(tempTransform.get().set(transform).setRotationXYZ(x,y,z));
+    }
+
+    public Transform layer(int layer) {
+        if (layer < 0 || layer > 31) {
+            throw new IllegalArgumentException("Layer must be between 0 (inclusive) and 32");
+        }
+        this.layer = layer;
+        return this;
+    }
+
+    public Vector3d up() {
+        return transform.positiveX(Up);
+    }
+
+    public Vector3d right() {
+        return transform.positiveY(Right);
+    }
+
+    public Vector3d forward() {
+        return transform.positiveZ(Forward);
     }
 }
