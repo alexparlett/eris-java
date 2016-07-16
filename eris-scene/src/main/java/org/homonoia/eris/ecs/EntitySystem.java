@@ -10,6 +10,9 @@ import org.homonoia.eris.events.frame.Update;
 public abstract class EntitySystem extends Contextual implements Comparable<EntitySystem> {
 
     public static final int MAX_PRIORITY = 0;
+    public static final int MIN_PRIORITY = Integer.MAX_VALUE;
+
+    protected FamilyManager familyManager;
 
     private boolean enabled;
     private int priority;
@@ -21,6 +24,7 @@ public abstract class EntitySystem extends Contextual implements Comparable<Enti
      */
     public EntitySystem(final Context context) {
         this(context, MAX_PRIORITY);
+        this.familyManager = context.getBean(FamilyManager.class);
     }
 
     /**

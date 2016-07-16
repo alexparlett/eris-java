@@ -6,6 +6,7 @@ import org.homonoia.eris.core.components.Clock;
 import org.homonoia.eris.core.components.FileSystem;
 import org.homonoia.eris.ecs.EntityManager;
 import org.homonoia.eris.ecs.EntitySystemManager;
+import org.homonoia.eris.ecs.FamilyManager;
 import org.homonoia.eris.engine.Engine;
 import org.homonoia.eris.engine.Locale;
 import org.homonoia.eris.engine.Log;
@@ -85,4 +86,7 @@ public class EngineConfiguration {
 
     @ContextualBean
     public EntityManager entityManager(Context context) { return new EntityManager(context); }
+
+    @ContextualBean
+    public FamilyManager familyManager(Context context) { return new FamilyManager(context); }
 }
