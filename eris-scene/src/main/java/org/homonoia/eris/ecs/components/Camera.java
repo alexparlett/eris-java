@@ -4,6 +4,7 @@ import org.homonoia.eris.ecs.Component;
 import org.homonoia.eris.ecs.annotations.Requires;
 import org.homonoia.eris.graphics.drawables.RenderTarget;
 import org.joml.Vector3d;
+import org.joml.Vector4f;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -22,7 +23,7 @@ public class Camera implements Component {
     private double far;
     private double fov;
     private RenderTarget renderTarget;
-    private Vector3d backgroundColor;
+    private Vector4f backgroundColor;
 
     public Set<Integer> getLayerMask() {
         return layerMask;
@@ -44,7 +45,32 @@ public class Camera implements Component {
         return renderTarget;
     }
 
-    public Vector3d getBackgroundColor() {
+    public Vector4f getBackgroundColor() {
         return backgroundColor;
+    }
+
+    public Camera near(double near) {
+        this.near = near;
+        return this;
+    }
+
+    public Camera far(double far) {
+        this.far = far;
+        return this;
+    }
+
+    public Camera fov(double fov) {
+        this.fov = fov;
+        return this;
+    }
+
+    public Camera renderTarget(RenderTarget renderTarget) {
+        this.renderTarget = renderTarget;
+        return this;
+    }
+
+    public Camera backgroundColor(Vector4f backgroundColor) {
+        this.backgroundColor = backgroundColor;
+        return this;
     }
 }

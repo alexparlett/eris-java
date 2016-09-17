@@ -5,4 +5,5 @@ dependencies {
     compile project(':eris-graphics')
     compile project(':eris-input')
     compile project(':eris-scene')
+    compile project(':eris-scripting')
 }

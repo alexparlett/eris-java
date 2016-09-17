@@ -22,7 +22,7 @@ public class Timer {
 
     public double getElapsedTime(boolean reset) {
         double currentTime = GLFW.glfwGetTime()  * 1000.0;
-        double elapsedTime = startTime - currentTime;
+        double elapsedTime =  currentTime - startTime;
 
         if (reset) {
             startTime = currentTime;

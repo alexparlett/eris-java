@@ -1,0 +1,19 @@
+{
+  "program": "Shaders/textured.shader",
+  "textures": [
+    {
+      "type": "2d",
+      "unit": "0",
+      "uniform": "diffuse",
+      "file": "Textures/ships.tex"
+    }
+  ],
+  "uniforms": [
+    {
+      "name": "ambient",
+      "type": "vec3",
+      "value": "1.0 1.0 1.0"
+    }
+  ],
+  "cull": "back"
+}

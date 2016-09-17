@@ -15,6 +15,7 @@ import org.homonoia.eris.graphics.Graphics;
 import org.homonoia.eris.input.Input;
 import org.homonoia.eris.renderer.Renderer;
 import org.homonoia.eris.resources.cache.ResourceCache;
+import org.homonoia.eris.scripting.ScriptEngine;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -89,4 +90,7 @@ public class EngineConfiguration {
 
     @ContextualBean
     public FamilyManager familyManager(Context context) { return new FamilyManager(context); }
+
+    @ContextualBean
+    public ScriptEngine scriptEngine(Context context) { return new ScriptEngine(context); }
 }

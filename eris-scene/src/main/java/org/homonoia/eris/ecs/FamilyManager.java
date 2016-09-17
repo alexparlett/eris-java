@@ -25,7 +25,7 @@ public class FamilyManager extends Contextual {
         super(context);
     }
 
-    public Family get(Class<? extends Component>... components) {
+    public <T extends Component> Family get(Class<T>... components) {
         Set<Class<? extends Component>> key = new HashSet<>(Arrays.asList(components));
         return Optional.ofNullable(families.get(key))
                 .orElseGet(createFamily(key));

@@ -148,4 +148,8 @@ public class Transform implements Component {
     public Vector3d forward() {
         return transform.positiveZ(Forward);
     }
+
+    public int getLayer() {
+        return layer;
+    }
 }

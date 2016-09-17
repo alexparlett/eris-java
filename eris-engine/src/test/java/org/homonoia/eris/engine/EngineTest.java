@@ -20,7 +20,6 @@ import java.nio.file.Path;
 public class EngineTest {
 
     @Test
-    @Ignore
     public void testEngine() throws InitializationException {
 
         Path currentDir = FileSystem.getApplicationDirectory();
