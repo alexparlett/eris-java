@@ -46,6 +46,10 @@ public class ScriptEngine extends Contextual {
         pythonGlobalsTable.put(name, global);
     }
 
+    /**
+     *
+     * @param clazz
+     */
     public void bindClass(Class clazz) {
         this.scriptClassLoader.bind(clazz);
     }

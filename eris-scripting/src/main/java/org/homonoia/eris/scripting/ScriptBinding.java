@@ -8,6 +8,8 @@ package org.homonoia.eris.scripting;
  */
 public interface ScriptBinding {
 
-    void bind(ScriptEngine scriptEngine);
+    default void bind(ScriptEngine scriptEngine) {
+        scriptEngine.bindClass(this.getClass());
+    }
 
 }
