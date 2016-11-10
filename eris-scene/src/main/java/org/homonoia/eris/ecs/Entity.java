@@ -11,10 +11,12 @@ import org.homonoia.eris.events.ComponentRemoved;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.stream.Collectors;
 
 /**
  * Created by alexparlett on 26/05/2016.
@@ -71,16 +73,17 @@ public final class Entity extends Contextual {
     }
 
     public <T extends Component> Optional<T> get(final Class<T> clazz) {
-        Iterator<? extends Component> iterator = components.iterator();
-        while(iterator.hasNext()) {
-            Component component = iterator.next();
+        return components.stream()
+                .filter(component -> component.getClass().equals(clazz))
+                .map(component -> (T) component)
+                .findFirst();
+    }
 
-            if (component.getClass().equals(clazz)) {
-                return Optional.of((T) component);
-            }
-        }
-
-        return Optional.empty();
+    public <T extends Component> List<T> getAll(final Class<T> clazz) {
+        return components.stream()
+                .filter(component -> component.getClass().equals(clazz))
+                .map(component -> (T) component)
+                .collect(Collectors.toList());
     }
 
     public Set<? extends Component> getAll() {
@@ -114,16 +117,10 @@ public final class Entity extends Contextual {
     }
 
     public boolean has(final Class<? extends Component> clazz) {
-        Iterator<? extends Component> iterator = components.iterator();
-        while(iterator.hasNext()) {
-            Component component = iterator.next();
-
-            if (component.getClass().equals(clazz)) {
-                return true;
-            }
-        }
-
-        return false;
+        return components.stream()
+                .filter(component -> component.getClass().equals(clazz))
+                .findFirst()
+                .isPresent();
     }
 
     protected void publishComponentRemoved(final Component component) {
