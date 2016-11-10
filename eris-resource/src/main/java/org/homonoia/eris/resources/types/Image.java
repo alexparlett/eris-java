@@ -10,6 +10,7 @@ import org.lwjgl.stb.STBImageResize;
 import org.lwjgl.stb.STBImageWrite;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.MessageFormatter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -20,6 +21,7 @@ import java.nio.IntBuffer;
 import java.text.MessageFormat;
 import java.util.Objects;
 
+import static java.util.Objects.isNull;
 import static org.lwjgl.stb.STBImage.*;
 
 /**
@@ -52,7 +54,7 @@ public class Image extends Resource {
         }
 
         if (baos.size() <= 0) {
-            throw new IOException(MessageFormat.format("Failed to load Image {0}. File empty.", getPath()));
+            throw new IOException(MessageFormat.format("Failed to load Image {0}. File empty.", getLocation()));
         }
 
         ByteBuffer byteBuffer = BufferUtils.createByteBuffer(baos.size());
@@ -63,15 +65,11 @@ public class Image extends Resource {
         IntBuffer h = BufferUtils.createIntBuffer(1);
         IntBuffer comp = BufferUtils.createIntBuffer(1);
 
-        // Use info to read image metadata without decoding the entire image.
-        if (stbi_info_from_memory(byteBuffer, w, h, comp) == 0)
-            throw new IOException("Failed to read image information: " + stbi_failure_reason());
-
-        stbi_set_flip_vertically_on_load(1);
+        stbi_set_flip_vertically_on_load(true);
         data = stbi_load_from_memory(byteBuffer, w, h, comp, 0);
-        if (data == null) {
-            LOG.error("Failed to load Image {}. {}", getPath(), stbi_failure_reason());
-            throw new IOException(MessageFormat.format("Failed to load Image {0}. {1}", getPath(), stbi_failure_reason()));
+        if (isNull(data)) {
+            LOG.error("Failed to load Image {}. {}", getLocation(), stbi_failure_reason());
+            throw new IOException(MessageFormat.format("Failed to load Image {0}. {1}", getLocation(), stbi_failure_reason()));
         }
 
         this.width = w.get(0);
@@ -85,15 +83,15 @@ public class Image extends Resource {
 
         if (data == null || this.width <= 0 || this.height <= 0 || this.components <= 0) {
             LOG.error("Failed to save Image {}.", getPath());
-            throw new IOException(MessageFormat.format("Failed to save Image {0}. Image data invalid.", getPath()));
+            throw new IOException(MessageFormatter.format("Failed to save Image {}. Image data invalid.", getPath()).getMessage());
         }
 
         ByteBuffer writeContext = BufferUtils.createByteBuffer(width * components);
         ByteBuffer outputContext = ByteBuffer.wrap(new byte[width * height * components]);
 
-        int success = STBImageWrite.stbi_write_png_to_func(STBIWriteCallback.create((context, data, size) -> outputContext.put(STBIWriteCallback.getData(data, size))), writeContext, width, height, components, data, width * components);
-        if (success == 0) {
-            throw new IOException(MessageFormat.format("Failed to save Image {0}.", getPath()));
+        if (STBImageWrite.stbi_write_png_to_func(STBIWriteCallback.create((context, data, size) ->
+                outputContext.put(STBIWriteCallback.getData(data, size))), writeContext, width, height, components, data, width * components)) {
+            throw new IOException(MessageFormatter.format("Failed to save Image {}. {}", getPath(), stbi_failure_reason()).getMessage());
         }
 
         outputStream.write(outputContext.array());
@@ -113,8 +111,9 @@ public class Image extends Resource {
         }
 
         ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * components);
-        if (STBImageResize.stbir_resize_uint8(data, this.width, this.height, this.width * components, buffer, width, height, width * components, components) == 0) {
-            throw new ImageException("Failed to resize Image {}.", getPath());
+
+        if (STBImageResize.stbir_resize_uint8(data, this.width, this.height, this.width * components, buffer, width, height, width * components, components)) {
+            throw new ImageException("Failed to resize Image {}. {}.", getPath(), stbi_failure_reason());
         }
 
         this.width = width;

@@ -10,6 +10,8 @@ import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.resources.cache.ResourceCache;
 import org.homonoia.eris.resources.types.Json;
 import org.homonoia.eris.resources.types.json.JsonException;
+import org.homonoia.eris.scripting.ScriptBinding;
+import org.homonoia.eris.scripting.ScriptEngine;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
@@ -24,7 +26,7 @@ import java.util.*;
  * @author alexp
  * @since 25/02/2016
  */
-public class Locale extends Contextual {
+public class Locale extends Contextual implements ScriptBinding {
 
     private static final String LOCALES_PATH = "Locales";
     private static final String LOCALES_EXTENSION = ".lang";
@@ -42,6 +44,11 @@ public class Locale extends Contextual {
     public Locale(final Context context, ResourceCache resourceCache) {
         super(context);
         this.resourceCache = resourceCache;
+    }
+
+    @Override
+    public void bind(ScriptEngine scriptEngine) {
+        scriptEngine.bindGlobal("locale", this);
     }
 
     public void load(final String language) throws IOException, JsonException {

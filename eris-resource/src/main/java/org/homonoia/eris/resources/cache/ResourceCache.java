@@ -4,6 +4,20 @@ import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.components.FileSystem;
 import org.homonoia.eris.resources.Resource;
+import org.homonoia.eris.resources.types.Image;
+import org.homonoia.eris.resources.types.Ini;
+import org.homonoia.eris.resources.types.Json;
+import org.homonoia.eris.resources.types.Mesh;
+import org.homonoia.eris.resources.types.Python;
+import org.homonoia.eris.resources.types.Stream;
+import org.homonoia.eris.resources.types.ini.IniSection;
+import org.homonoia.eris.resources.types.json.JsonPatch;
+import org.homonoia.eris.resources.types.json.JsonPath;
+import org.homonoia.eris.resources.types.json.JsonType;
+import org.homonoia.eris.resources.types.mesh.Face;
+import org.homonoia.eris.resources.types.mesh.Vertex;
+import org.homonoia.eris.scripting.ScriptBinding;
+import org.homonoia.eris.scripting.ScriptEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +26,14 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Copyright (c) 2015-2016 the Eris project.
@@ -20,7 +41,7 @@ import java.util.*;
  * @author alexparlett
  * @since 19/02/2016
  */
-public class ResourceCache extends Contextual {
+public class ResourceCache extends Contextual implements ScriptBinding {
 
     private static final Logger LOG = LoggerFactory.getLogger(ResourceCache.class);
 
@@ -50,6 +71,10 @@ public class ResourceCache extends Contextual {
         return addDirectory(path, Integer.MAX_VALUE);
     }
 
+    public boolean addDirectory(final String path) {
+        return addDirectory(Paths.get(path));
+    }
+
     public boolean addDirectory(final Path path, final int priority) {
         LOG.debug("Adding Directory {} to Resource Cache Lookup.", path);
         if (fileSystem.isAccessible(path)) {
@@ -64,15 +89,19 @@ public class ResourceCache extends Contextual {
         return false;
     }
 
+    public boolean addDirectory(final String path, final int priority) {
+        return addDirectory(Paths.get(path), priority);
+    }
+
     public boolean removeDirectory(final Path path) {
         return directories.remove(path);
     }
 
-    public <T extends Resource> Optional<T> get(final Class<T> clazz, final Path path) {
-        return get(clazz, path, true);
+    public boolean removeDirectory(final String path) {
+        return removeDirectory(Paths.get(path));
     }
 
-    public <T extends Resource> Optional<T> get(final Class<T> clazz, final Path path, boolean errorOnFail) {
+    public <T extends Resource> Optional<T> get(final Class<T> clazz, final Path path) {
         Objects.requireNonNull(path);
         Objects.requireNonNull(clazz);
 
@@ -99,11 +128,11 @@ public class ResourceCache extends Contextual {
         return Optional.empty();
     }
 
-    public <T extends Resource> Optional<T> getTemporary(final Class<T> clazz, final Path path) {
-        return getTemporary(clazz, path, false);
+    public <T extends Resource> Optional<T> get(final Class<T> clazz, final String path) {
+        return get(clazz, Paths.get(path));
     }
 
-    public <T extends Resource> Optional<T> getTemporary(final Class<T> clazz, final Path path, boolean errorOnFail) {
+    public <T extends Resource> Optional<T> getTemporary(final Class<T> clazz, final Path path) {
         Objects.requireNonNull(path);
         Objects.requireNonNull(clazz);
 
@@ -149,6 +178,10 @@ public class ResourceCache extends Contextual {
         return Optional.empty();
     }
 
+    public <T extends Resource> Optional<T> getTemporary(final Class<T> clazz, final String path) {
+        return getTemporary(clazz, Paths.get(path));
+    }
+
     public synchronized void remove(final Class<? extends Resource> clazz, final Path path, boolean force) {
         Objects.requireNonNull(path);
         Objects.requireNonNull(clazz);
@@ -161,6 +194,10 @@ public class ResourceCache extends Contextual {
                 group.remove(path);
             }
         }
+    }
+
+    public synchronized void remove(final Class<? extends Resource> clazz, final String path, boolean force) {
+        remove(clazz, Paths.get(path), force);
     }
 
     public synchronized void remove(final Class<? extends Resource> clazz, boolean force) {
@@ -208,7 +245,8 @@ public class ResourceCache extends Contextual {
             Path fullPath = findFile(path).orElseThrow(() -> new IOException("Resource does not exist."));
 
             Resource resource = clazz.getConstructor(Context.class).newInstance(getContext());
-            resource.setPath(fullPath);
+            resource.setPath(path);
+            resource.setLocation(fullPath);
 
             synchronized (this) {
                 Map<Path, Resource> group = groups.get(clazz);
@@ -227,6 +265,10 @@ public class ResourceCache extends Contextual {
         }
     }
 
+    public void add(final Class<? extends Resource> clazz, final String path, final boolean immediate) {
+        add(clazz, Paths.get(path), immediate);
+    }
+
     private synchronized Optional<Resource> find(final Class<? extends Resource> clazz, final Path path) {
         Map<Path, ? extends Resource> group = groups.get(clazz);
         if (group != null) {
@@ -236,6 +278,10 @@ public class ResourceCache extends Contextual {
             }
         }
         return Optional.empty();
+    }
+
+    private synchronized Optional<Resource> find(final Class<? extends Resource> clazz, final String path) {
+        return find(clazz, Paths.get(path));
     }
 
     private Optional<Path> findFile(final Path path) throws IOException {
@@ -250,5 +296,22 @@ public class ResourceCache extends Contextual {
             }
         }
         return Optional.empty();
+    }
+
+    @Override
+    public void bind(ScriptEngine scriptEngine) {
+        scriptEngine.bindClass(JsonPatch.class);
+        scriptEngine.bindClass(JsonPath.class);
+        scriptEngine.bindClass(JsonType.class);
+        scriptEngine.bindClass(IniSection.class);
+        scriptEngine.bindClass(Face.class);
+        scriptEngine.bindClass(Vertex.class);
+        scriptEngine.bindClass(Image.class);
+        scriptEngine.bindClass(Ini.class);
+        scriptEngine.bindClass(Json.class);
+        scriptEngine.bindClass(Mesh.class);
+        scriptEngine.bindClass(Stream.class);
+        scriptEngine.bindClass(Python.class);
+        scriptEngine.bindGlobal("resourceCache", this);
     }
 }

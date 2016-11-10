@@ -22,7 +22,7 @@ import java.util.concurrent.Executors;
  * @author alexparlett
  * @since 19/02/2016
  */
-public class ResourceLoader extends Contextual {
+class ResourceLoader extends Contextual {
 
     private static final Logger LOG = LoggerFactory.getLogger(ResourceLoader.class);
 
@@ -45,10 +45,10 @@ public class ResourceLoader extends Contextual {
 
     public void load(final Resource resource, final boolean immediate) throws IOException {
         Objects.requireNonNull(resource, MessageFormat.format("Failed to load {0} resource cannot be null", resource.getPath()));
-        Objects.requireNonNull(resource.getPath(), MessageFormat.format("Failed to load {0} path cannot be null", resource.getPath()));
+        Objects.requireNonNull(resource.getLocation(), MessageFormat.format("Failed to load {0} path cannot be null", resource.getPath()));
 
-        if (!fileSystem.isAccessible(resource.getPath())) {
-            throw new IOException(resource.getPath().toString() + " is not accessible.");
+        if (!fileSystem.isAccessible(resource.getLocation())) {
+            throw new IOException(resource.getLocation().toString() + " is not accessible.");
         }
 
         if (resource.getState().equals(Resource.AsyncState.FAILED) ||
@@ -59,7 +59,7 @@ public class ResourceLoader extends Contextual {
 
         LoadingTask task = new LoadingTask();
         task.resource = resource;
-        task.path = resource.getPath();
+        task.path = resource.getLocation();
 
         if (!immediate) {
             if (!resource.getState().equals(Resource.AsyncState.QUEUED)) {
@@ -77,10 +77,10 @@ public class ResourceLoader extends Contextual {
             try (InputStream inputStream = fileSystem.newInputStream(loadingTask.path)) {
                 loadingTask.resource.load(inputStream);
                 loadingTask.resource.setState(Resource.AsyncState.SUCCESS);
-                LOG.info("Loaded {} {}", loadingTask.resource.getClass().getSimpleName(), loadingTask.resource.getPath());
+                LOG.info("Loaded {} {}", loadingTask.resource.getClass().getSimpleName(), loadingTask.path);
             } catch (IOException e) {
                 loadingTask.resource.setState(Resource.AsyncState.FAILED);
-                LOG.error("Failed to load {} {}", loadingTask.resource.getClass().getSimpleName(), loadingTask.resource.getPath(), e);
+                LOG.error("Failed to load {} {}", loadingTask.resource.getClass().getSimpleName(), loadingTask.path, e);
             }
         }
     }

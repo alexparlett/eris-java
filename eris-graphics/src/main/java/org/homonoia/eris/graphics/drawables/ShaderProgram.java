@@ -11,7 +11,7 @@ import org.homonoia.eris.renderer.Renderer;
 import org.homonoia.eris.resources.Resource;
 import org.homonoia.eris.resources.cache.ResourceCache;
 import org.homonoia.eris.resources.types.Json;
-import org.homonoia.eris.resources.types.StreamResource;
+import org.homonoia.eris.resources.types.Stream;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL20;
@@ -107,8 +107,8 @@ public class ShaderProgram extends Resource implements GPUResource {
         ShaderPreprocessor shaderPreprocessor = new ShaderPreprocessor();
 
         StringBuffer fragBuffer, vertBuffer;
-        try (InputStream fragStream = resourceCache.get(StreamResource.class, Paths.get(frag))
-                .map(StreamResource::asInputStream)
+        try (InputStream fragStream = resourceCache.get(Stream.class, Paths.get(frag))
+                .map(Stream::asInputStream)
                 .orElseThrow(() -> new IOException(frag + " not found."))) {
 
             fragBuffer = shaderPreprocessor.process(fragStream, frag);
@@ -116,8 +116,8 @@ public class ShaderProgram extends Resource implements GPUResource {
 
         shaderPreprocessor.reset();
 
-        try (InputStream vertStream = resourceCache.get(StreamResource.class, Paths.get(vert))
-                .map(StreamResource::asInputStream)
+        try (InputStream vertStream = resourceCache.get(Stream.class, Paths.get(vert))
+                .map(Stream::asInputStream)
                 .orElseThrow(() -> new IOException(vert + " not found."))) {
 
             vertBuffer = shaderPreprocessor.process(vertStream, vert);

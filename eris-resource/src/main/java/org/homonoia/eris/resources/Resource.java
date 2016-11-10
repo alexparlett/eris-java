@@ -30,6 +30,7 @@ public abstract class Resource extends Contextual implements Closeable {
     }
 
     private Path path;
+    private Path location;
     private final AtomicReference<AsyncState> state = new AtomicReference<>(AsyncState.NEW);
 
     public Resource(final Context context) {
@@ -38,6 +39,14 @@ public abstract class Resource extends Contextual implements Closeable {
 
     public Path getPath() {
         return path;
+    }
+
+    public Path getLocation() {
+        return location;
+    }
+
+    public void setLocation(Path location) {
+        this.location = location;
     }
 
     public AsyncState getState() {
@@ -78,6 +87,4 @@ public abstract class Resource extends Contextual implements Closeable {
     public abstract void load(InputStream inputStream) throws IOException;
 
     public abstract void save(OutputStream outputStream) throws IOException;
-
-
 }

@@ -11,7 +11,10 @@ import rx.subjects.SerializedSubject;
 import rx.subjects.Subject;
 
 import javax.annotation.PreDestroy;
+import java.lang.annotation.Annotation;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 
@@ -32,6 +35,7 @@ public class Context implements ApplicationContextAware {
                 .orElse(true);
     }
 
+    private final AtomicBoolean debugEnabled = new AtomicBoolean(false);
     private final AtomicReference<ExitCode> exitCode = new AtomicReference<>(ExitCode.SUCCESS);
     private final Subject<Event, Event> subject = new SerializedSubject<>(PublishSubject.create());
     private ApplicationContext applicationContext;
@@ -75,6 +79,14 @@ public class Context implements ApplicationContextAware {
         this.exitCode.set(exitCode);
     }
 
+    public boolean isDebugEnabled() {
+        return debugEnabled.get();
+    }
+
+    public void setDebugEnabled(final Boolean debugEnabled) {
+        this.debugEnabled.set(debugEnabled);
+    }
+
     @Override
     public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
@@ -87,4 +99,9 @@ public class Context implements ApplicationContextAware {
     public <T extends Contextual> T getBean(Class<T> clazz) {
         return applicationContext.getBean(clazz);
     }
+
+    public <T extends Annotation> Map<String, Object> getBeansWithAnnotation(Class<T> clazz) {
+        return applicationContext.getBeansWithAnnotation(clazz);
+    }
+
 }

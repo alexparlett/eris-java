@@ -40,7 +40,7 @@ public final class Entity extends Contextual {
             Requires requires = component.getClass().getAnnotation(Requires.class);
             for(Class<? extends Component> require : requires.classes()) {
                 boolean has = has(require);
-                if (!has && ! requires.autoAdd()) {
+                if (!has && !requires.autoAdd()) {
                     throw new MissingRequiredComponentException(require, this, component);
                 } else if (!has) {
                     try {

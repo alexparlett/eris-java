@@ -13,13 +13,13 @@ import java.io.OutputStream;
 /**
  * Created by alexparlett on 21/05/2016.
  */
-public class StreamResource extends Resource {
+public class Stream extends Resource {
 
-    private static final Logger LOG = LoggerFactory.getLogger(StreamResource.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Stream.class);
 
     private FileSystem fileSystem;
 
-    public StreamResource(final Context context) {
+    public Stream(final Context context) {
         super(context);
         fileSystem = context.getBean(FileSystem.class);
     }
@@ -37,7 +37,7 @@ public class StreamResource extends Resource {
         try {
             return fileSystem.newInputStream(getPath());
         } catch (IOException e) {
-            LOG.error("Failed to create InputStream from StreamResource for {}", getPath(), e);
+            LOG.error("Failed to create InputStream from Stream for {}", getPath(), e);
             return null;
         }
     }
@@ -46,7 +46,7 @@ public class StreamResource extends Resource {
         try {
             return fileSystem.newOutputStream(getPath());
         } catch (IOException e) {
-            LOG.error("Failed to create InputStream from StreamResource for {}", getPath(), e);
+            LOG.error("Failed to create InputStream from Stream for {}", getPath(), e);
             return null;
         }
     }

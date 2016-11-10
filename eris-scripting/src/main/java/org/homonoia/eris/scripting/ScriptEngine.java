@@ -2,17 +2,16 @@ package org.homonoia.eris.scripting;
 
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
-import org.luaj.vm2.Globals;
-import org.luaj.vm2.LuaValue;
-import org.luaj.vm2.lib.MathLib;
-import org.luaj.vm2.lib.PackageLib;
-import org.luaj.vm2.lib.StringLib;
-import org.luaj.vm2.lib.jse.JseBaseLib;
-import org.luaj.vm2.lib.jse.LuajavaLib;
-import org.luaj.vm2.luajc.LuaJC;
+import org.homonoia.eris.core.components.FileSystem;
+import org.python.core.Py;
+import org.python.core.PyDictionary;
+import org.python.core.PySystemState;
+import org.python.util.PythonInterpreter;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
+
+import static java.util.Objects.nonNull;
 
 /**
  * Copyright (c) 2015-2016 Homonoia Studios.
@@ -22,8 +21,13 @@ import java.util.Set;
  */
 public class ScriptEngine extends Contextual {
 
-    private static Globals globals = new Globals();
-    private Set<LuaValue> libraries = new HashSet<>();
+    ScriptClassLoader scriptClassLoader = new ScriptClassLoader();
+    PyDictionary pythonGlobalsTable = new PyDictionary();
+    PySystemState pySystemState;
+    PythonInterpreter pythonInterpreter;
+
+    @Autowired
+    private List<ScriptBinding> bindings;
 
     /**
      * Instantiates a new Contextual.
@@ -32,17 +36,46 @@ public class ScriptEngine extends Contextual {
      */
     public ScriptEngine(Context context) {
         super(context);
-
-        globals.load(new JseBaseLib());
-        globals.load(new PackageLib());
-        globals.load(new StringLib());
-        globals.load(new MathLib());
-        globals.load(new LuajavaLib());
-
-        LuaJC.install(globals);
     }
 
-    public static <T extends LuaValue> void bind(T library) {
-        globals.add(library);
+    public void bindGlobal(String name, Object global) {
+        bindClass(global.getClass());
+        pythonGlobalsTable.put(name, global);
+    }
+
+    public void bindClass(Class clazz) {
+        this.scriptClassLoader.bind(clazz);
+    }
+
+    public void initialize() {
+        bindings.forEach(scriptBinding -> scriptBinding.bind(this));
+
+        pySystemState = new PySystemState();
+        pySystemState.setClassLoader(scriptClassLoader);
+        pySystemState.setCurrentWorkingDir(FileSystem.getApplicationDataDirectory().toString());
+
+        pySystemState.path.append(Py.java2py(FileSystem.getApplicationDataDirectory().toString()));
+        pySystemState.path.append(Py.java2py(FileSystem.getApplicationDirectory().toString()));
+        pySystemState.path.append(Py.java2py(FileSystem.getApplicationDirectory().resolve("Data").toString()));
+
+        pythonInterpreter = new PythonInterpreter(pythonGlobalsTable, pySystemState);
+    }
+
+    public void shutdown() {
+        if (nonNull(pySystemState)) {
+            pySystemState.close();
+        }
+    }
+
+    public PyDictionary getPythonGlobalsTable() {
+        return pythonGlobalsTable;
+    }
+
+    public PySystemState getPySystemState() {
+        return pySystemState;
+    }
+
+    public PythonInterpreter getPythonInterpreter() {
+        return pythonInterpreter;
     }
 }

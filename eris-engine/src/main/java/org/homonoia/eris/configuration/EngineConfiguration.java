@@ -16,7 +16,9 @@ import org.homonoia.eris.input.Input;
 import org.homonoia.eris.renderer.Renderer;
 import org.homonoia.eris.resources.cache.ResourceCache;
 import org.homonoia.eris.scripting.ScriptEngine;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 
 /**
  * Copyright (c) 2015-2016 the Eris project.
@@ -25,11 +27,14 @@ import org.springframework.context.annotation.Configuration;
  * @since 25/02/2016
  */
 @Configuration
+@ComponentScan("org.homonoia.eris")
 public class EngineConfiguration {
 
     @ContextualBean
-    public Context context() {
-        return new Context();
+    public Context context(Environment environment) {
+        Context context = new Context();
+        context.setDebugEnabled(environment.getProperty("debug", boolean.class, false));
+        return context;
     }
 
     @ContextualBean

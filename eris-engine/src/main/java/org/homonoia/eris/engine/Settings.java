@@ -7,6 +7,8 @@ import org.homonoia.eris.resources.cache.ResourceCache;
 import org.homonoia.eris.resources.types.Ini;
 import org.homonoia.eris.resources.types.ini.IniException;
 import org.homonoia.eris.resources.types.ini.IniSection;
+import org.homonoia.eris.scripting.ScriptBinding;
+import org.homonoia.eris.scripting.ScriptEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,7 @@ import java.util.Optional;
  * @author alexp
  * @since 25/02/2016
  */
-public class Settings extends Contextual {
+public class Settings extends Contextual implements ScriptBinding {
 
     private static final Logger LOG = LoggerFactory.getLogger(Settings.class);
 
@@ -41,6 +43,11 @@ public class Settings extends Contextual {
         super(context);
         this.resourceCache = resourceCache;
         this.fileSystem = fileSystem;
+    }
+
+    @Override
+    public void bind(ScriptEngine scriptEngine) {
+        scriptEngine.bindGlobal("settings", this);
     }
 
     void load() throws IOException {

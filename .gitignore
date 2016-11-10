@@ -12,3 +12,8 @@ build/
 gradlew.bat
 gradlew
 gradle/wrapper
+
+###
+# Python
+###
+*$py.class

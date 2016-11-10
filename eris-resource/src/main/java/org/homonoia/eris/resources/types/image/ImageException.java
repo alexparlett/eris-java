@@ -19,10 +19,10 @@ public class ImageException extends ResourceException {
     }
 
     public ImageException(final String msg, final Throwable ex, final Object... args) {
-        super(MessageFormatter.arrayFormat(msg, args).getMessage(), ex);
+        super(MessageFormatter.format(msg, args).getMessage(), ex);
     }
 
     public ImageException(final String msg, final Object... args) {
-        super(MessageFormatter.arrayFormat(msg, args).getMessage());
+        super(MessageFormatter.format(msg, args).getMessage());
     }
 }

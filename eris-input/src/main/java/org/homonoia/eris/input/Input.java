@@ -6,6 +6,8 @@ import org.homonoia.eris.core.exceptions.InitializationException;
 import org.homonoia.eris.events.frame.BeginFrame;
 import org.homonoia.eris.graphics.Graphics;
 import org.homonoia.eris.input.events.*;
+import org.homonoia.eris.scripting.ScriptBinding;
+import org.homonoia.eris.scripting.ScriptEngine;
 import org.joml.Vector2d;
 import org.lwjgl.glfw.*;
 import org.lwjgl.system.MemoryUtil;
@@ -20,7 +22,7 @@ import java.util.Objects;
  * @author alexp
  * @since 01/03/2016
  */
-public class Input extends Contextual {
+public class Input extends Contextual implements ScriptBinding {
 
     private final Graphics graphics;
 
@@ -208,5 +210,20 @@ public class Input extends Contextual {
         }
 
         return modifiers;
+    }
+
+    @Override
+    public void bind(ScriptEngine scriptEngine) {
+        scriptEngine.bindClass(Button.class);
+        scriptEngine.bindClass(Key.class);
+        scriptEngine.bindClass(Modifier.class);
+        scriptEngine.bindClass(KeyDown.class);
+        scriptEngine.bindClass(KeyUp.class);
+        scriptEngine.bindClass(MouseButtonDown.class);
+        scriptEngine.bindClass(MouseButtonUp.class);
+        scriptEngine.bindClass(MouseMove.class);
+        scriptEngine.bindClass(MouseScroll.class);
+        scriptEngine.bindClass(Text.class);
+        scriptEngine.bindGlobal("input", this);
     }
 }

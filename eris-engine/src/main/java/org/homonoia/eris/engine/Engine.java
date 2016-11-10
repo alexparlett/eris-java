@@ -10,12 +10,13 @@ import org.homonoia.eris.core.exceptions.InitializationException;
 import org.homonoia.eris.core.utils.Timer;
 import org.homonoia.eris.events.core.ExitRequested;
 import org.homonoia.eris.events.frame.Update;
-import org.homonoia.eris.events.graphics.Render;
 import org.homonoia.eris.graphics.Graphics;
 import org.homonoia.eris.input.Input;
 import org.homonoia.eris.renderer.Renderer;
 import org.homonoia.eris.resources.cache.ResourceCache;
 import org.homonoia.eris.resources.types.json.JsonException;
+import org.homonoia.eris.scripting.ScriptBinding;
+import org.homonoia.eris.scripting.ScriptEngine;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.slf4j.Logger;
@@ -31,7 +32,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author alexp
  * @since 25/02/2016
  */
-public class Engine extends Contextual {
+public class Engine extends Contextual implements ScriptBinding {
 
     private static final Logger LOG = LoggerFactory.getLogger(Engine.class);
 
@@ -65,6 +66,9 @@ public class Engine extends Contextual {
     @Autowired
     private Input input;
 
+    @Autowired
+    private ScriptEngine scriptEngine;
+
     /**
      * Instantiates a new Engine.
      *
@@ -75,6 +79,12 @@ public class Engine extends Contextual {
         super(context);
 
         subscribe(this::handleExitRequest, ExitRequested.class);
+    }
+
+    @Override
+    public void bind(ScriptEngine scriptEngine) {
+        scriptEngine.bindClass(Timer.class);
+        scriptEngine.bindGlobal("clock", clock);
     }
 
     public void initialize() throws InitializationException {
@@ -122,6 +132,7 @@ public class Engine extends Contextual {
         graphics.initialize();
         renderer.initialize();
         input.initialize();
+        scriptEngine.initialize();
 
         graphics.show();
     }
@@ -130,31 +141,13 @@ public class Engine extends Contextual {
         double delta = 0.0;
 
         Update.Builder updateBuilder = Update.builder();
-        Render.Builder renderBuilder = Render.builder();
         Timer timer = new Timer();
 
         while(!shouldExit.get()){
             delta += timer.getElapsedTime(true);
             if (delta >= (1000.0 / 60.0)) {
                 clock.beginFrame(delta);
-
-                {
-                    publish(updateBuilder.timeStep(delta));
-                }
-
-                {
-                    //TODO Post Update
-                }
-
-                {
-                    publish(renderBuilder);
-                }
-
-                {
-                    //TODO Post Render
-                    renderer.getState().swap();
-                }
-
+                publish(updateBuilder.timeStep(delta));
                 clock.endFrame();
                 delta--;
             }
@@ -164,6 +157,8 @@ public class Engine extends Contextual {
     public void shutdown() {
         graphics.hide();
 
+        scriptEngine.shutdown();
+        input.shutdown();
         renderer.shutdown();
         resourceCache.shutdown();
         graphics.shutdown();
@@ -186,7 +181,7 @@ public class Engine extends Contextual {
         LOG.info("Arch: {}", System.getProperty("os.arch"));
         LOG.info("Cores: {}", Runtime.getRuntime().availableProcessors());
         LOG.info("Memory: {}", FileSystem.readableFileSize(Runtime.getRuntime().totalMemory()));
-    }
+}
 
     private void shutdownLog(final double elapsedTime, final int frameNumber) {
         LOG.info("Terminating...");

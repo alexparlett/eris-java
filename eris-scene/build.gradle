@@ -3,4 +3,5 @@ dependencies {
     compile project(':eris-core')
     compile project(':eris-resource')
     compile project(':eris-graphics')
+    compile project(':eris-scripting')
 }

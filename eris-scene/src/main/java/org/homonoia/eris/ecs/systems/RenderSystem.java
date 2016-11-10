@@ -6,6 +6,7 @@ import org.homonoia.eris.ecs.EntitySystem;
 import org.homonoia.eris.ecs.Family;
 import org.homonoia.eris.ecs.components.Camera;
 import org.homonoia.eris.ecs.components.Mesh;
+import org.homonoia.eris.ecs.components.Transform;
 import org.homonoia.eris.events.frame.Update;
 import org.homonoia.eris.graphics.drawables.RenderTarget;
 import org.homonoia.eris.renderer.Renderer;
@@ -34,33 +35,16 @@ public class RenderSystem extends EntitySystem {
         super(context, MIN_PRIORITY);
         this.cameraFamily = familyManager.get(Camera.class);
         this.renderableFamily = familyManager.get(Mesh.class);
-        this.getContext().getBean(Renderer.class);
+        this.renderer = this.getContext().getBean(Renderer.class);
     }
 
     @Override
     public void update(final Update update) {
-        cameraFamily.getEntities()
-                .stream()
-                .map(entity -> entity.get(Camera.class))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .forEach(this::renderCamera);
     }
 
     private void renderCamera(Camera camera) {
-//        if (nonNull(camera.getRenderTarget())) {
-//            renderer.getState().add(RenderTargetCommand.builder()
-//                    .renderTarget(camera.getRenderTarget())
-//                    .build());
-//        }
+    }
 
-        renderer.getState().add(ClearColorCommand.builder()
-                .color(camera.getBackgroundColor())
-                .build());
-
-        renderableFamily.getEntities()
-                .stream()
-                .map(this::renderEntity)
-                .f;
+    private void renderEntity(Camera camera, Entity entity) {
     }
 }

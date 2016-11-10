@@ -4,7 +4,6 @@ import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.ExitCode;
 import org.homonoia.eris.core.exceptions.InitializationException;
-import org.homonoia.eris.events.graphics.Render;
 import org.homonoia.eris.events.graphics.ScreenMode;
 import org.homonoia.eris.graphics.Graphics;
 import org.homonoia.eris.renderer.commands.ClearColorCommand;
@@ -36,7 +35,7 @@ import static org.lwjgl.opengl.GL40.*;
  */
 public class Renderer extends Contextual implements Runnable {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Render.class);
+    private static final Logger LOG = LoggerFactory.getLogger(Renderer.class);
 
     private static final ClearCommand CLEAR_COMMAND = ClearCommand.builder()
             .renderKey(RenderKey.builder()
@@ -85,7 +84,6 @@ public class Renderer extends Contextual implements Runnable {
             return;
         }
 
-        subscribe(this::handleRenderEvent, Render.class);
         subscribe(this::handleScreenMode, ScreenMode.class);
 
         thread.setUncaughtExceptionHandler(this::handleRenderingThreadException);
@@ -242,11 +240,6 @@ public class Renderer extends Contextual implements Runnable {
         glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
         glViewport(0, 0, width, height);
-    }
-
-    private void handleRenderEvent(final Render evt) {
-        state.add(CLEAR_COLOR_COMMAND);
-        state.add(CLEAR_COMMAND);
     }
 
     private void handleScreenMode(final ScreenMode evt) {
