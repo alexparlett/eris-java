@@ -4,12 +4,14 @@ import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.components.FileSystem;
 import org.python.core.Py;
-import org.python.core.PyDictionary;
+import org.python.core.PyStringMap;
 import org.python.core.PySystemState;
 import org.python.util.PythonInterpreter;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static java.util.Objects.nonNull;
 
@@ -21,8 +23,9 @@ import static java.util.Objects.nonNull;
  */
 public class ScriptEngine extends Contextual {
 
+    public static final String GLOBAL_PREFIX = "_";
     ScriptClassLoader scriptClassLoader = new ScriptClassLoader();
-    PyDictionary pythonGlobalsTable = new PyDictionary();
+    Map<String, Object> pythonGlobalsTable = new HashMap<>();
     PySystemState pySystemState;
     PythonInterpreter pythonInterpreter;
 
@@ -39,6 +42,9 @@ public class ScriptEngine extends Contextual {
     }
 
     public void bindGlobal(String name, Object global) {
+        if (!name.startsWith(GLOBAL_PREFIX)) {
+            name = GLOBAL_PREFIX + name;
+        }
         bindClass(global.getClass());
         pythonGlobalsTable.put(name, global);
     }
@@ -50,7 +56,7 @@ public class ScriptEngine extends Contextual {
     public void initialize() {
         bindings.forEach(scriptBinding -> scriptBinding.bind(this));
 
-        pySystemState = new PySystemState();
+        pySystemState = Py.getSystemState();
         pySystemState.setClassLoader(scriptClassLoader);
         pySystemState.setCurrentWorkingDir(FileSystem.getApplicationDataDirectory().toString());
 
@@ -58,17 +64,19 @@ public class ScriptEngine extends Contextual {
         pySystemState.path.append(Py.java2py(FileSystem.getApplicationDirectory().toString()));
         pySystemState.path.append(Py.java2py(FileSystem.getApplicationDirectory().resolve("Data").toString()));
 
-        pythonInterpreter = new PythonInterpreter(pythonGlobalsTable, pySystemState);
+        PyStringMap builtins = (PyStringMap) pySystemState.getBuiltins();
+        pythonGlobalsTable.forEach((key,value) -> builtins.getMap().put(key, Py.java2py(value)));
+
+//        pySystemState.stdout = Py.java2py(new OutWriter());
+//        pySystemState.stderr = Py.java2py(new ErrWriter());
+//
+        pythonInterpreter = new PythonInterpreter(null, pySystemState);
     }
 
     public void shutdown() {
         if (nonNull(pySystemState)) {
             pySystemState.close();
         }
-    }
-
-    public PyDictionary getPythonGlobalsTable() {
-        return pythonGlobalsTable;
     }
 
     public PySystemState getPySystemState() {

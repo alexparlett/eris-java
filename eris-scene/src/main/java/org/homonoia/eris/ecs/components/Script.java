@@ -20,7 +20,7 @@ public class Script implements Component {
     public Script(ScriptEngine scriptEngine, Python pythonFile) {
         this.scriptEngine = scriptEngine;
         this.pythonFile = pythonFile;
-        this.interpreter = new PythonInterpreter(scriptEngine.getPythonGlobalsTable(), scriptEngine.getPySystemState());
+        this.interpreter = new PythonInterpreter(null, scriptEngine.getPySystemState());
     }
 
     public void execute() {
