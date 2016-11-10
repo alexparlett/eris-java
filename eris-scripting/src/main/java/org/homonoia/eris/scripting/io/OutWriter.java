@@ -16,19 +16,30 @@ public class OutWriter extends Writer {
 
     private final static Logger LOGGER = LoggerFactory.getLogger("org.homonoia.eris.scripting.out");
 
+    private StringBuilder builder = new StringBuilder();
 
     @Override
     public void write(char[] cbuf, int off, int len) throws IOException {
-        LOGGER.info(String.valueOf(cbuf));
+        synchronized (lock) {
+            builder.append(cbuf, off, len);
+        }
     }
 
     @Override
     public void flush() throws IOException {
-        //no op
+        synchronized (lock) {
+            if (builder.length() > 0 || builder.charAt(0) != '\n') {
+                LOGGER.info(builder.toString());
+            }
+            builder.delete(0, builder.length());
+        }
     }
 
     @Override
     public void close() throws IOException {
-        //no op
+        synchronized (lock) {
+            builder.delete(0, builder.length());
+            builder = null;
+        }
     }
 }

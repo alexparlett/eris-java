@@ -16,18 +16,32 @@ public class ErrWriter extends Writer {
 
     private final static Logger LOGGER = LoggerFactory.getLogger("org.homonoia.eris.scripting.err");
 
+    private StringBuilder builder = new StringBuilder();
+
+
+
     @Override
     public void write(char[] cbuf, int off, int len) throws IOException {
-        LOGGER.error(String.valueOf(cbuf));
+        synchronized (lock) {
+            builder.append(cbuf, off, len);
+        }
     }
 
     @Override
     public void flush() throws IOException {
-        //No op
+        synchronized (lock) {
+            if (builder.length() > 0 || builder.charAt(0) != '\n') {
+                LOGGER.info(builder.toString());
+            }
+            builder.delete(0, builder.length());
+        }
     }
 
     @Override
     public void close() throws IOException {
-        //No op
+        synchronized (lock) {
+            builder.delete(0, builder.length());
+            builder = null;
+        }
     }
 }

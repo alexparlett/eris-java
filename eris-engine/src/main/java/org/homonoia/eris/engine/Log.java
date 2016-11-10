@@ -13,6 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 /**
  * Copyright (c) 2015-2016 the Eris project.
  *
@@ -20,8 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @since 01/03/2016
  */
 public class Log extends Contextual implements ScriptBinding {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(Log.class);
 
     @Autowired
     public Log(final Context context) {
@@ -58,23 +59,36 @@ public class Log extends Contextual implements ScriptBinding {
         context.stop();
     }
 
-    public void info(String msg, Object... args) {
-        LOGGER.info(msg, args);
+    public void info(String src, String msg, Object... args) {
+        Logger logger = getLogger(src);
+        logger.info(msg, args);
     }
 
-    public void warn(String msg, Object... args) {
-        LOGGER.warn(msg, args);
+    public void warn(String src, String msg, Object... args) {
+        Logger logger = getLogger(src);
+        logger.warn(msg, args);
     }
 
-    public void error(String msg, Object... args) {
-        LOGGER.error(msg, args);
+    public void error(String src, String msg, Object... args) {
+        Logger logger = getLogger(src);
+        logger.error(msg, args);
     }
 
-    public void debug(String msg, Object... args) {
-        LOGGER.debug(msg, args);
+    public void debug(String src, String msg, Object... args) {
+        Logger logger = getLogger(src);
+        logger.debug(msg, args);
     }
 
-    public void trace(String msg, Object... args) {
-        LOGGER.trace(msg, args);
+    public void trace(String src, String msg, Object... args) {
+        Logger logger = getLogger(src);
+        logger.trace(msg, args);
+    }
+
+    private Logger getLogger(String src) {
+        if (src.endsWith("$py.class")) {
+            Path path = Paths.get(src.replace("$py.class", ".py"));
+            src = path.getFileName().toString();
+        }
+        return LoggerFactory.getLogger(src);
     }
 }

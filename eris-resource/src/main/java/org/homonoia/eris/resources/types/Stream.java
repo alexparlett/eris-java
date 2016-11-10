@@ -35,9 +35,9 @@ public class Stream extends Resource {
 
     public InputStream asInputStream() {
         try {
-            return fileSystem.newInputStream(getPath());
+            return fileSystem.newInputStream(getLocation());
         } catch (IOException e) {
-            LOG.error("Failed to create InputStream from Stream for {}", getPath(), e);
+            LOG.error("Failed to create InputStream from Stream for {}", getLocation(), e);
             return null;
         }
     }
@@ -46,7 +46,7 @@ public class Stream extends Resource {
         try {
             return fileSystem.newOutputStream(getPath());
         } catch (IOException e) {
-            LOG.error("Failed to create InputStream from Stream for {}", getPath(), e);
+            LOG.error("Failed to create InputStream from Stream for {}", getLocation(), e);
             return null;
         }
     }

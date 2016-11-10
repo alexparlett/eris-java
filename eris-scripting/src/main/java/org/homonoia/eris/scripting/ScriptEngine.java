@@ -3,6 +3,8 @@ package org.homonoia.eris.scripting;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.components.FileSystem;
+import org.homonoia.eris.scripting.io.ErrWriter;
+import org.homonoia.eris.scripting.io.OutWriter;
 import org.python.core.Py;
 import org.python.core.PyStringMap;
 import org.python.core.PySystemState;
@@ -13,8 +15,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Objects.nonNull;
-
 /**
  * Copyright (c) 2015-2016 Homonoia Studios.
  *
@@ -23,10 +23,8 @@ import static java.util.Objects.nonNull;
  */
 public class ScriptEngine extends Contextual {
 
-    public static final String GLOBAL_PREFIX = "_";
     ScriptClassLoader scriptClassLoader = new ScriptClassLoader();
     Map<String, Object> pythonGlobalsTable = new HashMap<>();
-    PySystemState pySystemState;
     PythonInterpreter pythonInterpreter;
 
     @Autowired
@@ -42,9 +40,6 @@ public class ScriptEngine extends Contextual {
     }
 
     public void bindGlobal(String name, Object global) {
-        if (!name.startsWith(GLOBAL_PREFIX)) {
-            name = GLOBAL_PREFIX + name;
-        }
         bindClass(global.getClass());
         pythonGlobalsTable.put(name, global);
     }
@@ -56,7 +51,7 @@ public class ScriptEngine extends Contextual {
     public void initialize() {
         bindings.forEach(scriptBinding -> scriptBinding.bind(this));
 
-        pySystemState = Py.getSystemState();
+        PySystemState pySystemState = Py.getSystemState();
         pySystemState.setClassLoader(scriptClassLoader);
         pySystemState.setCurrentWorkingDir(FileSystem.getApplicationDataDirectory().toString());
 
@@ -67,23 +62,23 @@ public class ScriptEngine extends Contextual {
         PyStringMap builtins = (PyStringMap) pySystemState.getBuiltins();
         pythonGlobalsTable.forEach((key,value) -> builtins.getMap().put(key, Py.java2py(value)));
 
-//        pySystemState.stdout = Py.java2py(new OutWriter());
-//        pySystemState.stderr = Py.java2py(new ErrWriter());
-//
-        pythonInterpreter = new PythonInterpreter(null, pySystemState);
+        pythonInterpreter = PythonInterpreter.threadLocalStateInterpreter(null);
+        pythonInterpreter.setErr(new ErrWriter());
+        pythonInterpreter.setOut(new OutWriter());
     }
 
     public void shutdown() {
-        if (nonNull(pySystemState)) {
-            pySystemState.close();
-        }
-    }
-
-    public PySystemState getPySystemState() {
-        return pySystemState;
     }
 
     public PythonInterpreter getPythonInterpreter() {
         return pythonInterpreter;
+    }
+
+    public Map<String, Object> getPythonGlobalsTable() {
+        return pythonGlobalsTable;
+    }
+
+    public ScriptClassLoader getScriptClassLoader() {
+        return scriptClassLoader;
     }
 }

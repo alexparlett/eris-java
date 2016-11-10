@@ -150,7 +150,8 @@ public class ResourceCache extends Contextual implements ScriptBinding {
             try {
                 Path fullPath = findFile(path).orElseThrow(() -> new IOException("Resource does not exist."));
                 T newResource = clazz.getConstructor(Context.class).newInstance(getContext());
-                newResource.setPath(fullPath);
+                newResource.setPath(path);
+                newResource.setLocation(fullPath);
                 return newResource;
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException | IOException e) {
                 LOG.error("Failed to create new {} {}.", clazz, path, e);

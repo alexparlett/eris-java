@@ -2,7 +2,6 @@ package org.homonoia.eris.ecs.components;
 
 import org.homonoia.eris.ecs.Component;
 import org.homonoia.eris.resources.types.Python;
-import org.homonoia.eris.scripting.ScriptEngine;
 import org.python.util.PythonInterpreter;
 
 /**
@@ -13,14 +12,14 @@ import org.python.util.PythonInterpreter;
  */
 public class Script implements Component {
 
-    private final ScriptEngine scriptEngine;
     private final PythonInterpreter interpreter;
     private final Python pythonFile;
 
-    public Script(ScriptEngine scriptEngine, Python pythonFile) {
-        this.scriptEngine = scriptEngine;
+    public Script(Python pythonFile) {
         this.pythonFile = pythonFile;
-        this.interpreter = new PythonInterpreter(null, scriptEngine.getPySystemState());
+
+        this.interpreter = PythonInterpreter.threadLocalStateInterpreter(null);
+        this.interpreter.set("__file__", pythonFile.getPath().toString());
     }
 
     public void execute() {
