@@ -2,12 +2,18 @@ package org.homonoia.eris.ecs;
 
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
+import org.homonoia.eris.ecs.annotations.Multiple;
 import org.homonoia.eris.ecs.annotations.Requires;
 import org.homonoia.eris.ecs.exceptions.MissingRequiredComponentException;
 import org.homonoia.eris.events.ComponentAdded;
 import org.homonoia.eris.events.ComponentRemoved;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -36,26 +42,29 @@ public final class Entity extends Contextual {
     public Entity add(final Component component) throws MissingRequiredComponentException {
         Objects.requireNonNull(component);
 
-        if (component.getClass().isAnnotationPresent(Requires.class)) {
+        if (component instanceof ScriptComponent) {
+            ScriptComponent scriptComponent = (ScriptComponent) component;
+            Class<? extends Component>[] classes = scriptComponent.classes();
+            boolean autoAdd = scriptComponent.autoAdd();
+            parseRequiredClass(classes, autoAdd, component);
+
+            boolean multiple = scriptComponent.multiple();
+            if (!multiple) {
+                remove(component.getClass());
+            }
+        } else if (component.getClass().isAnnotationPresent(Requires.class)) {
             Requires requires = component.getClass().getAnnotation(Requires.class);
-            for(Class<? extends Component> require : requires.classes()) {
-                boolean has = has(require);
-                if (!has && !requires.autoAdd()) {
-                    throw new MissingRequiredComponentException(require, this, component);
-                } else if (!has) {
-                    try {
-                        add(require.newInstance());
-                    } catch (InstantiationException | IllegalAccessException e) {
-                        throw new RuntimeException("Cannot add " + require.getName() + " automatically to entity when required as it does not have a valid no args constructor");
-                    }
-                }
+            Class<? extends Component>[] classes = requires.classes();
+            boolean autoAdd = requires.autoAdd();
+            parseRequiredClass(classes, autoAdd, component);
+
+            boolean multiple = component.getClass().isAnnotationPresent(Multiple.class);
+            if (!multiple) {
+                remove(component.getClass());
             }
         }
 
-        remove(component.getClass());
-
         components.add(component);
-
         publish(ComponentAdded.builder().component(component));
 
         return this;
@@ -136,5 +145,20 @@ public final class Entity extends Contextual {
     @Override
     public int hashCode() {
         return components != null ? components.hashCode() : 0;
+    }
+
+    private void parseRequiredClass(Class<? extends Component>[] requires, boolean autoAdd, Component component) throws MissingRequiredComponentException {
+        for(Class<? extends Component> require : requires) {
+            boolean has = has(require);
+            if (!has && !autoAdd) {
+                throw new MissingRequiredComponentException(require, this, component);
+            } else if (!has) {
+                try {
+                    add(require.newInstance());
+                } catch (InstantiationException | IllegalAccessException e) {
+                    throw new RuntimeException("Cannot add " + require.getName() + " automatically to entity when required as it does not have a valid no args constructor");
+                }
+            }
+        }
     }
 }

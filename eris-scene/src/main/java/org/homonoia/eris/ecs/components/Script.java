@@ -1,6 +1,7 @@
 package org.homonoia.eris.ecs.components;
 
 import org.homonoia.eris.ecs.Component;
+import org.homonoia.eris.ecs.annotations.Multiple;
 import org.homonoia.eris.resources.types.Python;
 import org.python.util.PythonInterpreter;
 
@@ -10,6 +11,7 @@ import org.python.util.PythonInterpreter;
  * @author alexparlett
  * @since 09/11/2016
  */
+@Multiple
 public class Script implements Component {
 
     private final PythonInterpreter interpreter;
@@ -28,5 +30,21 @@ public class Script implements Component {
 
     public void bind(String key, Object value) {
         interpreter.set(key, value);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Script script = (Script) o;
+
+        return pythonFile != null ? pythonFile.equals(script.pythonFile) : script.pythonFile == null;
+
+    }
+
+    @Override
+    public int hashCode() {
+        return pythonFile != null ? pythonFile.hashCode() : 0;
     }
 }

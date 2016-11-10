@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Objects.nonNull;
+
 /**
  * Copyright (c) 2015-2016 Homonoia Studios.
  *
@@ -68,6 +70,9 @@ public class ScriptEngine extends Contextual {
     }
 
     public void shutdown() {
+        if (nonNull(pythonInterpreter)) {
+            pythonInterpreter.close();
+        }
     }
 
     public PythonInterpreter getPythonInterpreter() {
