@@ -138,15 +138,15 @@ public class Transform implements Component {
     }
 
     public Vector3f up() {
-        return transform.positiveX(Up);
+        return getRotation().getEulerAnglesXYZ(new Vector3f()).mul(Up);
     }
 
     public Vector3f right() {
-        return transform.positiveY(Right);
+        return getRotation().getEulerAnglesXYZ(new Vector3f()).mul(Right);
     }
 
     public Vector3f forward() {
-        return transform.positiveZ(Forward);
+        return getRotation().getEulerAnglesXYZ(new Vector3f()).mul(Forward);
     }
 
     public int getLayer() {

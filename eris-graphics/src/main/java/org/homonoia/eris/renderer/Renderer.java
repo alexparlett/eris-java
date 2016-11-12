@@ -84,7 +84,7 @@ public class Renderer extends Contextual implements Runnable {
     private final AtomicBoolean threadExit = new AtomicBoolean(false);
     private final AtomicBoolean viewportDirty = new AtomicBoolean(false);
     private Matrix4f view = new Matrix4f();
-    private Matrix4f perspective = new Matrix4f();
+    private Matrix4f projection = new Matrix4f();
     private final Thread thread = new Thread(this);
     private final RenderState state = new SwappingRenderState(this);
 
@@ -153,13 +153,13 @@ public class Renderer extends Contextual implements Runnable {
         this.view = view;
     }
 
-    public Matrix4f getCurrentPerspective() {
-        return perspective;
+    public Matrix4f getCurrentProjection() {
+        return projection;
     }
 
-    public void setCurrentPerspective(final Matrix4f perspective) {
-        assert (perspective != null);
-        this.perspective = perspective;
+    public void setCurrentProjection(final Matrix4f projection) {
+        assert (projection != null);
+        this.projection = projection;
     }
 
     public void bindUniform(final int location, final int type, final java.lang.Object data) {

@@ -17,11 +17,11 @@ public class CameraCommand extends RenderCommand<CameraCommand> {
 
     private static final Pool<CameraCommand> POOL = new ExpandingPool<>(4, Integer.MAX_VALUE, CameraCommand.class);
     private Matrix4f view = new Matrix4f().identity();
-    private Matrix4f perspective = new Matrix4f().identity();
+    private Matrix4f projection = new Matrix4f().identity();
 
     @Override
     public void process(final Renderer renderer, final RenderKey renderKey) {
-        renderer.setCurrentPerspective(perspective);
+        renderer.setCurrentProjection(projection);
         renderer.setCurrentView(view);
     }
 
@@ -35,8 +35,8 @@ public class CameraCommand extends RenderCommand<CameraCommand> {
         return this;
     }
 
-    public CameraCommand perspective(Matrix4f perspective) {
-        this.perspective.set(perspective);
+    public CameraCommand projection(Matrix4f projection) {
+        this.projection.set(projection);
         return this;
     }
 

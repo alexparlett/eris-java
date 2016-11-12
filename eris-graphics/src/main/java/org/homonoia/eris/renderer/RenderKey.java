@@ -88,7 +88,7 @@ public class RenderKey {
         private long targetLayer;
         private long transparency;
         private long command;
-        private long extra;
+        private long extra = 0;
         private long depth;
         private long material;
 

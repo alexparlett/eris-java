@@ -12,6 +12,8 @@ import org.joml.Matrix4f;
 
 import java.util.Optional;
 
+import static java.util.Objects.isNull;
+
 /**
  * Copyright (c) 2015-2016 the Eris project.
  *
@@ -20,8 +22,6 @@ import java.util.Optional;
  */
 public class Draw3dCommand extends RenderCommand<Draw3dCommand> {
 
-    public static int ID = Draw3dCommand.class.hashCode();
-
     private static final Pool<Draw3dCommand> POOL = new ExpandingPool<>(4, Integer.MAX_VALUE, Draw3dCommand.class);
     private SubModel model;
     private Material material;
@@ -29,11 +29,11 @@ public class Draw3dCommand extends RenderCommand<Draw3dCommand> {
 
     @Override
     public void process(final Renderer renderer, final RenderKey previousRenderKey) {
-        if (previousRenderKey.getMaterial() != getRenderKey().getMaterial()) {
+        if (isNull(previousRenderKey) || previousRenderKey.getMaterial() != getRenderKey().getMaterial()) {
             material.use();
 
             findAndBindUniform("view", renderer, renderer.getCurrentView());
-            findAndBindUniform("perspective", renderer, renderer.getCurrentPerspective());
+            findAndBindUniform("projection", renderer, renderer.getCurrentProjection());
         }
 
         findAndBindUniform("model", renderer, transform);

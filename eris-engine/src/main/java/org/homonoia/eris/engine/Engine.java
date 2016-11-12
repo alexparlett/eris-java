@@ -133,8 +133,6 @@ public class Engine extends Contextual implements ScriptBinding {
         renderer.initialize();
         input.initialize();
         scriptEngine.initialize();
-
-        graphics.show();
     }
 
     public void run() {
@@ -143,6 +141,7 @@ public class Engine extends Contextual implements ScriptBinding {
         Update.Builder updateBuilder = Update.builder();
         Timer timer = new Timer();
 
+        graphics.show();
         while(!shouldExit.get()){
             delta += timer.getElapsedTime(true);
             if (delta >= (1000.0 / 60.0)) {

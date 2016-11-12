@@ -9,7 +9,7 @@ import java.text.ParseException;
  */
 public class Matrix4dParser {
     public static Matrix4d parse(final String asString) throws ParseException {
-        String[] tokens = asString.split(" \n\r");
+        String[] tokens = asString.trim().split(" \n\r");
         if (tokens.length != 16) {
             throw new ParseException("Cannot parse Matrix4d from " + asString + " invalid number of arguments", 0);
         }

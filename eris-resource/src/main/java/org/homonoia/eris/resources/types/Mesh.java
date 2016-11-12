@@ -182,7 +182,12 @@ public class Mesh extends Resource {
 
     private Vector2f processTextureCoord(String line) throws ParseException {
         String substring = line.substring(OBJ_TEXTURE_COORDS.length() + 1);
-        return Vector2fParser.parse(substring);
+        try {
+            return Vector2fParser.parse(substring);
+        } catch (ParseException pe) {
+            Vector3f parse = Vector3fParser.parse(substring);
+            return new Vector2f(parse.x(), parse.y());
+        }
     }
 
     private Vector3f processGeometry(String line) throws ParseException {

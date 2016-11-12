@@ -9,7 +9,7 @@ import java.text.ParseException;
  */
 public class Vector3fParser {
     public static Vector3f parse(final String asString) throws ParseException {
-        String[] tokens = asString.split(" ");
+        String[] tokens = asString.trim().split(" ");
         if (tokens.length != 3) {
             throw new ParseException("Cannot parse Vector3f from " + asString + " invalid number of arguments, found " + tokens.length, 0);
         }

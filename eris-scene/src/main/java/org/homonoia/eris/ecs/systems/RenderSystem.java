@@ -13,9 +13,13 @@ import org.homonoia.eris.events.frame.Update;
 import org.homonoia.eris.graphics.drawables.model.SubModel;
 import org.homonoia.eris.renderer.RenderKey;
 import org.homonoia.eris.renderer.Renderer;
+import org.homonoia.eris.renderer.commands.CameraCommand;
+import org.homonoia.eris.renderer.commands.ClearColorCommand;
+import org.homonoia.eris.renderer.commands.ClearCommand;
 import org.homonoia.eris.renderer.commands.Draw3dCommand;
 import org.joml.FrustumIntersection;
 import org.joml.Matrix4f;
+import org.joml.Vector4f;
 
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletionService;
@@ -26,7 +30,10 @@ import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
+import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 
 /**
  * Copyright (c) 2015-2016 Homonoia Studios.
@@ -51,22 +58,47 @@ public class RenderSystem extends EntitySystem {
 
     @Override
     public void update(final Update update) throws RenderingException {
-        long totalCount = cameraFamily.getEntities().stream()
-                .map(entity -> completionService.submit(new CameraSceneParser(renderer, renderableFamily, entity)))
-                .count();
-        long currentCount = 0L;
+        if (cameraFamily.getEntities().isEmpty()) {
+            renderer.getState().add(ClearCommand.newInstance()
+                    .bitfield(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+                    .renderKey(RenderKey.builder()
+                            .target(0)
+                            .targetLayer(0)
+                            .command(0)
+                            .extra(0)
+                            .depth(0)
+                            .material(0)
+                            .build()));
 
-        try {
-            while (currentCount < totalCount) {
-                Future<Boolean> take = completionService.take();
-                if (nonNull(take)) {
-                    take.get();
-                    currentCount++;
+            renderer.getState().add(ClearColorCommand.newInstance()
+                    .color(new Vector4f(0,0,0,1))
+                    .renderKey(RenderKey.builder()
+                            .target(0)
+                            .targetLayer(0)
+                            .command(1)
+                            .extra(0)
+                            .depth(0)
+                            .material(0)
+                            .build()));
+        } else {
+            long totalCount = cameraFamily.getEntities().stream()
+                    .map(entity -> completionService.submit(new CameraSceneParser(renderer, renderableFamily, entity)))
+                    .count();
+            long currentCount = 0L;
+            try {
+                while (currentCount < totalCount) {
+                    Future<Boolean> take = completionService.take();
+                    if (nonNull(take)) {
+                        take.get();
+                        currentCount++;
+                    }
                 }
+            } catch (InterruptedException | ExecutionException e) {
+                throw new RenderingException("Failed processing scene", e);
             }
-        } catch (InterruptedException | ExecutionException e) {
-            throw new RenderingException("Failed processing scene", e);
         }
+
+        renderer.getState().swap();
     }
 
     protected static final class CameraSceneParser implements Callable<Boolean> {
@@ -86,11 +118,47 @@ public class RenderSystem extends EntitySystem {
             Transform transform = cameraEntity.get(Transform.class).get();
             Camera camera = cameraEntity.get(Camera.class).get();
 
-            Matrix4f mat4 = new Matrix4f().identity()
-                    .perspective(camera.getFov(), camera.getAspect(), camera.getNear(), camera.getFar())
-                    .lookAt(transform.getTranslation(), transform.forward(), transform.up());
+            renderer.getState().add(ClearCommand.newInstance()
+                    .bitfield(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+                    .renderKey(RenderKey.builder()
+                            .target(isNull(camera.getRenderTarget()) ? 0 : camera.getRenderTarget().getHandle())
+                            .targetLayer(0)
+                            .command(0)
+                            .extra(0)
+                            .depth(0)
+                            .material(0)
+                            .build()));
 
-            FrustumIntersection intersection = new FrustumIntersection(mat4);
+            renderer.getState().add(ClearColorCommand.newInstance()
+                    .color(camera.getBackgroundColor())
+                    .renderKey(RenderKey.builder()
+                            .target(isNull(camera.getRenderTarget()) ? 0 : camera.getRenderTarget().getHandle())
+                            .targetLayer(0)
+                            .command(1)
+                            .extra(0)
+                            .depth(0)
+                            .material(0)
+                            .build()));
+
+            Matrix4f view = transform.get().invert(new Matrix4f());
+            Matrix4f perspective = new Matrix4f().identity().perspective(camera.getFov(), camera.getAspect(), camera.getNear(), camera.getFar());
+            renderer.getState().add(CameraCommand.newInstance()
+                    .view(view)
+                    .projection(perspective)
+                    .renderKey(RenderKey.builder()
+                            .target(isNull(camera.getRenderTarget()) ? 0 : camera.getRenderTarget().getHandle())
+                            .targetLayer(0)
+                            .command(2)
+                            .extra(0)
+                            .depth(0)
+                            .material(0)
+                            .build()));
+
+            Matrix4f frustum = new Matrix4f().perspective(camera.getFov(), camera.getAspect(), camera.getNear(), camera.getFar())
+                    .translate(transform.getTranslation())
+                    .rotate(transform.getRotation());
+
+            FrustumIntersection intersection = new FrustumIntersection(frustum);
 
             renderableFamily.getEntities()
                     .parallelStream()
@@ -121,10 +189,10 @@ public class RenderSystem extends EntitySystem {
 
         protected RenderKey buildRenderKey(Transform transform, Camera camera, Transform rndrTransform, SubModel subModel) {
             return RenderKey.builder()
-                    .command(Draw3dCommand.ID)
+                    .command(3)
                     .material(subModel.getMaterial().getHandle())
                     .targetLayer(rndrTransform.getLayer())
-                    .target(nonNull(camera.getRenderTarget()) ? 0 : camera.getRenderTarget().getHandle())
+                    .target(isNull(camera.getRenderTarget()) ? 0 : camera.getRenderTarget().getHandle())
                     .transparency(0)
                     .depth((long) rndrTransform.getTranslation().distance(transform.getTranslation()))
                     .build();
@@ -133,10 +201,8 @@ public class RenderSystem extends EntitySystem {
         protected Predicate<Entity> filterEntities(Transform transform, Camera camera, FrustumIntersection intersection) {
             return entity -> {
                 Transform rndrTransform = entity.get(Transform.class).get();
-                float distance = rndrTransform.getTranslation().distance(transform.getTranslation());
-                boolean inLayer = camera.getLayerMask().contains(rndrTransform.getLayer());
-                boolean notClipped = distance <= camera.getFar() && distance >= camera.getNear();
-                return inLayer && notClipped && intersection.testPoint(rndrTransform.getTranslation());
+                boolean inLayer = camera.getLayerMask().isEmpty() || camera.getLayerMask().contains(rndrTransform.getLayer());
+                return inLayer && intersection.testPoint(rndrTransform.getTranslation());
             };
         }
     }

@@ -9,7 +9,7 @@ import java.text.ParseException;
  */
 public class Vector2fParser {
     public static Vector2f parse(final String asString) throws ParseException {
-        String[] tokens = asString.split(" ");
+        String[] tokens = asString.trim().split(" ");
         if (tokens.length != 2) {
             throw new ParseException("Cannot parse Vector2f from " + asString + " invalid number of arguments", 0);
         }

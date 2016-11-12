@@ -8,7 +8,7 @@ import org.joml.Matrix3d;
  */
 public class Matrix3dParser {
     public Matrix3d parse(final String asString) throws ParseException {
-        String[] tokens = asString.split(" \n\r");
+        String[] tokens = asString.trim().split(" \n\r");
         if (tokens.length != 9) {
             throw new ParseException("Cannot parse Matrix3d from " + asString + " invalid number of arguments", 0);
         }

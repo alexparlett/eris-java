@@ -60,7 +60,12 @@ public class Camera implements Component {
     }
 
     public Camera fov(float fov) {
-        this.fov = fov;
+        this.fov = (float) Math.toRadians(fov);
+        return this;
+    }
+
+    public Camera aspect(float aspect) {
+        this.aspect = aspect;
         return this;
     }
 
@@ -76,9 +81,5 @@ public class Camera implements Component {
 
     public float getAspect() {
         return aspect;
-    }
-
-    public void setAspect(float aspect) {
-        this.aspect = aspect;
     }
 }

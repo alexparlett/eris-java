@@ -9,7 +9,7 @@ import java.text.ParseException;
  */
 public class Vector3dParser {
     public static Vector3d parse(final String asString) throws ParseException {
-        String[] tokens = asString.split(" ");
+        String[] tokens = asString.trim().split(" ");
         if (tokens.length != 3) {
             throw new ParseException("Cannot parse Vector3d from " + asString + " invalid number of arguments", 0);
         }

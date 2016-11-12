@@ -5,9 +5,9 @@ import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.events.ComponentAdded;
 import org.homonoia.eris.events.ComponentRemoved;
 
-import java.util.Objects;
+import java.util.Collections;
 import java.util.Set;
-import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 
 /**
@@ -18,15 +18,13 @@ import java.util.function.Predicate;
  */
 public class Family extends Contextual {
 
-    private Set<Entity> entities = new ConcurrentSkipListSet<>();
+    private Set<Entity> entities = Collections.newSetFromMap(new ConcurrentHashMap());
     private Set<Class<? extends Component>> watchedComponents;
 
     public Family(Context context, Set<Class<? extends Component>> watchedComponents) {
         super(context);
-        for (Class<? extends Component> watchComponent : watchedComponents) {
-            subscribe(this::handleComponentAdded, ComponentAdded.class, null, getComponentAddedPredicate(watchComponent));
-            subscribe(this::handleComponentRemoved, ComponentRemoved.class, null, getComponentRemovedPredicate(watchComponent));
-        }
+        subscribe(this::handleComponentAdded, ComponentAdded.class, null, getComponentAddedPredicate());
+        subscribe(this::handleComponentRemoved, ComponentRemoved.class, null, getComponentRemovedPredicate());
         this.watchedComponents = watchedComponents;
     }
 
@@ -57,12 +55,13 @@ public class Family extends Contextual {
         return result;
     }
 
-    private Predicate<ComponentAdded> getComponentAddedPredicate(final Class<? extends Component> watchClass) {
-        return componentAdded -> Objects.equals(componentAdded.getComponent().getClass(), watchClass);
+    private Predicate<ComponentAdded> getComponentAddedPredicate() {
+        return componentAdded -> watchedComponents.stream()
+                .allMatch(watchClass -> ((Entity)componentAdded.getSource()).has(watchClass));
     }
 
-    private Predicate<ComponentRemoved> getComponentRemovedPredicate(final Class<? extends Component> watchClass) {
-        return componentRemoved -> Objects.equals(componentRemoved.getComponent().getClass(), watchClass);
+    private Predicate<ComponentRemoved> getComponentRemovedPredicate() {
+        return componentRemoved -> watchedComponents.contains(componentRemoved.getComponent().getClass());
     }
 
     private void handleComponentAdded(final ComponentAdded componentAdded) {

@@ -9,7 +9,7 @@ import java.text.ParseException;
  */
 public class Matrix4fParser {
     public static Matrix4f parse(final String asString) throws ParseException {
-        String[] tokens = asString.split(" \n\r");
+        String[] tokens = asString.trim().split(" \n\r");
         if (tokens.length != 16) {
             throw new ParseException("Cannot parse Matrix4f from " + asString + " invalid number of arguments", 0);
         }

@@ -90,8 +90,8 @@ public abstract class Contextual {
      * @param filter      the filter
      */
     public synchronized <T extends Event> void subscribe(final Action1<T> eventAction, final Class<T> eventClass, final Object eventSrc, final Predicate<T> filter) {
-        Predicate<T> predicate = filter.and(eventSourcePredicate(eventSrc))
-                .and(eventClassPredicate(eventClass));
+        Predicate<T> predicate = (Predicate<T>) eventSourcePredicate(eventSrc).and(eventClassPredicate(eventClass));
+        predicate = predicate.and(filter);
 
         Subscription subscription = context.subscribe(eventAction, predicate);
         EventSubscription eventSubscription = EventSubscription.builder()

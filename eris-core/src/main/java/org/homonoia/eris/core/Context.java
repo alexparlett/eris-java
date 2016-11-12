@@ -13,6 +13,7 @@ import rx.subjects.Subject;
 import javax.annotation.PreDestroy;
 import java.lang.annotation.Annotation;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
@@ -25,13 +26,13 @@ public class Context implements ApplicationContextAware {
 
     public final static <T extends Event> Predicate<T> eventClassPredicate(Class eventClass) {
         return event -> Optional.ofNullable(eventClass)
-                .map(ec -> ec.equals(event.getClass()))
+                .map(ec -> Objects.equals(ec, event.getClass()))
                 .orElse(true);
     }
 
     public final static <T extends Event> Predicate<T> eventSourcePredicate(Object eventSource) {
         return event -> Optional.ofNullable(eventSource)
-                .map(es -> es.equals(event.getSource()))
+                .map(es -> Objects.equals(es, event.getSource()))
                 .orElse(true);
     }
 

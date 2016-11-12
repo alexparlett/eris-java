@@ -8,7 +8,7 @@ import org.joml.Matrix3f;
  */
 public class Matrix3fParser {
     public static Matrix3f parse(final String asString) throws ParseException {
-        String[] tokens = asString.split(" \n\r");
+        String[] tokens = asString.trim().split(" \n\r");
         if (tokens.length != 9) {
             throw new ParseException("Cannot parse Matrix3f from " + asString + " invalid number of arguments", 0);
         }

@@ -6,11 +6,10 @@ in VertexData
 } iData;
 
 uniform sampler2D diffuse;
-uniform vec3 ambient;
 
 out vec4 color;
 
 void main()
 {    
-	color = vec4(texture(diffuse, iData.texcoords)) * vec4(ambient, 1.0f);
+	color = vec4(texture(diffuse, iData.texcoords));
 }
