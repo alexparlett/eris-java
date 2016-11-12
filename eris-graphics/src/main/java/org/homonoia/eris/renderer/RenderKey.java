@@ -30,17 +30,17 @@ public class RenderKey {
         if (transparency != 0L) {
             key = target << 62;
             key |= targetLayer << 60;
-            key |= transparency << 58;
-            key |= command << 57;
-            key |= extra << 54;
+            key |= command << 58;
+            key |= transparency << 57;
+            key |= extra << 56;
             key |= -depth << 32;
             key |= material;
         } else {
             key = target << 62;
             key |= targetLayer << 60;
-            key |= transparency << 58;
-            key |= command << 57;
-            key |= extra << 54;
+            key |= command << 58;
+            key |= transparency << 57;
+            key |= extra << 56;
             key |= material << 24;
             key |= depth;
         }
