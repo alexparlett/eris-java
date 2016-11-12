@@ -1,5 +1,7 @@
 package org.homonoia.eris.renderer.commands;
 
+import org.homonoia.eris.core.collections.Pool;
+import org.homonoia.eris.core.collections.pools.ExpandingPool;
 import org.homonoia.eris.renderer.RenderCommand;
 import org.homonoia.eris.renderer.RenderKey;
 import org.homonoia.eris.renderer.Renderer;
@@ -12,36 +14,27 @@ import static org.lwjgl.opengl.GL11.glEnable;
  * @author alexparlett
  * @since 13/02/2016
  */
-public class EnableCommand extends RenderCommand {
+public class EnableCommand extends RenderCommand<EnableCommand> {
 
-    private final int capability;
-
-    protected EnableCommand(final Builder builder) {
-        super(builder);
-        this.capability = builder.capability;
-    }
+    private static final Pool<EnableCommand> POOL = new ExpandingPool<>(16, Integer.MAX_VALUE, EnableCommand.class);
+    private int capability;
 
     @Override
     public void process(final Renderer renderer, final RenderKey renderKey) {
         glEnable(capability);
     }
 
-    public static Builder builder() {
-        return new Builder();
+    @Override
+    public void free() {
+        POOL.free(this);
     }
 
-    public static class Builder extends RenderCommandBuilder<Builder> {
+    public EnableCommand capability(int capability) {
+        this.capability = capability;
+        return this;
+    }
 
-        private int capability;
-
-        @Override
-        public EnableCommand build() {
-            return new EnableCommand(this);
-        }
-
-        public Builder capability(final int capability) {
-            this.capability = capability;
-            return this;
-        }
+    public static EnableCommand newInstance() {
+        return POOL.obtain();
     }
 }

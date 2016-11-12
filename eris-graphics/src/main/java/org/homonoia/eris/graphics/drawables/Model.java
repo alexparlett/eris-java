@@ -1,14 +1,16 @@
 package org.homonoia.eris.graphics.drawables;
 
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import org.homonoia.eris.core.Constants;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.exceptions.ParseException;
-import org.homonoia.eris.core.parsers.*;
+import org.homonoia.eris.core.parsers.Vector3fParser;
 import org.homonoia.eris.graphics.GPUResource;
 import org.homonoia.eris.graphics.Graphics;
 import org.homonoia.eris.graphics.drawables.model.SubModel;
-import org.homonoia.eris.graphics.drawables.sp.Uniform;
 import org.homonoia.eris.renderer.Renderer;
 import org.homonoia.eris.resources.Resource;
 import org.homonoia.eris.resources.cache.ResourceCache;
@@ -20,7 +22,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.file.Paths;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Created by alexparlett on 07/05/2016.
@@ -77,76 +82,11 @@ public class Model extends Resource implements GPUResource {
                         .orElseThrow(() -> new ParseException("mesh specified for {0} not found", getPath()))
                         .orElseThrow(() -> new ParseException("mesh is required for models, e.g. 'mesh': 'Meshes/sphere.obj'"));
 
-                Map<String, Uniform> uniforms = new HashMap<>();
-                try {
-                    Optional<JsonArray> maybeUniforms = Optional.ofNullable(subModelJson.getAsJsonArray("uniforms"));
-                    maybeUniforms.ifPresent(ues -> ues.forEach(ue -> {
-                        JsonObject object = ue.getAsJsonObject();
-
-                        String type = Optional.ofNullable(object.getAsJsonPrimitive("type"))
-                                .map(JsonPrimitive::getAsString)
-                                .orElseThrow(() -> new JsonIOException("type element missing"));
-
-                        String name = Optional.ofNullable(object.getAsJsonPrimitive("name"))
-                                .map(JsonPrimitive::getAsString)
-                                .orElseThrow(() -> new JsonIOException("name element missing"));
-
-                        Object data = Optional.ofNullable(object.getAsJsonPrimitive("value"))
-                                .map(jsonPrimitive -> {
-                                    try {
-                                        if (type == "float") {
-                                            return jsonPrimitive.getAsFloat();
-                                        } else if (type.equals("vec2")) {
-                                            return Vector2fParser.parse(jsonPrimitive.getAsString());
-                                        } else if (type.equals("vec3")) {
-                                            return Vector3fParser.parse(jsonPrimitive.getAsString());
-                                        } else if (type.equals("vec4")) {
-                                            return Vector4fParser.parse(jsonPrimitive.getAsString());
-                                        } else if (type.equals("int")) {
-                                            return jsonPrimitive.getAsInt();
-                                        } else if (type.equals("ivec2")) {
-                                            return Vector2iParser.parse(jsonPrimitive.getAsString());
-                                        } else if (type.equals("ivec3")) {
-                                            return Vector3iParser.parse(jsonPrimitive.getAsString());
-                                        } else if (type.equals("ivec4")) {
-                                            return Vector4iParser.parse(jsonPrimitive.getAsString());
-                                        } else if (type.equals("bool")) {
-                                            return jsonPrimitive.getAsBoolean();
-                                        } else if (type.equals("mat3")) {
-                                            return Matrix3fParser.parse(jsonPrimitive.getAsString());
-                                        } else if (type.equals("mat4")) {
-                                            return Matrix4fParser.parse(jsonPrimitive.getAsString());
-                                        } else if (type.equals("double")) {
-                                            return jsonPrimitive.getAsDouble();
-                                        } else if (type.equals("dvec2")) {
-                                            return Vector2dParser.parse(jsonPrimitive.getAsString());
-                                        } else if (type.equals("dvec3")) {
-                                            return Vector3dParser.parse(jsonPrimitive.getAsString());
-                                        } else if (type.equals("dvec4")) {
-                                            return Vector4dParser.parse(jsonPrimitive.getAsString());
-                                        } else {
-                                            throw new JsonIOException("invalid value arg, type is not supported");
-                                        }
-                                    } catch (java.text.ParseException e) {
-                                        throw new JsonIOException("invalid value arg, data invalid", e);
-                                    }
-                                })
-                                .orElse(null);
-
-                        buildUniform(name, data, uniforms, material.getShaderProgram());
-
-                    }));
-                } catch (JsonParseException ex) {
-                    reset();
-                    throw new ParseException("Parsing Uniform failed.", ex);
-                }
-
                 subModels.add(SubModel.builder()
                         .material(material)
                         .mesh(mesh)
                         .scale(scale)
                         .origin(origin)
-                        .uniforms(uniforms)
                         .build());
             });
         } catch (ParseException | IllegalStateException ex) {
@@ -201,29 +141,5 @@ public class Model extends Resource implements GPUResource {
         int result = handle;
         result = 31 * result + (subModels != null ? subModels.hashCode() : 0);
         return result;
-    }
-
-    private void buildUniform(final String uniform, final Object data, final Map<String, Uniform> uniforms, ShaderProgram shaderProgram)
-    {
-        Uniform uniformOptional = uniforms.get(uniform);
-        if (Objects.nonNull(uniformOptional)) {
-            uniformOptional.setData(data);
-        }
-        else
-        {
-            Optional<Uniform> shaderProgramUniform = shaderProgram.getUniform(uniform);
-            if (shaderProgramUniform.isPresent()) {
-                Uniform shaderUniform = shaderProgramUniform.get();
-                Uniform modelUniform = Uniform.builder()
-                        .location(shaderUniform.getLocation())
-                        .type(shaderUniform.getType())
-                        .data(data)
-                        .build();
-
-                uniforms.put(uniform, modelUniform);
-            } else {
-                throw new IllegalArgumentException("No uniforms in shader found for " + uniform);
-            }
-        }
     }
 }

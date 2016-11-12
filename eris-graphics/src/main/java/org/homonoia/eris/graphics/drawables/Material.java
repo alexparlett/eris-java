@@ -250,18 +250,14 @@ public class Material extends Resource implements GPUResource {
         else
         {
             Optional<Uniform> shaderProgramUniform = shaderProgram.getUniform(uniform);
-            if (shaderProgramUniform.isPresent()) {
-                Uniform shaderUniform = shaderProgramUniform.get();
-                Uniform materialUniform = Uniform.builder()
-                        .location(shaderUniform.getLocation())
-                        .type(shaderUniform.getType())
-                        .data(data)
-                        .build();
+            Uniform shaderUniform = shaderProgramUniform.orElseThrow(() -> new IllegalArgumentException("No uniforms in shader found for " + uniform));
+            Uniform modelUniform = Uniform.builder()
+                    .location(shaderUniform.getLocation())
+                    .type(shaderUniform.getType())
+                    .data(data)
+                    .build();
 
-                uniforms.put(uniform, materialUniform);
-            } else {
-                throw new IllegalArgumentException("No uniforms in shader found for " + uniform);
-            }
+            uniforms.put(uniform, modelUniform);
         }
     }
 

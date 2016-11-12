@@ -20,6 +20,9 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 /**
  * Copyright (c) 2015-2016 the Eris project.
  *
@@ -98,4 +101,9 @@ public class EngineConfiguration {
 
     @ContextualBean
     public ScriptEngine scriptEngine(Context context) { return new ScriptEngine(context); }
+
+    @ContextualBean
+    public ExecutorService executorService() {
+        return Executors.newWorkStealingPool();
+    }
 }

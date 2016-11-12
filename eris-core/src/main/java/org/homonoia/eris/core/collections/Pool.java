@@ -8,7 +8,7 @@ package org.homonoia.eris.core.collections;
  */
 public interface Pool<T> {
 
-    T obtain();
+    T obtain(Object... args);
 
     void free(T object);
 

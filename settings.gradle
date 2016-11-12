@@ -8,4 +8,5 @@ include 'eris-engine'
 include 'eris-input'
 include 'eris-scene'
 include 'eris-scripting'
+include 'eris-ui'
 

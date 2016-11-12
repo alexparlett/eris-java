@@ -143,21 +143,9 @@ public class ShaderProgram extends Resource implements GPUResource {
                 .forEach(uniform -> renderer.bindUniform(uniform.getLocation(), uniform.getType(), uniform.getData()));
     }
 
-    public void setUniform(String uniform, final Object data) {
-        Optional.ofNullable(uniforms.get(uniform))
-                .ifPresent(shaderUniform -> shaderUniform.setData(data));
-    }
 
     public Optional<Uniform> getUniform(String uniform) {
         return Optional.ofNullable(uniforms.get(uniform));
-    }
-
-    public void removeUniform(String uniform) {
-        uniforms.remove(uniform);
-    }
-
-    public Map<String, Uniform> getUniforms() {
-        return uniforms;
     }
 
     @Override

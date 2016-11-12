@@ -3,7 +3,6 @@ package org.homonoia.eris.ecs.components;
 import org.homonoia.eris.ecs.Component;
 import org.homonoia.eris.ecs.annotations.Requires;
 import org.homonoia.eris.graphics.drawables.RenderTarget;
-import org.joml.Vector3d;
 import org.joml.Vector4f;
 
 import java.util.HashSet;
@@ -19,25 +18,26 @@ import java.util.Set;
 public class Camera implements Component {
 
     private Set<Integer> layerMask = new HashSet<>();
-    private double near;
-    private double far;
-    private double fov;
+    private float near;
+    private float far;
+    private float fov;
     private RenderTarget renderTarget;
     private Vector4f backgroundColor;
+    private float aspect;
 
     public Set<Integer> getLayerMask() {
         return layerMask;
     }
 
-    public double getNear() {
+    public float getNear() {
         return near;
     }
 
-    public double getFar() {
+    public float getFar() {
         return far;
     }
 
-    public double getFov() {
+    public float getFov() {
         return fov;
     }
 
@@ -49,17 +49,17 @@ public class Camera implements Component {
         return backgroundColor;
     }
 
-    public Camera near(double near) {
+    public Camera near(float near) {
         this.near = near;
         return this;
     }
 
-    public Camera far(double far) {
+    public Camera far(float far) {
         this.far = far;
         return this;
     }
 
-    public Camera fov(double fov) {
+    public Camera fov(float fov) {
         this.fov = fov;
         return this;
     }
@@ -72,5 +72,13 @@ public class Camera implements Component {
     public Camera backgroundColor(Vector4f backgroundColor) {
         this.backgroundColor = backgroundColor;
         return this;
+    }
+
+    public float getAspect() {
+        return aspect;
+    }
+
+    public void setAspect(float aspect) {
+        this.aspect = aspect;
     }
 }

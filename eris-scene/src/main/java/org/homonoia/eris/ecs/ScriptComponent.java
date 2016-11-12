@@ -8,7 +8,7 @@ package org.homonoia.eris.ecs;
  */
 public interface ScriptComponent extends Component {
 
-    Class<? extends Component>[] classes();
+    default Class<? extends Component>[] classes() { return new Class[]{}; }
 
     default boolean autoAdd() { return false; }
 

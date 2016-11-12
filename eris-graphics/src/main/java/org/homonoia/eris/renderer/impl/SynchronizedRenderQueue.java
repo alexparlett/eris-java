@@ -50,6 +50,7 @@ public class SynchronizedRenderQueue implements RenderQueue {
 
     @Override
     public synchronized void clear() {
+        renderCommands.forEach(RenderCommand::free);
         renderCommands.clear();
     }
 

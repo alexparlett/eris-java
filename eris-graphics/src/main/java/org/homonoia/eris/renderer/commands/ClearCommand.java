@@ -1,5 +1,7 @@
 package org.homonoia.eris.renderer.commands;
 
+import org.homonoia.eris.core.collections.Pool;
+import org.homonoia.eris.core.collections.pools.ExpandingPool;
 import org.homonoia.eris.renderer.RenderCommand;
 import org.homonoia.eris.renderer.RenderKey;
 import org.homonoia.eris.renderer.Renderer;
@@ -12,36 +14,27 @@ import static org.lwjgl.opengl.GL11.glClear;
  * @author alexparlett
  * @since 13/02/2016
  */
-public class ClearCommand extends RenderCommand {
+public class ClearCommand extends RenderCommand<ClearCommand> {
 
-    private final int bitfield;
-
-    protected ClearCommand(final Builder builder) {
-        super(builder);
-        this.bitfield = builder.bitfield;
-    }
+    private static final Pool<ClearCommand> POOL = new ExpandingPool<>(4, Integer.MAX_VALUE, ClearCommand.class);
+    private int bitfield;
 
     @Override
     public void process(final Renderer renderer, final RenderKey renderKey) {
         glClear(bitfield);
     }
 
-    public static Builder builder() {
-        return new Builder();
+    @Override
+    public void free() {
+        POOL.free(this);
     }
 
-    public static class Builder extends RenderCommandBuilder<Builder> {
+    public ClearCommand bitfield(int bitfield) {
+        this.bitfield = bitfield;
+        return this;
+    }
 
-        private int bitfield;
-
-        @Override
-        public ClearCommand build() {
-            return new ClearCommand(this);
-        }
-
-        public Builder bitfield(final int bitfield) {
-            this.bitfield = bitfield;
-            return this;
-        }
+    public static ClearCommand newInstance() {
+        return POOL.obtain();
     }
 }

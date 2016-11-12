@@ -4,7 +4,6 @@
     "mesh": "Meshes/MS Fighter.obj",
     "origin": "0 0 0",
     "scale": 1,
-    "animations": [],
-    "uniforms": []
+    "animations": []
   }
 ]

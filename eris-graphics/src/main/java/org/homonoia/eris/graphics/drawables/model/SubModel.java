@@ -3,7 +3,6 @@ package org.homonoia.eris.graphics.drawables.model;
 import org.homonoia.eris.core.Constants;
 import org.homonoia.eris.graphics.Graphics;
 import org.homonoia.eris.graphics.drawables.Material;
-import org.homonoia.eris.graphics.drawables.sp.Uniform;
 import org.homonoia.eris.renderer.Renderer;
 import org.homonoia.eris.resources.types.Mesh;
 import org.homonoia.eris.resources.types.mesh.Face;
@@ -19,7 +18,11 @@ import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
@@ -37,7 +40,6 @@ public class SubModel {
     private Mesh mesh;
     private float scale = 1.f;
     private Vector3f origin = Constants.VectorConstants.ZERO;
-    private Map<String, Uniform> uniforms;
     private int vao = 0;
     private int vbo = 0;
     private int ebo = 0;
@@ -47,7 +49,6 @@ public class SubModel {
         this.mesh = builder.mesh;
         this.scale = builder.scale;
         this.origin = builder.origin;
-        this.uniforms = builder.uniforms;
     }
 
     public Material getMaterial() {
@@ -90,44 +91,7 @@ public class SubModel {
         return ebo;
     }
 
-    public Map<String, Uniform> getUniforms() {
-        return uniforms;
-    }
-
-    public void setUniforms(final Map<String, Uniform> uniforms) {
-        this.uniforms = uniforms;
-    }
-
-    public void setUniform(final String uniform, final Object data) {
-        Optional<Uniform> uniformOptional = getUniform(uniform);
-        if (uniformOptional.isPresent()) {
-            uniformOptional.get().setData(data);
-        } else {
-            Optional<Uniform> shaderProgramUniform = getMaterial().getShaderProgram().getUniform(uniform);
-            if (shaderProgramUniform.isPresent()) {
-                Uniform shaderUniform = shaderProgramUniform.get();
-                Uniform materialUniform = Uniform.builder()
-                        .location(shaderUniform.getLocation())
-                        .type(shaderUniform.getType())
-                        .data(data)
-                        .build();
-
-                uniforms.put(uniform, materialUniform);
-            } else {
-                throw new IllegalArgumentException("No uniforms in shader found for " + uniform);
-            }
-        }
-    }
-
-    public Optional<Uniform> getUniform(final String uniform) {
-        return Optional.ofNullable(uniforms.get(uniform));
-    }
-
-    public void removeUniform(final String uniform) {
-        uniforms.remove(uniform);
-    }
-
-    public void compile(Graphics graphics) {
+   public void compile(Graphics graphics) {
         long win = GLFW.glfwGetCurrentContext();
         glfwMakeContextCurrent(win != MemoryUtil.NULL ? win : graphics.getBackgroundWindow());
 
@@ -182,10 +146,6 @@ public class SubModel {
             compileInternal();
             generationState = GenerationState.RENDERER;
         }
-
-        uniforms.values().stream()
-                .filter(uniform -> Objects.nonNull(uniform.getData()))
-                .forEach(uniform -> renderer.bindUniform(uniform.getLocation(), uniform.getType(), uniform.getData()));
 
         // Bind to the VAO that has all the information about the vertices
         GL30.glBindVertexArray(vao);
@@ -242,8 +202,7 @@ public class SubModel {
         if (indices != null ? !indices.equals(subModel.indices) : subModel.indices != null) return false;
         if (vertices != null ? !vertices.equals(subModel.vertices) : subModel.vertices != null) return false;
         if (mesh != null ? !mesh.equals(subModel.mesh) : subModel.mesh != null) return false;
-        if (origin != null ? !origin.equals(subModel.origin) : subModel.origin != null) return false;
-        return uniforms != null ? uniforms.equals(subModel.uniforms) : subModel.uniforms == null;
+        return origin != null ? origin.equals(subModel.origin) : subModel.origin == null;
 
     }
 
@@ -256,7 +215,6 @@ public class SubModel {
         result = 31 * result + (mesh != null ? mesh.hashCode() : 0);
         result = 31 * result + (scale != +0.0f ? Float.floatToIntBits(scale) : 0);
         result = 31 * result + (origin != null ? origin.hashCode() : 0);
-        result = 31 * result + (uniforms != null ? uniforms.hashCode() : 0);
         result = 31 * result + vao;
         result = 31 * result + vbo;
         result = 31 * result + ebo;
@@ -272,7 +230,6 @@ public class SubModel {
         private Mesh mesh;
         private float scale = 1.f;
         private Vector3f origin = Constants.VectorConstants.ZERO;
-        private Map<String, Uniform> uniforms;
 
         private Builder() {
         }
@@ -294,11 +251,6 @@ public class SubModel {
 
         public Builder origin(Vector3f origin) {
             this.origin = origin;
-            return this;
-        }
-
-        public Builder uniforms(Map<String, Uniform> uniforms) {
-            this.uniforms = uniforms;
             return this;
         }
 

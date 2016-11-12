@@ -6,10 +6,18 @@ import org.homonoia.eris.core.ExitCode;
 import org.homonoia.eris.core.exceptions.InitializationException;
 import org.homonoia.eris.events.graphics.ScreenMode;
 import org.homonoia.eris.graphics.Graphics;
-import org.homonoia.eris.renderer.commands.ClearColorCommand;
-import org.homonoia.eris.renderer.commands.ClearCommand;
 import org.homonoia.eris.renderer.impl.SwappingRenderState;
-import org.joml.*;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
+import org.joml.Vector2d;
+import org.joml.Vector2f;
+import org.joml.Vector2i;
+import org.joml.Vector3d;
+import org.joml.Vector3f;
+import org.joml.Vector3i;
+import org.joml.Vector4d;
+import org.joml.Vector4f;
+import org.joml.Vector4i;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryUtil;
@@ -20,13 +28,46 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.nio.FloatBuffer;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.lwjgl.glfw.GLFW.*;
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
+import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
+import static org.lwjgl.opengl.GL11.GL_DOUBLE;
+import static org.lwjgl.opengl.GL11.GL_FLOAT;
+import static org.lwjgl.opengl.GL11.GL_INT;
+import static org.lwjgl.opengl.GL11.glEnable;
+import static org.lwjgl.opengl.GL11.glViewport;
 import static org.lwjgl.opengl.GL13.GL_MULTISAMPLE;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE_CUBE_MAP;
-import static org.lwjgl.opengl.GL20.*;
+import static org.lwjgl.opengl.GL20.GL_BOOL;
+import static org.lwjgl.opengl.GL20.GL_BOOL_VEC2;
+import static org.lwjgl.opengl.GL20.GL_BOOL_VEC3;
+import static org.lwjgl.opengl.GL20.GL_BOOL_VEC4;
+import static org.lwjgl.opengl.GL20.GL_FLOAT_MAT3;
+import static org.lwjgl.opengl.GL20.GL_FLOAT_MAT4;
+import static org.lwjgl.opengl.GL20.GL_FLOAT_VEC2;
+import static org.lwjgl.opengl.GL20.GL_FLOAT_VEC3;
+import static org.lwjgl.opengl.GL20.GL_FLOAT_VEC4;
+import static org.lwjgl.opengl.GL20.GL_INT_VEC2;
+import static org.lwjgl.opengl.GL20.GL_INT_VEC3;
+import static org.lwjgl.opengl.GL20.GL_INT_VEC4;
+import static org.lwjgl.opengl.GL20.glUniform1f;
+import static org.lwjgl.opengl.GL20.glUniform1i;
+import static org.lwjgl.opengl.GL20.glUniform2f;
+import static org.lwjgl.opengl.GL20.glUniform2i;
+import static org.lwjgl.opengl.GL20.glUniform3f;
+import static org.lwjgl.opengl.GL20.glUniform3i;
+import static org.lwjgl.opengl.GL20.glUniform4f;
+import static org.lwjgl.opengl.GL20.glUniform4i;
+import static org.lwjgl.opengl.GL20.glUniformMatrix3fv;
+import static org.lwjgl.opengl.GL20.glUniformMatrix4fv;
 import static org.lwjgl.opengl.GL32.GL_TEXTURE_CUBE_MAP_SEAMLESS;
-import static org.lwjgl.opengl.GL40.*;
+import static org.lwjgl.opengl.GL40.GL_DOUBLE_VEC2;
+import static org.lwjgl.opengl.GL40.GL_DOUBLE_VEC3;
+import static org.lwjgl.opengl.GL40.GL_DOUBLE_VEC4;
+import static org.lwjgl.opengl.GL40.glUniform1d;
+import static org.lwjgl.opengl.GL40.glUniform2d;
+import static org.lwjgl.opengl.GL40.glUniform3d;
+import static org.lwjgl.opengl.GL40.glUniform4d;
 /**
  * Copyright (c) 2015-2016 the Eris project.
  *
@@ -36,32 +77,6 @@ import static org.lwjgl.opengl.GL40.*;
 public class Renderer extends Contextual implements Runnable {
 
     private static final Logger LOG = LoggerFactory.getLogger(Renderer.class);
-
-    private static final ClearCommand CLEAR_COMMAND = ClearCommand.builder()
-            .renderKey(RenderKey.builder()
-                    .command(0)
-                    .depth(0)
-                    .extra(0)
-                    .material(0)
-                    .target(0)
-                    .targetLayer(0)
-                    .transparency(0)
-                    .build())
-            .bitfield(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-            .build();
-
-    private static final ClearColorCommand CLEAR_COLOR_COMMAND = ClearColorCommand.builder()
-            .renderKey(RenderKey.builder()
-                    .command(0)
-                    .depth(0)
-                    .extra(0)
-                    .material(0)
-                    .target(0)
-                    .targetLayer(0)
-                    .transparency(0)
-                    .build())
-            .color(new Vector4f(0.f, 0.f, 0.f, 1.f))
-            .build();
 
     private final Graphics graphics;
 

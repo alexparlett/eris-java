@@ -2,6 +2,7 @@ package org.homonoia.eris.ecs;
 
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
+import org.homonoia.eris.core.exceptions.ErisException;
 import org.homonoia.eris.events.frame.Update;
 
 /**
@@ -38,7 +39,7 @@ public abstract class EntitySystem extends Contextual implements Comparable<Enti
         this.enabled = true;
     }
 
-    public abstract void update(final Update update);
+    public abstract void update(final Update update) throws ErisException;
 
     public boolean isEnabled() {
         return enabled;

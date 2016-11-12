@@ -1,10 +1,12 @@
 buildscript {
+    ext.kotlin_version = '1.0.5'
     repositories {
         mavenCentral()
         jcenter()
     }
 
     dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
 
@@ -12,6 +14,7 @@ configure(allprojects) {
     configure(subprojects) {
         apply plugin: 'java'
         apply plugin: 'idea'
+        apply plugin: 'kotlin'
 
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
@@ -33,11 +36,14 @@ configure(allprojects) {
         repositories {
             mavenCentral()
             jcenter()
-            maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+        }
+
+        sourceSets {
+            main.java.srcDirs += 'src/main/kotlin'
         }
 
         dependencies {
-            testCompile 'junit:junit:4.+'
+            testCompile 'junit:junit:+'
             testCompile 'org.mockito:mockito-all:+'
             testCompile 'org.hamcrest:hamcrest-all:+'
             testCompile 'org.springframework:spring-test:+'
@@ -51,42 +57,23 @@ configure(allprojects) {
 
             // LWJGL dependencies START
             compile "org.lwjgl:lwjgl:${lwjglVersion}"
-            compile "org.lwjgl:lwjgl-bgfx:${lwjglVersion}"
-            compile "org.lwjgl:lwjgl-egl:${lwjglVersion}"
             compile "org.lwjgl:lwjgl-glfw:${lwjglVersion}"
-            compile "org.lwjgl:lwjgl-jawt:${lwjglVersion}"
             compile "org.lwjgl:lwjgl-jemalloc:${lwjglVersion}"
-            compile "org.lwjgl:lwjgl-lmdb:${lwjglVersion}"
-            compile "org.lwjgl:lwjgl-nanovg:${lwjglVersion}"
             compile "org.lwjgl:lwjgl-nfd:${lwjglVersion}"
-            compile "org.lwjgl:lwjgl-nuklear:${lwjglVersion}"
             compile "org.lwjgl:lwjgl-openal:${lwjglVersion}"
-            compile "org.lwjgl:lwjgl-opencl:${lwjglVersion}"
             compile "org.lwjgl:lwjgl-opengl:${lwjglVersion}"
-            compile "org.lwjgl:lwjgl-opengles:${lwjglVersion}"
-            compile "org.lwjgl:lwjgl-ovr:${lwjglVersion}"
             compile "org.lwjgl:lwjgl-par:${lwjglVersion}"
-            compile "org.lwjgl:lwjgl-sse:${lwjglVersion}"
             compile "org.lwjgl:lwjgl-stb:${lwjglVersion}"
             compile "org.lwjgl:lwjgl-tinyfd:${lwjglVersion}"
-            compile "org.lwjgl:lwjgl-vulkan:${lwjglVersion}"
-            compile "org.lwjgl:lwjgl-xxhash:${lwjglVersion}"
             // LWJGL natives
             runtime "org.lwjgl:lwjgl:${lwjglVersion}:${lwjglNatives}"
-            runtime "org.lwjgl:lwjgl-bgfx:${lwjglVersion}:${lwjglNatives}"
             runtime "org.lwjgl:lwjgl-glfw:${lwjglVersion}:${lwjglNatives}"
             runtime "org.lwjgl:lwjgl-jemalloc:${lwjglVersion}:${lwjglNatives}"
-            runtime "org.lwjgl:lwjgl-lmdb:${lwjglVersion}:${lwjglNatives}"
-            runtime "org.lwjgl:lwjgl-nanovg:${lwjglVersion}:${lwjglNatives}"
             runtime "org.lwjgl:lwjgl-nfd:${lwjglVersion}:${lwjglNatives}"
-            runtime "org.lwjgl:lwjgl-nuklear:${lwjglVersion}:${lwjglNatives}"
             runtime "org.lwjgl:lwjgl-openal:${lwjglVersion}:${lwjglNatives}"
-            //runtime "org.lwjgl:lwjgl-ovr:${lwjglVersion}:${lwjglNatives}"
             runtime "org.lwjgl:lwjgl-par:${lwjglVersion}:${lwjglNatives}"
-            runtime "org.lwjgl:lwjgl-sse:${lwjglVersion}:${lwjglNatives}"
             runtime "org.lwjgl:lwjgl-stb:${lwjglVersion}:${lwjglNatives}"
             runtime "org.lwjgl:lwjgl-tinyfd:${lwjglVersion}:${lwjglNatives}"
-            runtime "org.lwjgl:lwjgl-xxhash:${lwjglVersion}:${lwjglNatives}"
             // LWJGL dependencies END
 
             compile 'org.joml:joml:+'
@@ -94,6 +81,8 @@ configure(allprojects) {
             compile 'net.sf.sociaal:jbullet:+'
 
             compile group: 'org.python', name: 'jython-standalone', version: '2.7.0'
+
+            compile 'com.github.nifty-gui:nifty:1.4.2'
         }
 
         configurations.all {

@@ -9,13 +9,13 @@ package org.homonoia.eris.renderer;
 public class RenderKey {
 
     private long key = 0L;
-    private long target;
-    private long targetLayer;
-    private long transparency;
-    private long command;
+    private long target; //The RenderTarget
+    private long targetLayer; //The Layer in the Render Target
+    private long transparency; //Whether there is transparency
+    private long command; //The command id
     private long extra;
-    private long depth;
-    private long material;
+    private long depth; //the depth of the object
+    private long material; //The material
 
     public RenderKey(final Builder builder) {
 
@@ -28,21 +28,21 @@ public class RenderKey {
         material = builder.material;
 
         if (transparency != 0L) {
-            key = target << 62
-                    | targetLayer << 60
-                    | transparency << 58
-                    | command << 57
-                    | extra << 54
-                    | material << 24
-                    | depth;
+            key = target << 62;
+            key |= targetLayer << 60;
+            key |= transparency << 58;
+            key |= command << 57;
+            key |= extra << 54;
+            key |= -depth << 32;
+            key |= material;
         } else {
-            key = target << 62
-                    | targetLayer << 60
-                    | transparency << 58
-                    | command << 57
-                    | extra << 54
-                    | depth << 32
-                    | material;
+            key = target << 62;
+            key |= targetLayer << 60;
+            key |= transparency << 58;
+            key |= command << 57;
+            key |= extra << 54;
+            key |= material << 24;
+            key |= depth;
         }
     }
 
