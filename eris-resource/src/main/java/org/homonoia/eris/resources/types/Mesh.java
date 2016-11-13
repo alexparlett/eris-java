@@ -3,17 +3,18 @@ package org.homonoia.eris.resources.types;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.parsers.Vector2fParser;
 import org.homonoia.eris.core.parsers.Vector3fParser;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
 import org.homonoia.eris.resources.Resource;
 import org.homonoia.eris.resources.types.mesh.Face;
 import org.homonoia.eris.resources.types.mesh.Vertex;
+import org.joml.Vector2f;
+import org.joml.Vector3f;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.regex.Pattern;
 
 /**
@@ -39,12 +40,10 @@ public class Mesh extends Resource {
     }
 
     @Override
-    public void load(final InputStream inputStream) throws IOException {
-        Objects.requireNonNull(inputStream);
-
+    public void onLoad() throws IOException {
         reset();
 
-        BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+        BufferedReader br = new BufferedReader(new InputStreamReader(fileSystem.newInputStream(getLocation())));
 
         String line;
         try {
@@ -64,11 +63,6 @@ public class Mesh extends Resource {
         } catch (ParseException | IndexOutOfBoundsException ex) {
             throw new IOException("Failed to parse obj", ex);
         }
-    }
-
-    @Override
-    public void save(final OutputStream outputStream) throws IOException {
-        throw new UnsupportedOperationException();
     }
 
     @Override

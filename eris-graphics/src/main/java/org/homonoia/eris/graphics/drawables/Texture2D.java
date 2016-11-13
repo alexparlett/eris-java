@@ -13,14 +13,21 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.Objects;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_LINEAR;
+import static org.lwjgl.opengl.GL11.GL_LINEAR_MIPMAP_LINEAR;
+import static org.lwjgl.opengl.GL11.GL_NO_ERROR;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
+import static org.lwjgl.opengl.GL11.glBindTexture;
+import static org.lwjgl.opengl.GL11.glDeleteTextures;
+import static org.lwjgl.opengl.GL11.glGenTextures;
+import static org.lwjgl.opengl.GL11.glGetError;
+import static org.lwjgl.opengl.GL11.glTexImage2D;
 
 /**
  * Copyright (c) 2015-2016 the Eris project.
@@ -34,10 +41,11 @@ public class Texture2D extends Texture {
     }
 
     @Override
-    public void load(final InputStream inputStream) throws IOException {
+    public void onLoad() throws IOException {
+        ResourceCache resourceCache = getContext().getBean(ResourceCache.class);
 
-        Json json = new Json(getContext());
-        json.load(inputStream);
+        Json json = resourceCache.getTemporary(Json.class, getLocation())
+                .orElseThrow(() -> new IOException("Texture2D resource is a JSON file"));
 
         JsonObject root = json.getRoot()
                 .map(JsonElement::getAsJsonObject)
@@ -46,7 +54,6 @@ public class Texture2D extends Texture {
 
         Path file = Paths.get(root.get("file").getAsString());
 
-        ResourceCache resourceCache = getContext().getBean(ResourceCache.class);
         Image image = resourceCache.getTemporary(Image.class, file)
                 .orElseThrow(() -> new IOException("Failed to load Texture2D. Metadata Json doesn't contain valid file: " + file));
 
@@ -86,11 +93,6 @@ public class Texture2D extends Texture {
         } finally {
              image.release();
         }
-    }
-
-    @Override
-    public void save(final OutputStream outputStream) throws IOException {
-        throw new UnsupportedOperationException();
     }
 
     @Override

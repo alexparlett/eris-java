@@ -74,8 +74,11 @@ class ResourceLoader extends Contextual {
     private void process(LoadingTask loadingTask) {
         if (loadingTask.resource != null && loadingTask.path != null) {
             loadingTask.resource.setState(Resource.AsyncState.LOADING);
-            try (InputStream inputStream = fileSystem.newInputStream(loadingTask.path)) {
-                loadingTask.resource.load(inputStream);
+            try {
+                if (!fileSystem.isAccessible(loadingTask.resource.getLocation())) {
+                    throw new IOException(loadingTask.resource.getLocation() + " is not accessible");
+                }
+                loadingTask.resource.load();
                 loadingTask.resource.setState(Resource.AsyncState.SUCCESS);
                 LOG.info("Loaded {} {}", loadingTask.resource.getClass().getSimpleName(), loadingTask.path);
             } catch (IOException e) {

@@ -2,11 +2,11 @@ package org.homonoia.eris.resources;
 
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
+import org.homonoia.eris.core.components.FileSystem;
+import org.slf4j.helpers.MessageFormatter;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -32,9 +32,11 @@ public abstract class Resource extends Contextual implements Closeable {
     private Path path;
     private Path location;
     private final AtomicReference<AsyncState> state = new AtomicReference<>(AsyncState.NEW);
+    protected final FileSystem fileSystem;
 
     public Resource(final Context context) {
         super(context);
+        this.fileSystem = context.getBean(FileSystem.class);
     }
 
     public Path getPath() {
@@ -84,7 +86,27 @@ public abstract class Resource extends Contextual implements Closeable {
         release();
     }
 
-    public abstract void load(InputStream inputStream) throws IOException;
+    public final void load() throws IOException {
+        if (!fileSystem.isAccessible(getLocation())) {
+            throw new IOException(MessageFormatter.format("Failed to load {} {}. Location not allowed.", this.getClass().getSimpleName(), getLocation()).getMessage());
+        }
 
-    public abstract void save(OutputStream outputStream) throws IOException;
+        onLoad();
+    }
+
+    public final void save() throws IOException {
+        if (!fileSystem.isAccessible(getLocation())) {
+            throw new IOException(MessageFormatter.format("Failed to save {} {}. Location not allowed.", this.getClass().getSimpleName(), getLocation()).getMessage());
+        }
+
+        onSave();
+    }
+
+    protected void onLoad() throws IOException {
+        throw new UnsupportedOperationException();
+    }
+
+    protected void onSave() throws IOException {
+        throw new UnsupportedOperationException();
+    }
 }

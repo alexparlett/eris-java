@@ -16,8 +16,6 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
@@ -41,11 +39,11 @@ public class TextureCube extends Texture {
     }
 
     @Override
-    public void load(final InputStream inputStream) throws IOException {
+    public void onLoad() throws IOException {
         ResourceCache resourceCache = getContext().getBean(ResourceCache.class);
 
-        Json json = new Json(getContext());
-        json.load(inputStream);
+        Json json = resourceCache.getTemporary(Json.class, getLocation())
+                .orElseThrow(() -> new IOException("TextureCube resource is a JSON file"));
 
         JsonObject root = json.getRoot()
                 .map(JsonElement::getAsJsonObject)
@@ -74,11 +72,6 @@ public class TextureCube extends Texture {
                 }
             });
         }
-    }
-
-    @Override
-    public void save(final OutputStream outputStream) throws IOException {
-        throw new UnsupportedOperationException();
     }
 
     @Override
