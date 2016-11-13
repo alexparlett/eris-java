@@ -17,7 +17,7 @@ import static org.lwjgl.opengl.GL11.glClearColor;
  */
 public class ClearColorCommand extends RenderCommand<ClearColorCommand> {
 
-    private static final Pool<ClearColorCommand> POOL = new ExpandingPool<>(4, Integer.MAX_VALUE, ClearColorCommand.class);
+    private static final Pool<ClearColorCommand> POOL = new ExpandingPool<>(4, Integer.MAX_VALUE, () -> new ClearColorCommand());
     private Vector4f color;
 
     @Override

@@ -16,7 +16,7 @@ import static org.lwjgl.opengl.GL11.glClear;
  */
 public class ClearCommand extends RenderCommand<ClearCommand> {
 
-    private static final Pool<ClearCommand> POOL = new ExpandingPool<>(4, Integer.MAX_VALUE, ClearCommand.class);
+    private static final Pool<ClearCommand> POOL = new ExpandingPool<>(4, Integer.MAX_VALUE, () -> new ClearCommand());
     private int bitfield;
 
     @Override

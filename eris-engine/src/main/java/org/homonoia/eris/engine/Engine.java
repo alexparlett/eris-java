@@ -142,14 +142,20 @@ public class Engine extends Contextual implements ScriptBinding {
         Timer timer = new Timer();
 
         graphics.show();
-        while(!shouldExit.get()){
-            delta += timer.getElapsedTime(true);
-            if (delta >= (1000.0 / 60.0)) {
-                clock.beginFrame(delta);
-                publish(updateBuilder.timeStep(delta));
-                clock.endFrame();
-                delta--;
+        try {
+            while (!shouldExit.get()) {
+                delta += timer.getElapsedTime(true);
+                if (delta >= (1000.0 / 60.0)) {
+                    clock.beginFrame(delta);
+                    publish(updateBuilder.timeStep(delta));
+                    clock.endFrame();
+                    delta--;
+                }
             }
+        } catch (Throwable t) {
+            LOG.error("Unhandled exception", t);
+            getContext().setExitCode(ExitCode.RUNTIME);
+            shouldExit.set(true);
         }
     }
 

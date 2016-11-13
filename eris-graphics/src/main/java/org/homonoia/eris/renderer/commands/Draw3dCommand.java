@@ -22,7 +22,7 @@ import static java.util.Objects.isNull;
  */
 public class Draw3dCommand extends RenderCommand<Draw3dCommand> {
 
-    private static final Pool<Draw3dCommand> POOL = new ExpandingPool<>(4, Integer.MAX_VALUE, Draw3dCommand.class);
+    private static final Pool<Draw3dCommand> POOL = new ExpandingPool<>(4, Integer.MAX_VALUE, () -> new Draw3dCommand());
     private SubModel model;
     private Material material;
     private Matrix4f transform = new Matrix4f().identity();

@@ -1,7 +1,6 @@
 package org.homonoia.eris.core.collections.pools;
 
 import org.homonoia.eris.core.collections.Pool;
-import org.homonoia.eris.core.collections.Poolable;
 
 import java.util.*;
 
@@ -16,54 +15,44 @@ import static java.util.Objects.requireNonNull;
 public final class ExpandingPool<T> implements Pool<T> {
 
     private int max;
-    private Class<T> type;
+    private PoolFactory<T> factory;
     private Stack<T> available;
 
-    public ExpandingPool(final int initialSize, final int max, Class<T> type) {
+    public ExpandingPool(final int initialSize, final int max, PoolFactory<T> factory) {
         this.max = max;
-        this.type = type;
-        try {
-            this.available = new Stack<>();
-            this.available.addAll(Collections.nCopies(initialSize, newObject()));
-        } catch (IllegalAccessException|InstantiationException e) {
-            throw new RuntimeException("No valid no args constructor found for " + type.getName());
-        }
+        this.factory = factory;
+        this.available = new Stack<>();
+        this.available.addAll(Collections.nCopies(initialSize, newObject()));
     }
 
     @Override
-    public T obtain() {
-        try {
-            return available.isEmpty() ? newObject() : available.pop();
-        } catch (IllegalAccessException|InstantiationException e) {
-            throw new RuntimeException("No valid no args constructor found for " + type.getName());
-        }
+    public synchronized T obtain() {
+        return available.isEmpty() ? newObject() : available.pop();
     }
 
     @Override
-    public void free(final T object) {
+    public synchronized void free(final T object) {
         requireNonNull(object);
         if (available.size() < max) {
             available.push(object);
         }
-        reset(object);
+
+        if (object instanceof Resetable) {
+            ((Resetable) object).reset();
+        }
     }
 
     @Override
-    public void free(final T... objects) {
+    public synchronized void free(final T... objects) {
         Arrays.stream(objects).forEach(this::free);
     }
 
     @Override
-    public void reset(final T object) {
-        if (object instanceof Poolable) ((Poolable) object).reset();
-    }
-
-    @Override
-    public void clear() {
+    public synchronized void clear() {
         available.clear();
     }
 
-    protected T newObject() throws IllegalAccessException, InstantiationException {
-        return type.newInstance();
+    protected T newObject() {
+        return factory.create();
     }
 }

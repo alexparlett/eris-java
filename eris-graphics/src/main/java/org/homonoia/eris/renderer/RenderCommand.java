@@ -6,7 +6,7 @@ package org.homonoia.eris.renderer;
  * @author alexparlett
  * @since 06/02/2016
  */
-public abstract class RenderCommand<T extends RenderCommand> {
+public abstract class RenderCommand<T extends RenderCommand> implements Comparable<T> {
 
     private RenderKey renderKey;
 
@@ -22,4 +22,9 @@ public abstract class RenderCommand<T extends RenderCommand> {
     public abstract void process(final Renderer renderer, final RenderKey renderKey);
 
     public abstract void free();
+
+    @Override
+    public int compareTo(T o) {
+        return this.getRenderKey().getKey().compareTo(o.getRenderKey().getKey());
+    }
 }

@@ -14,7 +14,5 @@ public interface Pool<T> {
 
     void free(T... objects);
 
-    void reset(T object);
-
     void clear();
 }

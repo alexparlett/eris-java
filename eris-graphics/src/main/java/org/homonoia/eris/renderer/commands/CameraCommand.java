@@ -15,7 +15,7 @@ import org.joml.Matrix4f;
  */
 public class CameraCommand extends RenderCommand<CameraCommand> {
 
-    private static final Pool<CameraCommand> POOL = new ExpandingPool<>(4, Integer.MAX_VALUE, CameraCommand.class);
+    private static final Pool<CameraCommand> POOL = new ExpandingPool<>(4, Integer.MAX_VALUE, () -> new CameraCommand());
     private Matrix4f view = new Matrix4f().identity();
     private Matrix4f projection = new Matrix4f().identity();
 

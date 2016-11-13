@@ -6,28 +6,24 @@ package org.homonoia.eris.renderer;
  * @author alexparlett
  * @since 06/02/2016
  */
-public interface RenderQueue {
+public interface RenderFrame<T extends RenderFrame> {
 
     /**
      * Add.
      *
      * @param renderCommand the render command
      */
-    void add(final RenderCommand renderCommand);
+    T add(final RenderCommand renderCommand);
 
     /**
      * Sort.
      */
-    void sort();
+    T sort();
 
     /**
      * Process.
      */
-    void process();
+    T process();
 
-    /**
-     * Clear.
-     */
-    void clear();
-
+    T clear();
 }

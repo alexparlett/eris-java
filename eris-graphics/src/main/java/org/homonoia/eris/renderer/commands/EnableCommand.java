@@ -16,7 +16,7 @@ import static org.lwjgl.opengl.GL11.glEnable;
  */
 public class EnableCommand extends RenderCommand<EnableCommand> {
 
-    private static final Pool<EnableCommand> POOL = new ExpandingPool<>(16, Integer.MAX_VALUE, EnableCommand.class);
+    private static final Pool<EnableCommand> POOL = new ExpandingPool<>(16, Integer.MAX_VALUE, () -> new EnableCommand());
     private int capability;
 
     @Override

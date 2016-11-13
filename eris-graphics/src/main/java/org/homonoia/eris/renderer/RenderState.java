@@ -6,12 +6,13 @@ package org.homonoia.eris.renderer;
  * @author alexparlett
  * @since 06/02/2016
  */
-public interface RenderState {
+public interface RenderState<T extends RenderFrame> {
 
-    void add(RenderCommand renderCommand);
-
-    void swap();
+    void add(T renderFrame);
 
     void process();
 
+    int frameCount();
+
+    T newRenderFrame();
 }
