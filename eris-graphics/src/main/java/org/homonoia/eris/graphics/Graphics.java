@@ -6,6 +6,7 @@ import org.homonoia.eris.core.ExitCode;
 import org.homonoia.eris.core.exceptions.InitializationException;
 import org.homonoia.eris.events.core.ExitRequested;
 import org.homonoia.eris.events.graphics.ScreenMode;
+import org.homonoia.eris.graphics.drawables.RenderTarget;
 import org.homonoia.eris.resources.cache.ResourceCache;
 import org.homonoia.eris.resources.types.Image;
 import org.lwjgl.BufferUtils;
@@ -48,14 +49,13 @@ public class Graphics extends Contextual {
     private boolean resizable = false;
     private boolean borderless = false;
     private boolean vsync = true;
-    private final AtomicInteger width = new AtomicInteger(0);
-    private final AtomicInteger height = new AtomicInteger(0);
     private int samples = 4;
     private float gamma;
     private String title = "Eris";
     private long renderWindow = MemoryUtil.NULL;
     private long backgroundWindow = MemoryUtil.NULL;
     private String icon = "icon.ico";
+    private RenderTarget defaultRenderTarget = new RenderTarget();
 
     /**
      * Instantiates a new Contextual.
@@ -147,8 +147,8 @@ public class Graphics extends Contextual {
     }
 
     public void setSize(final int width, final int height) {
-        this.width.set(width);
-        this.height.set(height);
+        this.defaultRenderTarget.width(width);
+        this.defaultRenderTarget.height(height);
 
         if (isInitialized() && renderWindow != MemoryUtil.NULL) {
             glfwSetWindowSize(renderWindow, width, height);
@@ -245,11 +245,11 @@ public class Graphics extends Contextual {
     }
 
     public int getWidth() {
-        return width.get();
+        return defaultRenderTarget.getWidth();
     }
 
     public int getHeight() {
-        return height.get();
+        return defaultRenderTarget.getHeight();
     }
 
     public int getSamples() {
@@ -274,6 +274,10 @@ public class Graphics extends Contextual {
 
     public String getIcon() {
         return icon;
+    }
+
+    public RenderTarget getDefaultRenderTarget() {
+        return defaultRenderTarget;
     }
 
     public List<GLFWVidMode> getResolutions() {
@@ -301,15 +305,15 @@ public class Graphics extends Contextual {
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
         GLFWVidMode desktop = getResolution();
-        if (width.get() <= 0 || height.get() <= 0) {
-            width.set(desktop.width());
-            height.set(desktop.height());
+        if (getWidth() <= 0 || getHeight() <= 0) {
+            defaultRenderTarget.width(desktop.width())
+                    .height(desktop.height());
         }
 
         if (fullscreen) {
-            renderWindow = glfwCreateWindow(width.get(), height.get(), title, glfwGetPrimaryMonitor(), MemoryUtil.NULL);
+            renderWindow = glfwCreateWindow(getWidth(), getHeight(), title, glfwGetPrimaryMonitor(), MemoryUtil.NULL);
         } else {
-            renderWindow = glfwCreateWindow(width.get(), height.get(), title, MemoryUtil.NULL, MemoryUtil.NULL);
+            renderWindow = glfwCreateWindow(getWidth(), getHeight(), title, MemoryUtil.NULL, MemoryUtil.NULL);
         }
 
         if (renderWindow == MemoryUtil.NULL) {
@@ -321,8 +325,8 @@ public class Graphics extends Contextual {
         IntBuffer widthBuffer = BufferUtils.createIntBuffer(1);
         IntBuffer heightBuffer = BufferUtils.createIntBuffer(1);
         glfwGetFramebufferSize(renderWindow, widthBuffer, heightBuffer);
-        this.width.set(widthBuffer.get());
-        this.height.set(heightBuffer.get());
+        this.defaultRenderTarget.width(widthBuffer.get())
+            .height(heightBuffer.get());
 
         if (isVsync()) {
             glfwSwapInterval(1);
@@ -335,7 +339,7 @@ public class Graphics extends Contextual {
         }
 
         if (!isFullscreen()) {
-            glfwSetWindowPos(renderWindow, (desktop.width() - width.get()) / 2, (desktop.height() - height.get()) / 2);
+            glfwSetWindowPos(renderWindow, (desktop.width() - getWidth()) / 2, (desktop.height() - getHeight()) / 2);
         }
 
         glfwSetFramebufferSizeCallback(renderWindow, GLFWFramebufferSizeCallback.create(this::handleFramebufferCallback));
@@ -395,8 +399,8 @@ public class Graphics extends Contextual {
     }
 
     private void handleFramebufferCallback(final long window, final int width, final int height) {
-        this.width.set(width);
-        this.height.set(height);
+        this.defaultRenderTarget.width(width)
+            .height(height);
 
         publish(ScreenMode.builder()
                 .width(width)

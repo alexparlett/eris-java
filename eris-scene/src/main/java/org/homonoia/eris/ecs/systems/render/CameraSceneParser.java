@@ -71,7 +71,8 @@ public final class CameraSceneParser implements Callable<Boolean> {
                         .build()));
 
         Matrix4f view = transform.get().invert(new Matrix4f());
-        Matrix4f perspective = new Matrix4f().identity().perspective(camera.getFov(), camera.getAspect(), camera.getNear(), camera.getFar());
+        int aspectRatio = camera.getRenderTarget().getWidth() / camera.getRenderTarget().getHeight();
+        Matrix4f perspective = new Matrix4f().identity().perspective(camera.getFov(), aspectRatio, camera.getNear(), camera.getFar());
         renderFrame.add(CameraCommand.newInstance()
                 .view(view)
                 .projection(perspective)
@@ -84,7 +85,7 @@ public final class CameraSceneParser implements Callable<Boolean> {
                         .material(0)
                         .build()));
 
-        Matrix4f frustum = new Matrix4f().perspective(camera.getFov(), camera.getAspect(), camera.getNear(), camera.getFar())
+        Matrix4f frustum = new Matrix4f().perspective(camera.getFov(), aspectRatio, camera.getNear(), camera.getFar())
                 .translate(transform.getTranslation())
                 .rotate(transform.getRotation());
 

@@ -23,7 +23,6 @@ public class Camera implements Component {
     private float fov;
     private RenderTarget renderTarget;
     private Vector4f backgroundColor;
-    private float aspect;
 
     public Set<Integer> getLayerMask() {
         return layerMask;
@@ -64,11 +63,6 @@ public class Camera implements Component {
         return this;
     }
 
-    public Camera aspect(float aspect) {
-        this.aspect = aspect;
-        return this;
-    }
-
     public Camera renderTarget(RenderTarget renderTarget) {
         this.renderTarget = renderTarget;
         return this;
@@ -77,9 +71,5 @@ public class Camera implements Component {
     public Camera backgroundColor(Vector4f backgroundColor) {
         this.backgroundColor = backgroundColor;
         return this;
-    }
-
-    public float getAspect() {
-        return aspect;
     }
 }
