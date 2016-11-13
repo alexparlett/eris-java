@@ -85,12 +85,12 @@ public class ShaderProgram extends Resource implements GPUResource {
     }
 
     @Override
-    public void onLoad() throws IOException {
+    public void load(final InputStream inputStream) throws IOException {
 
         ResourceCache resourceCache = getContext().getBean(ResourceCache.class);
 
-        Json json = resourceCache.getTemporary(Json.class, getLocation())
-                .orElseThrow(() -> new IOException("ShaderProgram resource is a JSON file"));
+        Json json = new Json(getContext());
+        json.load(inputStream);
 
         JsonObject root = json.getRoot()
                 .map(JsonElement::getAsJsonObject)
@@ -124,6 +124,11 @@ public class ShaderProgram extends Resource implements GPUResource {
         }
 
         compile(fragBuffer, vertBuffer);
+    }
+
+    @Override
+    public void save(final OutputStream outputStream) throws IOException {
+        throw new UnsupportedOperationException();
     }
 
     @Override

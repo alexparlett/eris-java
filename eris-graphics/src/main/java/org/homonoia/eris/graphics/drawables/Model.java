@@ -40,15 +40,14 @@ public class Model extends Resource implements GPUResource {
     }
 
     @Override
-    public void onLoad() throws IOException {
-        ResourceCache resourceCache = getContext().getBean(ResourceCache.class);
-
-        Json json = resourceCache.getTemporary(Json.class, getLocation())
-                .orElseThrow(() -> new IOException("Model must be JSON file"));
+    public void load(final InputStream inputStream) throws IOException {
+        Json json = new Json(getContext());
+        json.load(inputStream);
 
         JsonArray root = json.getRoot().map(JsonElement::getAsJsonArray)
                 .orElseThrow(() -> new IOException("no root found"));
 
+        ResourceCache resourceCache = getContext().getBean(ResourceCache.class);
 
         try {
             root.forEach(jsonElement -> {
@@ -57,7 +56,8 @@ public class Model extends Resource implements GPUResource {
                 Material material = Optional.ofNullable(subModelJson.getAsJsonPrimitive("material"))
                         .map(JsonPrimitive::getAsString)
                         .map(Paths::get)
-                        .flatMap(file -> resourceCache.get(Material.class, file))
+                        .map(file -> resourceCache.get(Material.class, file))
+                        .orElseThrow(() -> new ParseException("material specified for {0} not found", getPath()))
                         .orElseThrow(() -> new ParseException("material is required for models, e.g. 'material': 'Materials/planet.mat'"));
 
                 float scale = Optional.ofNullable(subModelJson.getAsJsonPrimitive("scale"))
@@ -78,7 +78,8 @@ public class Model extends Resource implements GPUResource {
                 Mesh mesh = Optional.ofNullable(subModelJson.getAsJsonPrimitive("mesh"))
                         .map(JsonPrimitive::getAsString)
                         .map(Paths::get)
-                        .flatMap(file -> resourceCache.get(Mesh.class, file))
+                        .map(file -> resourceCache.get(Mesh.class, file))
+                        .orElseThrow(() -> new ParseException("mesh specified for {0} not found", getPath()))
                         .orElseThrow(() -> new ParseException("mesh is required for models, e.g. 'mesh': 'Meshes/sphere.obj'"));
 
                 subModels.add(SubModel.builder()
@@ -95,6 +96,11 @@ public class Model extends Resource implements GPUResource {
 
         Graphics graphics = getContext().getBean(Graphics.class);
         subModels.forEach(subModel -> subModel.compile(graphics));
+    }
+
+    @Override
+    public void save(final OutputStream outputStream) throws IOException {
+        throw new UnsupportedOperationException();
     }
 
     @Override

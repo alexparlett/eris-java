@@ -1,23 +1,8 @@
 package org.homonoia.eris.graphics.drawables;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonIOException;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.google.gson.JsonPrimitive;
+import com.google.gson.*;
 import org.homonoia.eris.core.Context;
-import org.homonoia.eris.core.parsers.Matrix3fParser;
-import org.homonoia.eris.core.parsers.Matrix4fParser;
-import org.homonoia.eris.core.parsers.Vector2dParser;
-import org.homonoia.eris.core.parsers.Vector2fParser;
-import org.homonoia.eris.core.parsers.Vector2iParser;
-import org.homonoia.eris.core.parsers.Vector3dParser;
-import org.homonoia.eris.core.parsers.Vector3fParser;
-import org.homonoia.eris.core.parsers.Vector3iParser;
-import org.homonoia.eris.core.parsers.Vector4dParser;
-import org.homonoia.eris.core.parsers.Vector4fParser;
-import org.homonoia.eris.core.parsers.Vector4iParser;
+import org.homonoia.eris.core.parsers.*;
 import org.homonoia.eris.graphics.GPUResource;
 import org.homonoia.eris.graphics.drawables.material.CullMode;
 import org.homonoia.eris.graphics.drawables.material.TextureUnit;
@@ -31,16 +16,12 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -59,21 +40,21 @@ public class Material extends Resource implements GPUResource {
     }
 
     @Override
-    public void onLoad() throws IOException {
+    public void load(final InputStream inputStream) throws IOException {
 
-        ResourceCache resourceCache = getContext().getBean(ResourceCache.class);
-
-        Json json = resourceCache.getTemporary(Json.class, getLocation())
-                .orElseThrow(() -> new IOException("Material resource is a JSON file"));
+        Json json = new Json(getContext());
+        json.load(inputStream);
 
         JsonObject root = json.getRoot().map(JsonElement::getAsJsonObject)
                 .orElseThrow(() -> new IOException("no root found"));
 
+        ResourceCache resourceCache = getContext().getBean(ResourceCache.class);
 
         shaderProgram = Optional.ofNullable(root.getAsJsonPrimitive("program"))
                 .map(JsonPrimitive::getAsString)
                 .map(prg -> Paths.get(prg))
-                .flatMap(prg -> resourceCache.get(ShaderProgram.class, prg))
+                .map(prg -> resourceCache.get(ShaderProgram.class, prg))
+                .orElseThrow(() -> new IOException("no program found"))
                 .orElseThrow(() -> new IOException("Program not found in Resource Cache for Material " + getPath()));
 
         try {
@@ -184,6 +165,11 @@ public class Material extends Resource implements GPUResource {
                 .map(JsonPrimitive::getAsString)
                 .map(CullMode::parse)
                 .orElse(CullMode.Back);
+    }
+
+    @Override
+    public void save(final OutputStream outputStream) throws IOException {
+        throw new UnsupportedOperationException();
     }
 
     @Override

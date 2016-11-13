@@ -25,12 +25,12 @@ public class Stream extends Resource {
     }
 
     @Override
-    public void onLoad() throws IOException {
+    public void load(final InputStream inputStream) throws IOException {
 
     }
 
     @Override
-    public void onSave() throws IOException {
+    public void save(final OutputStream outputStream) throws IOException {
     }
 
     public InputStream asInputStream() {
@@ -44,9 +44,9 @@ public class Stream extends Resource {
 
     public OutputStream asOutputStream() {
         try {
-            return fileSystem.newOutputStream(getLocation());
+            return fileSystem.newOutputStream(getPath());
         } catch (IOException e) {
-            LOG.error("Failed to create OutputStream from Stream for {}", getLocation(), e);
+            LOG.error("Failed to create InputStream from Stream for {}", getLocation(), e);
             return null;
         }
     }

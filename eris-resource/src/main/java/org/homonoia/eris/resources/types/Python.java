@@ -5,8 +5,10 @@ import org.homonoia.eris.resources.Resource;
 import org.homonoia.eris.scripting.ScriptEngine;
 import org.python.core.PyCode;
 
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
 
 /**
  * Copyright (c) 2015-2016 Homonoia Studios.
@@ -23,9 +25,14 @@ public class Python extends Resource {
     }
 
     @Override
-    public void onLoad() throws IOException {
+    public void load(InputStream inputStream) throws IOException {
         ScriptEngine scriptEngine = getContext().getBean(ScriptEngine.class);
-        contents = scriptEngine.getPythonInterpreter().compile(new FileReader(getLocation().toFile()), getPath().toString());
+        contents = scriptEngine.getPythonInterpreter().compile(new InputStreamReader(inputStream), getPath().toString());
+    }
+
+    @Override
+    public void save(OutputStream outputStream) throws IOException {
+        throw new UnsupportedOperationException();
     }
 
     public PyCode getContents() {

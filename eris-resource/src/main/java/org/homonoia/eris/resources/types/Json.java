@@ -50,12 +50,12 @@ public class Json extends Resource {
     }
 
     @Override
-    public void onLoad() throws IOException {
+    public void load(final InputStream inputStream) throws IOException {
 
         List<JsonElement> elements = new ArrayList<>();
 
         try {
-            JsonStreamParser parser = new JsonStreamParser(new InputStreamReader(fileSystem.newInputStream(getLocation()), "UTF-8"));
+            JsonStreamParser parser = new JsonStreamParser(new InputStreamReader(inputStream, "UTF-8"));
             parser.forEachRemaining(elements::add);
 
             if (elements.isEmpty()) {
@@ -72,9 +72,9 @@ public class Json extends Resource {
     }
 
     @Override
-    protected void onSave() throws IOException {
+    public void save(final OutputStream outputStream) throws IOException {
         try {
-            JsonWriter writer = new JsonWriter(new OutputStreamWriter(fileSystem.newOutputStream(getLocation()), "UTF-8"));
+            JsonWriter writer = new JsonWriter(new OutputStreamWriter(outputStream, "UTF-8"));
             gson.toJson(root, writer);
         } catch (JsonParseException ex) {
             throw new IOException("Failed to save Json.", ex);

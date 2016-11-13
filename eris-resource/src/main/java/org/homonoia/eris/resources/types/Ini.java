@@ -37,8 +37,10 @@ public class Ini extends Resource implements Iterable<Map.Entry<String, IniSecti
     }
 
     @Override
-    public void onLoad() throws IOException {
-        BufferedReader br = new BufferedReader(new InputStreamReader(fileSystem.newInputStream(getLocation())));
+    public void load(final InputStream inputStream) throws IOException {
+        Objects.requireNonNull(inputStream);
+
+        BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
 
         clear();
 
@@ -70,8 +72,10 @@ public class Ini extends Resource implements Iterable<Map.Entry<String, IniSecti
     }
 
     @Override
-    public void onSave() throws IOException {
-        OutputStreamWriter osw = new OutputStreamWriter(fileSystem.newOutputStream(getLocation()));
+    public void save(final OutputStream outputStream) throws IOException {
+        Objects.requireNonNull(outputStream);
+
+        OutputStreamWriter osw = new OutputStreamWriter(outputStream);
         for (Map.Entry<String, IniSection> section : sections.entrySet()) {
             osw.write(SECTION_START);
             osw.write(section.getKey());

@@ -44,13 +44,29 @@ public class Image extends Resource {
     }
 
     @Override
-    public void onLoad() throws IOException {
+    public void load(final InputStream inputStream) throws IOException {
+        Objects.requireNonNull(inputStream, "Input Stream must not be null.");
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        int read;
+        while ((read = inputStream.read()) >= 0) {
+            baos.write(read);
+        }
+
+        if (baos.size() <= 0) {
+            throw new IOException(MessageFormat.format("Failed to load Image {0}. File empty.", getLocation()));
+        }
+
+        ByteBuffer byteBuffer = BufferUtils.createByteBuffer(baos.size());
+        byteBuffer.put(baos.toByteArray());
+        byteBuffer.flip();
+
         IntBuffer w = BufferUtils.createIntBuffer(1);
         IntBuffer h = BufferUtils.createIntBuffer(1);
         IntBuffer comp = BufferUtils.createIntBuffer(1);
 
         stbi_set_flip_vertically_on_load(true);
-        data = stbi_load(getLocation().toString(), w, h, comp, 0);
+        data = stbi_load_from_memory(byteBuffer, w, h, comp, 0);
         if (isNull(data)) {
             LOG.error("Failed to load Image {}. {}", getLocation(), stbi_failure_reason());
             throw new IOException(MessageFormat.format("Failed to load Image {0}. {1}", getLocation(), stbi_failure_reason()));
@@ -62,14 +78,23 @@ public class Image extends Resource {
     }
 
     @Override
-    public void onSave() throws IOException {
+    public void save(final OutputStream outputStream) throws IOException {
+        Objects.requireNonNull(outputStream, "Output Stream must not be null.");
+
         if (data == null || this.width <= 0 || this.height <= 0 || this.components <= 0) {
-            throw new IOException(MessageFormatter.format("Failed to save Image {}. Image data invalid.", getLocation()).getMessage());
+            LOG.error("Failed to save Image {}.", getPath());
+            throw new IOException(MessageFormatter.format("Failed to save Image {}. Image data invalid.", getPath()).getMessage());
         }
 
-        if (!STBImageWrite.stbi_write_png(getLocation().toString(), getWidth(), getHeight(), getComponents(), getData(), getWidth() * getComponents())) {
+        ByteBuffer writeContext = BufferUtils.createByteBuffer(width * components);
+        ByteBuffer outputContext = ByteBuffer.wrap(new byte[width * height * components]);
+
+        if (STBImageWrite.stbi_write_png_to_func(STBIWriteCallback.create((context, data, size) ->
+                outputContext.put(STBIWriteCallback.getData(data, size))), writeContext, width, height, components, data, width * components)) {
             throw new IOException(MessageFormatter.format("Failed to save Image {}. {}", getPath(), stbi_failure_reason()).getMessage());
         }
+
+        outputStream.write(outputContext.array());
     }
 
     public void resize(int width, int height) throws ImageException {
