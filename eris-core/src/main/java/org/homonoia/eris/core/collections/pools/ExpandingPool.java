@@ -2,8 +2,11 @@ package org.homonoia.eris.core.collections.pools;
 
 import org.homonoia.eris.core.collections.Pool;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
+import static java.util.Objects.isNull;
 import static java.util.Objects.requireNonNull;
 
 /**
@@ -16,25 +19,32 @@ public final class ExpandingPool<T> implements Pool<T> {
 
     private int max;
     private PoolFactory<T> factory;
-    private Stack<T> available;
+    private Queue<T> available;
 
     public ExpandingPool(final int initialSize, final int max, PoolFactory<T> factory) {
         this.max = max;
         this.factory = factory;
-        this.available = new Stack<>();
-        this.available.addAll(Collections.nCopies(initialSize, newObject()));
+        this.available = new ConcurrentLinkedQueue<>();
+
+        for (int i = 0; i < initialSize; i++) {
+            this.available.add(newObject());
+        }
     }
 
     @Override
-    public synchronized T obtain() {
-        return available.isEmpty() ? newObject() : available.pop();
+    public T obtain() {
+        T t = available.poll();
+        if (isNull(t)) {
+            t = newObject();
+        }
+        return t;
     }
 
     @Override
-    public synchronized void free(final T object) {
+    public void free(final T object) {
         requireNonNull(object);
         if (available.size() < max) {
-            available.push(object);
+            available.add(object);
         }
 
         if (object instanceof Resetable) {
@@ -43,12 +53,12 @@ public final class ExpandingPool<T> implements Pool<T> {
     }
 
     @Override
-    public synchronized void free(final T... objects) {
+    public void free(final T... objects) {
         Arrays.stream(objects).forEach(this::free);
     }
 
     @Override
-    public synchronized void clear() {
+    public void clear() {
         available.clear();
     }
 

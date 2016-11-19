@@ -28,7 +28,7 @@ public class OutWriter extends Writer {
     @Override
     public void flush() throws IOException {
         synchronized (lock) {
-            if (builder.length() > 0 || builder.charAt(0) != '\n') {
+            if (builder.length() > 0 || (builder.length() > 0 && builder.charAt(0) != '\n')) {
                 LOGGER.info(builder.toString());
             }
             builder.delete(0, builder.length());

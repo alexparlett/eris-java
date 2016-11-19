@@ -2,7 +2,6 @@ package org.homonoia.eris.renderer.commands;
 
 import org.homonoia.eris.core.collections.Pool;
 import org.homonoia.eris.core.collections.pools.ExpandingPool;
-import org.homonoia.eris.graphics.drawables.Material;
 import org.homonoia.eris.graphics.drawables.model.SubModel;
 import org.homonoia.eris.graphics.drawables.sp.Uniform;
 import org.homonoia.eris.renderer.RenderCommand;
@@ -24,13 +23,12 @@ public class Draw3dCommand extends RenderCommand<Draw3dCommand> {
 
     private static final Pool<Draw3dCommand> POOL = new ExpandingPool<>(4, Integer.MAX_VALUE, () -> new Draw3dCommand());
     private SubModel model;
-    private Material material;
     private Matrix4f transform = new Matrix4f().identity();
 
     @Override
     public void process(final Renderer renderer, final RenderKey previousRenderKey) {
         if (isNull(previousRenderKey) || previousRenderKey.getMaterial() != getRenderKey().getMaterial()) {
-            material.use();
+            model.getMaterial().use();
 
             findAndBindUniform("view", renderer, renderer.getCurrentView());
             findAndBindUniform("projection", renderer, renderer.getCurrentProjection());
@@ -42,7 +40,7 @@ public class Draw3dCommand extends RenderCommand<Draw3dCommand> {
     }
 
     private void findAndBindUniform(String uniform, Renderer renderer, Object value) {
-        Optional<Uniform> shaderUniformMaybe = material.getShaderProgram().getUniform(uniform);
+        Optional<Uniform> shaderUniformMaybe = model.getMaterial().getShaderProgram().getUniform(uniform);
         Uniform shaderUniform = shaderUniformMaybe.orElseThrow(() -> new IllegalArgumentException("No uniforms in shader found for " + uniform));
         renderer.bindUniform(shaderUniform.getLocation(), shaderUniform.getType(), value);
     }
@@ -54,11 +52,6 @@ public class Draw3dCommand extends RenderCommand<Draw3dCommand> {
 
     public Draw3dCommand model(SubModel model) {
         this.model = model;
-        return this;
-    }
-
-    public Draw3dCommand material(Material material) {
-        this.material = material;
         return this;
     }
 

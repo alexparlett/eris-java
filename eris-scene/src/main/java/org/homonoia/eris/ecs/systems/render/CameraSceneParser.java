@@ -14,6 +14,7 @@ import org.homonoia.eris.renderer.commands.CameraCommand;
 import org.homonoia.eris.renderer.commands.ClearColorCommand;
 import org.homonoia.eris.renderer.commands.ClearCommand;
 import org.homonoia.eris.renderer.commands.Draw3dCommand;
+import org.homonoia.eris.renderer.commands.EnableCommand;
 import org.joml.FrustumIntersection;
 import org.joml.Matrix4f;
 
@@ -21,9 +22,9 @@ import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import static java.util.Objects.isNull;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 
 /**
  * Copyright (c) 2015-2016 Homonoia Studios.
@@ -51,9 +52,9 @@ public final class CameraSceneParser implements Callable<Boolean> {
         renderFrame.add(ClearCommand.newInstance()
                 .bitfield(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
                 .renderKey(RenderKey.builder()
-                        .target(isNull(camera.getRenderTarget()) ? 0 : camera.getRenderTarget().getHandle())
+                        .target(camera.getRenderTarget().getHandle())
                         .targetLayer(0)
-                        .command(0)
+                        .command(1)
                         .extra(0)
                         .depth(0)
                         .material(0)
@@ -62,9 +63,20 @@ public final class CameraSceneParser implements Callable<Boolean> {
         renderFrame.add(ClearColorCommand.newInstance()
                 .color(camera.getBackgroundColor())
                 .renderKey(RenderKey.builder()
-                        .target(isNull(camera.getRenderTarget()) ? 0 : camera.getRenderTarget().getHandle())
+                        .target(camera.getRenderTarget().getHandle())
                         .targetLayer(0)
-                        .command(1)
+                        .command(0)
+                        .extra(0)
+                        .depth(0)
+                        .material(0)
+                        .build()));
+
+        renderFrame.add(EnableCommand.newInstance()
+                .capability(GL_DEPTH_TEST)
+                .renderKey(RenderKey.builder()
+                        .target(camera.getRenderTarget().getHandle())
+                        .targetLayer(0)
+                        .command(2)
                         .extra(0)
                         .depth(0)
                         .material(0)
@@ -77,9 +89,9 @@ public final class CameraSceneParser implements Callable<Boolean> {
                 .view(view)
                 .projection(perspective)
                 .renderKey(RenderKey.builder()
-                        .target(isNull(camera.getRenderTarget()) ? 0 : camera.getRenderTarget().getHandle())
+                        .target(camera.getRenderTarget().getHandle())
                         .targetLayer(0)
-                        .command(2)
+                        .command(3)
                         .extra(0)
                         .depth(0)
                         .material(0)
@@ -112,7 +124,6 @@ public final class CameraSceneParser implements Callable<Boolean> {
 
     protected Consumer<SubModel> processSubModel(Transform transform, Camera camera, Transform rndrTransform) {
         return subModel -> renderFrame.add(Draw3dCommand.newInstance()
-                .material(subModel.getMaterial())
                 .model(subModel)
                 .transform(rndrTransform.get())
                 .renderKey(buildRenderKey(transform, camera, rndrTransform, subModel)));
@@ -120,10 +131,10 @@ public final class CameraSceneParser implements Callable<Boolean> {
 
     protected RenderKey buildRenderKey(Transform transform, Camera camera, Transform rndrTransform, SubModel subModel) {
         return RenderKey.builder()
-                .command(3)
+                .command(4)
                 .material(subModel.getMaterial().getHandle())
                 .targetLayer(rndrTransform.getLayer())
-                .target(isNull(camera.getRenderTarget()) ? 0 : camera.getRenderTarget().getHandle())
+                .target(camera.getRenderTarget().getHandle())
                 .transparency(0)
                 .depth((long) rndrTransform.getTranslation().distance(transform.getTranslation()))
                 .build();
@@ -133,7 +144,8 @@ public final class CameraSceneParser implements Callable<Boolean> {
         return entity -> {
             Transform rndrTransform = entity.get(Transform.class).get();
             boolean inLayer = camera.getLayerMask().isEmpty() || camera.getLayerMask().contains(rndrTransform.getLayer());
-            return inLayer && intersection.testPoint(rndrTransform.getTranslation());
+            boolean visible = inLayer && intersection.testPoint(rndrTransform.getTranslation());
+            return visible;
         };
     }
 }

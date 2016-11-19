@@ -4,6 +4,8 @@ import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.exceptions.ErisException;
 import org.homonoia.eris.events.frame.Update;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by alexparlett on 30/05/2016.
@@ -13,7 +15,8 @@ public abstract class EntitySystem extends Contextual implements Comparable<Enti
     public static final int MAX_PRIORITY = 0;
     public static final int MIN_PRIORITY = Integer.MAX_VALUE;
 
-    protected FamilyManager familyManager;
+    protected final Logger LOG = LoggerFactory.getLogger(getClass());
+    protected final FamilyManager familyManager;
 
     private boolean enabled;
     private int priority;
