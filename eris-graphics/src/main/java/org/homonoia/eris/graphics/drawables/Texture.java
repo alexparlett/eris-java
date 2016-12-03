@@ -32,7 +32,7 @@ public abstract class Texture extends Resource implements GPUResource {
         wrapMap.put("CLAMP_TO_EDGE", GL13.GL_CLAMP_TO_BORDER);
     }
 
-    protected boolean generateMipMaps = true;
+    protected boolean generateMipMaps = false;
     protected int uWrapMode = GL11.GL_REPEAT;
     protected int vWrapMode = GL11.GL_REPEAT;
     protected int wWrapMode = GL11.GL_REPEAT;

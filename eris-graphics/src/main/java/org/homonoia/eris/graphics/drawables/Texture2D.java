@@ -9,7 +9,6 @@ import org.homonoia.eris.resources.types.Image;
 import org.homonoia.eris.resources.types.Json;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 
 import java.io.IOException;
@@ -20,7 +19,17 @@ import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.Objects;
 
-import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL11.GL_LINEAR;
+import static org.lwjgl.opengl.GL11.GL_LINEAR_MIPMAP_LINEAR;
+import static org.lwjgl.opengl.GL11.GL_NO_ERROR;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_2D;
+import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
+import static org.lwjgl.opengl.GL11.glBindTexture;
+import static org.lwjgl.opengl.GL11.glDeleteTextures;
+import static org.lwjgl.opengl.GL11.glGenTextures;
+import static org.lwjgl.opengl.GL11.glGetError;
+import static org.lwjgl.opengl.GL11.glTexImage2D;
+import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 
 /**
  * Copyright (c) 2015-2016 the Eris project.
@@ -78,7 +87,7 @@ public class Texture2D extends Texture {
             }
 
             if (generateMipMaps) {
-                GL30.glGenerateMipmap(GL11.GL_TEXTURE_2D);
+                glGenerateMipmap(GL_TEXTURE_2D);
             }
 
             glBindTexture(GL_TEXTURE_2D, 0);
