@@ -1,9 +1,8 @@
 package org.homonoia.eris.ecs.exceptions;
 
+import org.homonoia.eris.core.exceptions.ErisException;
 import org.homonoia.eris.ecs.Component;
 import org.homonoia.eris.ecs.Entity;
-
-import java.text.MessageFormat;
 
 /**
  * Copyright (c) 2015-2016 Homonoia Studios.
@@ -11,8 +10,8 @@ import java.text.MessageFormat;
  * @author alexparlett
  * @since 09/07/2016
  */
-public class MissingRequiredComponentException extends Exception {
+public class MissingRequiredComponentException extends ErisException {
     public MissingRequiredComponentException(Class<? extends Component> missingClass, Entity entity, Component addedComponent) {
-        super(MessageFormat.format("{1} cannot be added to {2}, {3} is required as a component", addedComponent.getClass().getSimpleName(), entity.getId(), missingClass.getSimpleName()));
+        super("{1} cannot be added to {2}, {3} is required as a component", addedComponent.getClass().getSimpleName(), entity.getId(), missingClass.getSimpleName());
     }
 }

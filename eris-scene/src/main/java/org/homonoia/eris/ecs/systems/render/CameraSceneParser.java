@@ -83,7 +83,7 @@ public final class CameraSceneParser implements Callable<Boolean> {
                         .build()));
 
         Matrix4f view = transform.get().invert(new Matrix4f());
-        int aspectRatio = camera.getRenderTarget().getWidth() / camera.getRenderTarget().getHeight();
+        float aspectRatio = (float) camera.getRenderTarget().getWidth() / camera.getRenderTarget().getHeight();
         Matrix4f perspective = new Matrix4f().identity().perspective(camera.getFov(), aspectRatio, camera.getNear(), camera.getFar());
         renderFrame.add(CameraCommand.newInstance()
                 .view(view)
@@ -105,7 +105,7 @@ public final class CameraSceneParser implements Callable<Boolean> {
 
         renderableFamily.getEntities()
                 .parallelStream()
-                .filter(filterEntities(transform, camera, intersection))
+                .filter(filterEntities(camera, intersection))
                 .spliterator()
                 .forEachRemaining(processEntity(transform, camera));
 
@@ -140,7 +140,7 @@ public final class CameraSceneParser implements Callable<Boolean> {
                 .build();
     }
 
-    protected Predicate<Entity> filterEntities(Transform transform, Camera camera, FrustumIntersection intersection) {
+    protected Predicate<Entity> filterEntities(Camera camera, FrustumIntersection intersection) {
         return entity -> {
             Transform rndrTransform = entity.get(Transform.class).get();
             boolean inLayer = camera.getLayerMask().isEmpty() || camera.getLayerMask().contains(rndrTransform.getLayer());

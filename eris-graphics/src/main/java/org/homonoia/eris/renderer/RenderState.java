@@ -12,6 +12,8 @@ public interface RenderState<T extends RenderFrame> {
 
     void process();
 
+    void clear();
+
     int frameCount();
 
     T newRenderFrame();

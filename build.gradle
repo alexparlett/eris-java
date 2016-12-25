@@ -1,12 +1,11 @@
 buildscript {
-    ext.kotlin_version = '1.0.5'
     repositories {
         mavenCentral()
         jcenter()
     }
 
     dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+
     }
 }
 
@@ -14,7 +13,6 @@ configure(allprojects) {
     configure(subprojects) {
         apply plugin: 'java'
         apply plugin: 'idea'
-        apply plugin: 'kotlin'
 
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
@@ -36,10 +34,6 @@ configure(allprojects) {
         repositories {
             mavenCentral()
             jcenter()
-        }
-
-        sourceSets {
-            main.java.srcDirs += 'src/main/kotlin'
         }
 
         dependencies {
@@ -80,9 +74,11 @@ configure(allprojects) {
 
             compile 'net.sf.sociaal:jbullet:+'
 
-            compile group: 'org.python', name: 'jython-standalone', version: '2.7.0'
+            compile group: 'org.python', name: 'jython-standalone', version: '+'
 
-            compile 'com.github.nifty-gui:nifty:1.4.2'
+            compile 'com.github.nifty-gui:nifty:+'
+
+            compile 'org.reflections:reflections:+'
         }
 
         configurations.all {

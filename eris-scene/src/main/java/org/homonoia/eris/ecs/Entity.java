@@ -44,26 +44,24 @@ public final class Entity extends Contextual {
     public Entity add(final Component component) throws MissingRequiredComponentException {
         Objects.requireNonNull(component);
 
+        boolean multiple = component.getClass().isAnnotationPresent(Multiple.class);
+
         if (component instanceof ScriptComponent) {
             ScriptComponent scriptComponent = (ScriptComponent) component;
-            Class<? extends Component>[] classes = scriptComponent.classes();
+            Class<? extends Component>[] classes = scriptComponent.requires();
             boolean autoAdd = scriptComponent.autoAdd();
             parseRequiredClass(classes, autoAdd, component);
 
-            boolean multiple = scriptComponent.multiple();
-            if (!multiple) {
-                remove(component.getClass());
-            }
+            multiple = scriptComponent.multiple();
         } else if (component.getClass().isAnnotationPresent(Requires.class)) {
             Requires requires = component.getClass().getAnnotation(Requires.class);
             Class<? extends Component>[] classes = requires.classes();
             boolean autoAdd = requires.autoAdd();
             parseRequiredClass(classes, autoAdd, component);
+        }
 
-            boolean multiple = component.getClass().isAnnotationPresent(Multiple.class);
-            if (!multiple) {
-                remove(component.getClass());
-            }
+        if (!multiple) {
+            remove(component.getClass());
         }
 
         components.add(component);

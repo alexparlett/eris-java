@@ -7,8 +7,7 @@ package org.homonoia.eris.ecs;
  * @since 10/11/2016
  */
 public interface ScriptComponent extends Component {
-
-    default Class<? extends Component>[] classes() { return new Class[]{}; }
+    default Class<? extends Component>[] requires() { return new Class[]{}; }
 
     default boolean autoAdd() { return false; }
 

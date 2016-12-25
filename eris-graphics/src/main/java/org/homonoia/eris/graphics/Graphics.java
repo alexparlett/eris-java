@@ -14,6 +14,7 @@ import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
 import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.glfw.GLFWWindowCloseCallback;
+import org.lwjgl.glfw.GLFWWindowSizeCallback;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
@@ -25,11 +26,46 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.IOException;
 import java.nio.IntBuffer;
 import java.nio.file.Paths;
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.lwjgl.glfw.GLFW.*;
+import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MAJOR;
+import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MINOR;
+import static org.lwjgl.glfw.GLFW.GLFW_DECORATED;
+import static org.lwjgl.glfw.GLFW.GLFW_FALSE;
+import static org.lwjgl.glfw.GLFW.GLFW_FOCUSED;
+import static org.lwjgl.glfw.GLFW.GLFW_ICONIFIED;
+import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_CORE_PROFILE;
+import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_FORWARD_COMPAT;
+import static org.lwjgl.glfw.GLFW.GLFW_OPENGL_PROFILE;
+import static org.lwjgl.glfw.GLFW.GLFW_RESIZABLE;
+import static org.lwjgl.glfw.GLFW.GLFW_SAMPLES;
+import static org.lwjgl.glfw.GLFW.GLFW_TRUE;
+import static org.lwjgl.glfw.GLFW.GLFW_VISIBLE;
+import static org.lwjgl.glfw.GLFW.glfwCreateWindow;
+import static org.lwjgl.glfw.GLFW.glfwDestroyWindow;
+import static org.lwjgl.glfw.GLFW.glfwGetFramebufferSize;
+import static org.lwjgl.glfw.GLFW.glfwGetPrimaryMonitor;
+import static org.lwjgl.glfw.GLFW.glfwGetVersionString;
+import static org.lwjgl.glfw.GLFW.glfwGetVideoMode;
+import static org.lwjgl.glfw.GLFW.glfwGetVideoModes;
+import static org.lwjgl.glfw.GLFW.glfwGetWindowAttrib;
+import static org.lwjgl.glfw.GLFW.glfwHideWindow;
+import static org.lwjgl.glfw.GLFW.glfwIconifyWindow;
+import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
+import static org.lwjgl.glfw.GLFW.glfwRestoreWindow;
+import static org.lwjgl.glfw.GLFW.glfwSetFramebufferSizeCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetGamma;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowCloseCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowIcon;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowPos;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowSize;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowSizeCallback;
+import static org.lwjgl.glfw.GLFW.glfwSetWindowTitle;
+import static org.lwjgl.glfw.GLFW.glfwShowWindow;
+import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
+import static org.lwjgl.glfw.GLFW.glfwWindowHint;
 import static org.lwjgl.opengl.GL11.glGetString;
 
 /**
@@ -56,6 +92,8 @@ public class Graphics extends Contextual {
     private long backgroundWindow = MemoryUtil.NULL;
     private String icon = "icon.ico";
     private RenderTarget defaultRenderTarget = new RenderTarget();
+    private int width;
+    private int height;
 
     /**
      * Instantiates a new Contextual.
@@ -147,8 +185,8 @@ public class Graphics extends Contextual {
     }
 
     public void setSize(final int width, final int height) {
-        this.defaultRenderTarget.width(width);
-        this.defaultRenderTarget.height(height);
+        this.width = width;
+        this.height = height;
 
         if (isInitialized() && renderWindow != MemoryUtil.NULL) {
             glfwSetWindowSize(renderWindow, width, height);
@@ -245,11 +283,11 @@ public class Graphics extends Contextual {
     }
 
     public int getWidth() {
-        return defaultRenderTarget.getWidth();
+        return width;
     }
 
     public int getHeight() {
-        return defaultRenderTarget.getHeight();
+        return height;
     }
 
     public int getSamples() {
@@ -281,7 +319,7 @@ public class Graphics extends Contextual {
     }
 
     public List<GLFWVidMode> getResolutions() {
-        List<GLFWVidMode> videoModesList = Collections.emptyList();
+        List<GLFWVidMode> videoModesList = new ArrayList<>();
         GLFWVidMode.Buffer vidModes = glfwGetVideoModes(glfwGetPrimaryMonitor());
         while (vidModes.hasRemaining()) {
             videoModesList.add(vidModes.get());
@@ -300,17 +338,17 @@ public class Graphics extends Contextual {
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
 
         glfwWindowHint(GLFW_DECORATED, borderless ? GLFW_FALSE : GLFW_TRUE);
-        glfwWindowHint(GLFW_RESIZABLE, resizable ? GLFW_TRUE : GLFW_FALSE);
+        glfwWindowHint(GLFW_RESIZABLE, resizable && !fullscreen ? GLFW_TRUE : GLFW_FALSE);
         glfwWindowHint(GLFW_SAMPLES, samples);
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
         GLFWVidMode desktop = getResolution();
-        if (getWidth() <= 0 || getHeight() <= 0) {
-            defaultRenderTarget.width(desktop.width())
-                    .height(desktop.height());
+        if (getWidth() <= 0 || getHeight() <= 0 || borderless) {
+            width = desktop.width();
+            height = desktop.height();
         }
 
-        if (fullscreen) {
+        if (fullscreen && !borderless) {
             renderWindow = glfwCreateWindow(getWidth(), getHeight(), title, glfwGetPrimaryMonitor(), MemoryUtil.NULL);
         } else {
             renderWindow = glfwCreateWindow(getWidth(), getHeight(), title, MemoryUtil.NULL, MemoryUtil.NULL);
@@ -322,11 +360,14 @@ public class Graphics extends Contextual {
 
         glfwMakeContextCurrent(renderWindow);
 
+        if (!isFullscreen()) {
+            glfwSetWindowPos(renderWindow, (desktop.width() - getWidth()) / 2, (desktop.height() - getHeight()) / 2);
+        }
+
         IntBuffer widthBuffer = BufferUtils.createIntBuffer(1);
         IntBuffer heightBuffer = BufferUtils.createIntBuffer(1);
         glfwGetFramebufferSize(renderWindow, widthBuffer, heightBuffer);
-        this.defaultRenderTarget.width(widthBuffer.get())
-            .height(heightBuffer.get());
+        this.defaultRenderTarget.width(widthBuffer.get()).height(heightBuffer.get());
 
         if (isVsync()) {
             glfwSwapInterval(1);
@@ -338,10 +379,7 @@ public class Graphics extends Contextual {
             throw new InitializationException("Failed to create OpenGL capabilities.", ExitCode.GL_CREATE_ERROR);
         }
 
-        if (!isFullscreen()) {
-            glfwSetWindowPos(renderWindow, (desktop.width() - getWidth()) / 2, (desktop.height() - getHeight()) / 2);
-        }
-
+        glfwSetWindowSizeCallback(renderWindow, GLFWWindowSizeCallback.create(this::handleWindowSizeCallback));
         glfwSetFramebufferSizeCallback(renderWindow, GLFWFramebufferSizeCallback.create(this::handleFramebufferCallback));
         glfwSetWindowCloseCallback(renderWindow, GLFWWindowCloseCallback.create(this::handleWindowCloseCallback));
 
@@ -358,6 +396,8 @@ public class Graphics extends Contextual {
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+
         glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
 
         backgroundWindow = glfwCreateWindow(1, 1, title, MemoryUtil.NULL, renderWindow);
@@ -409,5 +449,10 @@ public class Graphics extends Contextual {
 
     private void handleWindowCloseCallback(final long window) {
         publish(ExitRequested.builder());
+    }
+
+    private void handleWindowSizeCallback(long window, int width, int height) {
+        this.width = width;
+        this.height = height;
     }
 }

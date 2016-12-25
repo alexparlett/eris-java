@@ -57,7 +57,7 @@ public class LocaleTest {
 
     @Test
     public void testLocalize_Successful() throws IOException, JsonException {
-        locale.load("en_GB");
+        locale.load("enGB");
 
         assertThat(locale.localize(0, 1), is("NEW"));
         assertThat(locale.localize(0, 2), is("LOAD"));
@@ -70,21 +70,21 @@ public class LocaleTest {
 
     @Test
     public void testLocalize_LineDoesntExistSuccessful() throws IOException, JsonException {
-        locale.load("en_GB");
+        locale.load("enGB");
 
         assertThat(locale.localize(0, 8), is(nullValue()));
     }
 
     @Test
     public void testLocalize_PageDoesntExistSuccessful() throws IOException, JsonException {
-        locale.load("en_GB");
+        locale.load("enGB");
 
         assertThat(locale.localize(1, 8), is(nullValue()));
     }
 
     @Test(expected = IOException.class)
     public void testLocalize_LanguageDoesntExist() throws IOException, JsonException {
-        locale.load("en_US");
+        locale.load("enUS");
     }
 
     @Test

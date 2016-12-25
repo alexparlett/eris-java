@@ -122,7 +122,7 @@ public class Engine extends Contextual implements ScriptBinding {
         graphics.setTitle(settings.getString("Game", "Title").orElse("Eris"));
         graphics.setIcon(settings.getString("Game", "Icon").orElse(null));
         graphics.setResizable(settings.getBoolean("Graphics", "Resizable").orElse(false));
-        graphics.setSize(settings.getInteger("Graphics", "Width").orElse(1024), settings.getInteger("Graphics", "Height").orElse(768));
+        graphics.setSize(settings.getInteger("Graphics", "Width").orElse(0), settings.getInteger("Graphics", "Height").orElse(0));
         graphics.setBorderless(settings.getBoolean("Graphics", "Borderless").orElse(false));
         graphics.setFullscreen(settings.getBoolean("Graphics", "Fullscreen").orElse(true));
         graphics.setVSync(settings.getBoolean("Graphics", "VSync").orElse(true));
