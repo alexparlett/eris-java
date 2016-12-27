@@ -34,9 +34,11 @@ public class Model extends Resource implements GPUResource {
 
     private int handle = UUID.randomUUID().hashCode();
     private List<SubModel> subModels = new ArrayList<>();
+    private Renderer renderer;
 
     public Model(final Context context) {
         super(context);
+        renderer = context.getBean(Renderer.class);
     }
 
     @Override
@@ -99,11 +101,6 @@ public class Model extends Resource implements GPUResource {
     }
 
     @Override
-    public void save(final OutputStream outputStream) throws IOException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public void reset() {
         subModels.forEach(SubModel::reset);
         subModels.clear();
@@ -111,7 +108,6 @@ public class Model extends Resource implements GPUResource {
 
     @Override
     public void use() {
-        Renderer renderer = getContext().getBean(Renderer.class);
         subModels.forEach(subModel -> subModel.draw(renderer));
     }
 

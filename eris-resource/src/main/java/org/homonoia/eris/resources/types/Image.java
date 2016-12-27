@@ -3,11 +3,7 @@ package org.homonoia.eris.resources.types;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.resources.Resource;
 import org.homonoia.eris.resources.types.image.ImageException;
-import org.lwjgl.BufferUtils;
-import org.lwjgl.stb.STBIWriteCallback;
-import org.lwjgl.stb.STBImage;
-import org.lwjgl.stb.STBImageResize;
-import org.lwjgl.stb.STBImageWrite;
+import org.lwjgl.system.MemoryStack;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.MessageFormatter;
@@ -15,14 +11,22 @@ import org.slf4j.helpers.MessageFormatter;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.util.Objects;
 
 import static java.util.Objects.isNull;
-import static org.lwjgl.stb.STBImage.*;
+import static org.lwjgl.stb.STBImage.stbi_failure_reason;
+import static org.lwjgl.stb.STBImage.stbi_image_free;
+import static org.lwjgl.stb.STBImage.stbi_load_from_memory;
+import static org.lwjgl.stb.STBImage.stbi_set_flip_vertically_on_load;
+import static org.lwjgl.stb.STBImageResize.stbir_resize_uint8;
+import static org.lwjgl.stb.STBImageWrite.stbi_write_png;
+import static org.lwjgl.system.MemoryStack.stackPush;
+import static org.lwjgl.system.MemoryUtil.memAlloc;
+import static org.lwjgl.system.MemoryUtil.memFree;
 
 /**
  * Copyright (c) 2015-2016 the Eris project.
@@ -43,6 +47,11 @@ public class Image extends Resource {
         super(context);
     }
 
+    public Image(final Context context, final Path location) {
+        super(context);
+        setLocation(location);
+    }
+
     @Override
     public void load(final InputStream inputStream) throws IOException {
         Objects.requireNonNull(inputStream, "Input Stream must not be null.");
@@ -57,44 +66,40 @@ public class Image extends Resource {
             throw new IOException(MessageFormat.format("Failed to load Image {0}. File empty.", getLocation()));
         }
 
-        ByteBuffer byteBuffer = BufferUtils.createByteBuffer(baos.size());
-        byteBuffer.put(baos.toByteArray());
-        byteBuffer.flip();
+        ByteBuffer byteBuffer = memAlloc(baos.size());
+        try (MemoryStack stack = stackPush()) {
+            byteBuffer.put(baos.toByteArray());
+            byteBuffer.flip();
 
-        IntBuffer w = BufferUtils.createIntBuffer(1);
-        IntBuffer h = BufferUtils.createIntBuffer(1);
-        IntBuffer comp = BufferUtils.createIntBuffer(1);
+            IntBuffer w = stack.mallocInt(1);
+            IntBuffer h = stack.mallocInt(1);
+            IntBuffer comp = stack.mallocInt(1);
 
-        stbi_set_flip_vertically_on_load(true);
-        data = stbi_load_from_memory(byteBuffer, w, h, comp, 0);
-        if (isNull(data)) {
-            LOG.error("Failed to load Image {}. {}", getLocation(), stbi_failure_reason());
-            throw new IOException(MessageFormat.format("Failed to load Image {0}. {1}", getLocation(), stbi_failure_reason()));
+            stbi_set_flip_vertically_on_load(true);
+            data = stbi_load_from_memory(byteBuffer, w, h, comp, 0);
+            if (isNull(data)) {
+                LOG.error("Failed to load Image {}. {}", getLocation(), stbi_failure_reason());
+                throw new IOException(MessageFormat.format("Failed to load Image {0}. {1}", getLocation(), stbi_failure_reason()));
+            }
+
+            this.width = w.get(0);
+            this.height = h.get(0);
+            this.components = comp.get(0);
+        } finally {
+            memFree(byteBuffer);
         }
-
-        this.width = w.get(0);
-        this.height = h.get(0);
-        this.components = comp.get(0);
     }
 
     @Override
-    public void save(final OutputStream outputStream) throws IOException {
-        Objects.requireNonNull(outputStream, "Output Stream must not be null.");
-
+    public void save() throws IOException {
         if (data == null || this.width <= 0 || this.height <= 0 || this.components <= 0) {
             LOG.error("Failed to save Image {}.", getPath());
             throw new IOException(MessageFormatter.format("Failed to save Image {}. Image data invalid.", getPath()).getMessage());
         }
 
-        ByteBuffer writeContext = BufferUtils.createByteBuffer(width * components);
-        ByteBuffer outputContext = ByteBuffer.wrap(new byte[width * height * components]);
-
-        if (STBImageWrite.stbi_write_png_to_func(STBIWriteCallback.create((context, data, size) ->
-                outputContext.put(STBIWriteCallback.getData(data, size))), writeContext, width, height, components, data, width * components)) {
+        if (!stbi_write_png(getLocation().toString(), width, height, components, data, width * components)) {
             throw new IOException(MessageFormatter.format("Failed to save Image {}. {}", getPath(), stbi_failure_reason()).getMessage());
         }
-
-        outputStream.write(outputContext.array());
     }
 
     public void resize(int width, int height) throws ImageException {
@@ -110,15 +115,19 @@ public class Image extends Resource {
             throw new ImageException("Failed to resize {}. No Image Data.", getPath());
         }
 
-        ByteBuffer buffer = BufferUtils.createByteBuffer(width * height * components);
+        ByteBuffer buffer = memAlloc(width * height * components);
+        try {
 
-        if (STBImageResize.stbir_resize_uint8(data, this.width, this.height, this.width * components, buffer, width, height, width * components, components)) {
-            throw new ImageException("Failed to resize Image {}. {}.", getPath(), stbi_failure_reason());
+            if (!stbir_resize_uint8(data, this.width, this.height, this.width * components, buffer, width, height, width * components, components)) {
+                throw new ImageException("Failed to resize Image {}. {}.", getPath(), stbi_failure_reason());
+            }
+
+            this.width = width;
+            this.height = height;
+            this.data = buffer;
+        } finally {
+            memFree(buffer);
         }
-
-        this.width = width;
-        this.height = height;
-        this.data = buffer;
     }
 
     public void flip() {
@@ -164,9 +173,10 @@ public class Image extends Resource {
     @Override
     public void reset() {
         if (data != null) {
-            STBImage.stbi_image_free(data);
+            stbi_image_free(data);
             data.clear();
             data = null;
+            memFree(data);
         }
     }
 }

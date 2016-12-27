@@ -84,4 +84,17 @@ public class ContextTest {
 
         Assert.assertThat(events.size(), CoreMatchers.is(2));
     }
+
+    @Test
+    public void testEventBus_MultipleSubscriptions_DontPropagate() throws Exception {
+
+        Context publisher = new Context();
+
+        List<Event> events = new ArrayList<>();
+        publisher.subscribe(endFrame -> { events.add(endFrame); endFrame.stopPropagation();}, Context.eventClassPredicate(null).and(Context.eventSourcePredicate(null)));
+        publisher.subscribe(endFrame -> events.add(endFrame), Context.eventClassPredicate(null).and(Context.eventSourcePredicate(null)));
+        publisher.publish(EndFrame.builder().build());
+
+        Assert.assertThat(events.size(), CoreMatchers.is(1));
+    }
 } 

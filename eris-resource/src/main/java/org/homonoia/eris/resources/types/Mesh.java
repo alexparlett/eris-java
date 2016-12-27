@@ -67,11 +67,6 @@ public class Mesh extends Resource {
     }
 
     @Override
-    public void save(final OutputStream outputStream) throws IOException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public void reset() {
         geometry.clear();
         textureCoords.clear();

@@ -17,7 +17,7 @@ public class InputSystem extends EntitySystem {
     private final Input input;
 
     public InputSystem(Context context) {
-        super(context, EntitySystem.MAX_PRIORITY);
+        super(context, MAX_PRIORITY);
         this.input = context.getBean(Input.class);
     }
 

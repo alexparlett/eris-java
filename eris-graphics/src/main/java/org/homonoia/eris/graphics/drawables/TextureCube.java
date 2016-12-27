@@ -77,11 +77,6 @@ public class TextureCube extends Texture {
     }
 
     @Override
-    public void save(final OutputStream outputStream) throws IOException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public void use() {
         Objects.requireNonNull(handle, "Texture Handle must be set");
         glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, handle);

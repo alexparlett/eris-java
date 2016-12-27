@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.util.StringUtils;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.function.Consumer;
@@ -72,24 +73,24 @@ public class Ini extends Resource implements Iterable<Map.Entry<String, IniSecti
     }
 
     @Override
-    public void save(final OutputStream outputStream) throws IOException {
-        Objects.requireNonNull(outputStream);
+    public void save() throws IOException {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(getLocation().toFile())) {
+            OutputStreamWriter osw = new OutputStreamWriter(fileOutputStream, StandardCharsets.UTF_8);
+            for (Map.Entry<String, IniSection> section : sections.entrySet()) {
+                osw.write(SECTION_START);
+                osw.write(section.getKey());
+                osw.write(SECTION_END);
+                osw.write(System.lineSeparator());
 
-        OutputStreamWriter osw = new OutputStreamWriter(outputStream);
-        for (Map.Entry<String, IniSection> section : sections.entrySet()) {
-            osw.write(SECTION_START);
-            osw.write(section.getKey());
-            osw.write(SECTION_END);
-            osw.write(System.lineSeparator());
+                for (Map.Entry<String, String> property : section.getValue()) {
+                    osw.write(property.getKey());
+                    osw.write(PROPERTY_SPLIT);
+                    osw.write(property.getValue());
+                    osw.write(System.lineSeparator());
+                }
 
-            for (Map.Entry<String, String> property : section.getValue()) {
-                osw.write(property.getKey());
-                osw.write(PROPERTY_SPLIT);
-                osw.write(property.getValue());
                 osw.write(System.lineSeparator());
             }
-
-            osw.write(System.lineSeparator());
         }
     }
 

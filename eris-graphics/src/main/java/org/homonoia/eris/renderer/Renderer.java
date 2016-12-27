@@ -4,6 +4,7 @@ import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.ExitCode;
 import org.homonoia.eris.core.exceptions.InitializationException;
+import org.homonoia.eris.core.utils.Timer;
 import org.homonoia.eris.events.graphics.ScreenMode;
 import org.homonoia.eris.graphics.Graphics;
 import org.homonoia.eris.renderer.commands.ClearColorCommand;
@@ -20,8 +21,8 @@ import org.joml.Vector3i;
 import org.joml.Vector4d;
 import org.joml.Vector4f;
 import org.joml.Vector4i;
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,6 +73,8 @@ import static org.lwjgl.opengl.GL40.glUniform1d;
 import static org.lwjgl.opengl.GL40.glUniform2d;
 import static org.lwjgl.opengl.GL40.glUniform3d;
 import static org.lwjgl.opengl.GL40.glUniform4d;
+import static org.lwjgl.system.MemoryStack.stackPush;
+
 /**
  * Copyright (c) 2015-2016 the Eris project.
  *
@@ -91,6 +94,8 @@ public class Renderer extends Contextual implements Runnable {
     private Matrix4f projection = new Matrix4f();
     private final Thread thread = new Thread(this);
     private final RenderState state = new SwappingRenderState(this);
+    private int frameCount = 0;
+    private double elapsedTime = 0.0;
 
     @Autowired
     public Renderer(final Context context, final Graphics graphics) {
@@ -118,7 +123,7 @@ public class Renderer extends Contextual implements Runnable {
                         .build()));
 
         renderFrame.add(ClearColorCommand.newInstance()
-                .color(new Vector4f(0,0,0,1))
+                .color(new Vector4f(0, 0, 0, 1))
                 .renderKey(RenderKey.builder()
                         .target(0)
                         .targetLayer(0)
@@ -139,21 +144,26 @@ public class Renderer extends Contextual implements Runnable {
         long window = graphics.getRenderWindow();
 
         try {
-            initializeOpenGl(window, graphics.getWidth(), graphics.getHeight());
+            initializeOpenGl(window, graphics.getDefaultRenderTarget().getWidth(), graphics.getDefaultRenderTarget().getHeight());
         } catch (InitializationException e) {
             LOG.error("Initialization Error in Renderer", e);
             getContext().setExitCode(e.getError());
             glfwSetWindowShouldClose(graphics.getRenderWindow(), true);
         }
 
+        Timer timer = new Timer();
         while (!threadExit.get()) {
             state.process();
             glfwSwapBuffers(window);
 
             if (viewportDirty.get()) {
-                glViewport(0, 0, graphics.getWidth(), graphics.getHeight());
+                glViewport(0, 0, graphics.getDefaultRenderTarget().getWidth(), graphics.getDefaultRenderTarget().getHeight());
                 glfwSwapBuffers(window);
             }
+
+            frameCount++;
+            double frameElapsedTime = timer.getElapsedTime(true);
+            elapsedTime += frameElapsedTime;
         }
 
         glfwMakeContextCurrent(MemoryUtil.NULL);
@@ -164,6 +174,11 @@ public class Renderer extends Contextual implements Runnable {
         threadExit.set(true);
 
         unsubscribe();
+
+        LOG.info("Terminating Renderer...");
+        LOG.info("Frames: {}", frameCount);
+        LOG.info("Milliseconds: {}", elapsedTime);
+        LOG.info("FPS: {}",  frameCount / (elapsedTime / 1000));
 
         try {
             thread.join();
@@ -191,72 +206,74 @@ public class Renderer extends Contextual implements Runnable {
     }
 
     public void bindUniform(final int location, final int type, final java.lang.Object data) {
-        switch (type) {
-            case GL_FLOAT:
-                Float fData = (Float) data;
-                glUniform1f(location, fData);
-                break;
-            case GL_FLOAT_VEC2:
-                Vector2f v2fData = (Vector2f) data;
-                glUniform2f(location, v2fData.x, v2fData.y);
-                break;
-            case GL_FLOAT_VEC3:
-                Vector3f v3fData = (Vector3f) data;
-                glUniform3f(location, v3fData.x, v3fData.y, v3fData.z);
-                break;
-            case GL_FLOAT_VEC4:
-                Vector4f v4fData = (Vector4f) data;
-                glUniform4f(location, v4fData.x, v4fData.y, v4fData.z, v4fData.w);
-                break;
-            case GL_DOUBLE:
-                Double dData = (Double) data;
-                glUniform1d(location, dData);
-                break;
-            case GL_DOUBLE_VEC2:
-                Vector2d v2dData = (Vector2d) data;
-                glUniform2d(location, v2dData.x, v2dData.y);
-                break;
-            case GL_DOUBLE_VEC3:
-                Vector3d v3dData = (Vector3d) data;
-                glUniform3d(location, v3dData.x, v3dData.y, v3dData.z);
-                break;
-            case GL_DOUBLE_VEC4:
-                Vector4d v4dData = (Vector4d) data;
-                glUniform4d(location, v4dData.x, v4dData.y, v4dData.z, v4dData.w);
-                break;
-            case GL_INT:
-                Integer iData = (Integer) data;
-                glUniform1i(location, iData);
-                break;
-            case GL_INT_VEC2:
-            case GL_BOOL_VEC2:
-                Vector2i v2iData = (Vector2i) data;
-                glUniform2i(location, v2iData.x, v2iData.y);
-                break;
-            case GL_INT_VEC3:
-            case GL_BOOL_VEC3:
-                Vector3i v3iData = (Vector3i) data;
-                glUniform3i(location, v3iData.x, v3iData.y, v3iData.z);
-                break;
-            case GL_INT_VEC4:
-            case GL_BOOL_VEC4:
-                Vector4i v4iData = (Vector4i) data;
-                glUniform4i(location, v4iData.x, v4iData.y, v4iData.z, v4iData.w);
-                break;
-            case GL_BOOL:
-                Boolean bData = (Boolean) data;
-                glUniform1i(location, bData ? 1 : 0);
-                break;
-            case GL_FLOAT_MAT3:
-                Matrix3f m3f = (Matrix3f) data;
-                FloatBuffer m3fb = m3f.get(BufferUtils.createFloatBuffer(9));
-                glUniformMatrix3fv(location, false, m3fb);
-                break;
-            case GL_FLOAT_MAT4:
-                Matrix4f m4f = (Matrix4f) data;
-                FloatBuffer m4fb = m4f.get(BufferUtils.createFloatBuffer(16));
-                glUniformMatrix4fv(location, false, m4fb);
-                break;
+        try (MemoryStack stack = stackPush()) {
+            switch (type) {
+                case GL_FLOAT:
+                    Float fData = (Float) data;
+                    glUniform1f(location, fData);
+                    break;
+                case GL_FLOAT_VEC2:
+                    Vector2f v2fData = (Vector2f) data;
+                    glUniform2f(location, v2fData.x, v2fData.y);
+                    break;
+                case GL_FLOAT_VEC3:
+                    Vector3f v3fData = (Vector3f) data;
+                    glUniform3f(location, v3fData.x, v3fData.y, v3fData.z);
+                    break;
+                case GL_FLOAT_VEC4:
+                    Vector4f v4fData = (Vector4f) data;
+                    glUniform4f(location, v4fData.x, v4fData.y, v4fData.z, v4fData.w);
+                    break;
+                case GL_DOUBLE:
+                    Double dData = (Double) data;
+                    glUniform1d(location, dData);
+                    break;
+                case GL_DOUBLE_VEC2:
+                    Vector2d v2dData = (Vector2d) data;
+                    glUniform2d(location, v2dData.x, v2dData.y);
+                    break;
+                case GL_DOUBLE_VEC3:
+                    Vector3d v3dData = (Vector3d) data;
+                    glUniform3d(location, v3dData.x, v3dData.y, v3dData.z);
+                    break;
+                case GL_DOUBLE_VEC4:
+                    Vector4d v4dData = (Vector4d) data;
+                    glUniform4d(location, v4dData.x, v4dData.y, v4dData.z, v4dData.w);
+                    break;
+                case GL_INT:
+                    Integer iData = (Integer) data;
+                    glUniform1i(location, iData);
+                    break;
+                case GL_INT_VEC2:
+                case GL_BOOL_VEC2:
+                    Vector2i v2iData = (Vector2i) data;
+                    glUniform2i(location, v2iData.x, v2iData.y);
+                    break;
+                case GL_INT_VEC3:
+                case GL_BOOL_VEC3:
+                    Vector3i v3iData = (Vector3i) data;
+                    glUniform3i(location, v3iData.x, v3iData.y, v3iData.z);
+                    break;
+                case GL_INT_VEC4:
+                case GL_BOOL_VEC4:
+                    Vector4i v4iData = (Vector4i) data;
+                    glUniform4i(location, v4iData.x, v4iData.y, v4iData.z, v4iData.w);
+                    break;
+                case GL_BOOL:
+                    Boolean bData = (Boolean) data;
+                    glUniform1i(location, bData ? 1 : 0);
+                    break;
+                case GL_FLOAT_MAT3:
+                    Matrix3f m3f = (Matrix3f) data;
+                    FloatBuffer m3fb = m3f.get(stack.mallocFloat(9));
+                    glUniformMatrix3fv(location, false, m3fb);
+                    break;
+                case GL_FLOAT_MAT4:
+                    Matrix4f m4f = (Matrix4f) data;
+                    FloatBuffer m4fb = m4f.get(stack.mallocFloat(16));
+                    glUniformMatrix4fv(location, false, m4fb);
+                    break;
+            }
         }
     }
 

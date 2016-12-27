@@ -20,6 +20,14 @@ public class MouseMove extends Event {
         this.delta = builder.delta;
     }
 
+    public Vector2d getPosition() {
+        return position;
+    }
+
+    public Vector2d getDelta() {
+        return delta;
+    }
+
     public static Builder builder() {
         return new Builder();
     }

@@ -1,8 +1,23 @@
 package org.homonoia.eris.graphics.drawables;
 
-import com.google.gson.*;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
 import org.homonoia.eris.core.Context;
-import org.homonoia.eris.core.parsers.*;
+import org.homonoia.eris.core.parsers.Matrix3fParser;
+import org.homonoia.eris.core.parsers.Matrix4fParser;
+import org.homonoia.eris.core.parsers.Vector2dParser;
+import org.homonoia.eris.core.parsers.Vector2fParser;
+import org.homonoia.eris.core.parsers.Vector2iParser;
+import org.homonoia.eris.core.parsers.Vector3dParser;
+import org.homonoia.eris.core.parsers.Vector3fParser;
+import org.homonoia.eris.core.parsers.Vector3iParser;
+import org.homonoia.eris.core.parsers.Vector4dParser;
+import org.homonoia.eris.core.parsers.Vector4fParser;
+import org.homonoia.eris.core.parsers.Vector4iParser;
 import org.homonoia.eris.graphics.GPUResource;
 import org.homonoia.eris.graphics.drawables.material.CullMode;
 import org.homonoia.eris.graphics.drawables.material.TextureUnit;
@@ -17,11 +32,16 @@ import org.lwjgl.opengl.GL20;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 
 /**
@@ -34,9 +54,11 @@ public class Material extends Resource implements GPUResource {
     private Map<String, Uniform> uniforms = new HashMap<>();
     private List<TextureUnit> textureUnits = new ArrayList<>();
     private CullMode cullMode;
+    private Renderer renderer;
 
     public Material(final Context context) {
         super(context);
+        renderer = context.getBean(Renderer.class);
     }
 
     @Override
@@ -168,14 +190,7 @@ public class Material extends Resource implements GPUResource {
     }
 
     @Override
-    public void save(final OutputStream outputStream) throws IOException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public void use() {
-        Renderer renderer = getContext().getBean(Renderer.class);
-
         GL11.glCullFace(cullMode.getGlCull());
 
         shaderProgram.use();

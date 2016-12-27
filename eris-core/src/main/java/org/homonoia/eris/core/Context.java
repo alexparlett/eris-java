@@ -59,6 +59,7 @@ public class Context implements ApplicationContextAware {
      */
     public <T extends Event> Subscription subscribe(final Action1<T> eventAction, final Predicate<T> filter) {
         return subject.map(obj -> (T) obj)
+                .filter(event -> !event.isStopPropagation())
                 .filter(filter::test)
                 .subscribe(eventAction);
     }

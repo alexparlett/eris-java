@@ -119,6 +119,9 @@ public class ResourceCache extends Contextual implements ScriptBinding {
         } else if (resource != null && !resource.getState().equals(Resource.AsyncState.FAILED)) {
             try {
                 loader.load(resource, true);
+                if (resource.getState().equals(Resource.AsyncState.SUCCESS)) {
+                    return Optional.of(resource.hold());
+                }
             } catch (IOException ex) {
                 LOG.error("Failed to load Resource", ex);
             }
@@ -168,10 +171,11 @@ public class ResourceCache extends Contextual implements ScriptBinding {
         } else if (resource != null && !resource.getState().equals(Resource.AsyncState.FAILED)) {
             try {
                 loader.load(resource, true);
-                if (resource.getState().equals(Resource.AsyncState.SUCCESS))
+                if (resource.getState().equals(Resource.AsyncState.SUCCESS)) {
                     return Optional.of(resource);
+                }
             } catch (IOException ex) {
-
+                LOG.error("Failed to load Resource", ex);
             }
         }
 

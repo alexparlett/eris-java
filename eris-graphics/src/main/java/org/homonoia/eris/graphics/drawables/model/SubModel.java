@@ -8,7 +8,6 @@ import org.homonoia.eris.resources.types.Mesh;
 import org.homonoia.eris.resources.types.mesh.Face;
 import org.homonoia.eris.resources.types.mesh.Vertex;
 import org.joml.Vector3f;
-import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
@@ -27,6 +26,9 @@ import java.util.Objects;
 import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
+import static org.lwjgl.system.MemoryUtil.memAllocFloat;
+import static org.lwjgl.system.MemoryUtil.memAllocInt;
+import static org.lwjgl.system.MemoryUtil.memFree;
 
 /**
  * Created by alexparlett on 07/05/2016.
@@ -113,7 +115,7 @@ public class SubModel {
             }
         }
 
-        vertices = BufferUtils.createFloatBuffer(vertexList.size() * Vertex.COUNT);
+        vertices = memAllocFloat(vertexList.size() * Vertex.COUNT);
         vertexList.forEach(vertex -> {
             vertices.put((vertex.getPosition().x + origin.x) * scale);
             vertices.put((vertex.getPosition().y + origin.y) * scale);
@@ -128,7 +130,7 @@ public class SubModel {
         });
         vertices.flip();
 
-        indices = BufferUtils.createIntBuffer(mesh.getFaces().size() * 3);
+        indices = memAllocInt(mesh.getFaces().size() * 3);
         for (Face face : mesh.getFaces()) {
             for (Vertex vertex : face.getVertices()) {
                 indices.put(indexMap.get(vertex));
@@ -155,8 +157,8 @@ public class SubModel {
 
     public void reset() {
         if (Objects.nonNull(material)) material.release();
-        if (Objects.nonNull(indices)) indices.clear();
-        if (Objects.nonNull(vertices)) vertices.clear();
+        if (Objects.nonNull(indices)) memFree(indices);
+        if (Objects.nonNull(vertices)) memFree(vertices);
         if (Objects.nonNull(mesh)) mesh.release();
         if (vao != 0) glDeleteVertexArrays(vao);
         if (vbo != 0) glDeleteBuffers(vbo);

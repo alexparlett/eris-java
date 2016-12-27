@@ -9,6 +9,7 @@ package org.homonoia.eris.events;
 public abstract class Event {
 
     private final Object source;
+    private boolean stopPropagation = false;
 
     protected Event(EventBuilder<?> eventBuilder) {
         this.source = eventBuilder.source;
@@ -16,6 +17,14 @@ public abstract class Event {
 
     public Object getSource() {
         return source;
+    }
+
+    public boolean isStopPropagation() {
+        return stopPropagation;
+    }
+
+    public void stopPropagation() {
+        this.stopPropagation = true;
     }
 
     public static abstract class EventBuilder<T extends EventBuilder> {

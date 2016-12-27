@@ -17,6 +17,7 @@ public class KeyDown extends Event {
     private final boolean repeat;
     private final Key key;
     private final int scancode;
+    private final char character;
     private final List<Modifier> mods;
 
     protected KeyDown(final Builder builder) {
@@ -25,6 +26,7 @@ public class KeyDown extends Event {
         this.key = builder.key;
         this.scancode = builder.scancode;
         this.mods = builder.mods;
+        this.character = builder.character;
     }
 
     public boolean isRepeat() {
@@ -43,6 +45,10 @@ public class KeyDown extends Event {
         return mods;
     }
 
+    public char getCharacter() {
+        return character;
+    }
+
     public static Builder builder() {
         return new Builder();
     }
@@ -53,6 +59,7 @@ public class KeyDown extends Event {
         private List<Modifier> mods;
         private Key key;
         private int scancode;
+        private char character;
 
         public Builder key(final Key key) {
             this.key = key;
@@ -61,6 +68,11 @@ public class KeyDown extends Event {
 
         public Builder scancode(final int scancode) {
             this.scancode = scancode;
+            return this;
+        }
+
+        public Builder character(final char character) {
+            this.character = character;
             return this;
         }
 

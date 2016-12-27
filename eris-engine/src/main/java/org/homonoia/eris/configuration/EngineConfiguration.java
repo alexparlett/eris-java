@@ -16,6 +16,7 @@ import org.homonoia.eris.input.Input;
 import org.homonoia.eris.renderer.Renderer;
 import org.homonoia.eris.resources.cache.ResourceCache;
 import org.homonoia.eris.scripting.ScriptEngine;
+import org.homonoia.eris.ui.UI;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
@@ -105,5 +106,10 @@ public class EngineConfiguration {
     @ContextualBean
     public ExecutorService executorService() {
         return Executors.newWorkStealingPool();
+    }
+
+    @ContextualBean
+    public UI ui(Context context) {
+        return new UI(context);
     }
 }

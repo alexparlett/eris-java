@@ -3,18 +3,36 @@ package org.homonoia.eris.input;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.exceptions.InitializationException;
-import org.homonoia.eris.events.frame.BeginFrame;
 import org.homonoia.eris.graphics.Graphics;
-import org.homonoia.eris.input.events.*;
+import org.homonoia.eris.input.events.KeyDown;
+import org.homonoia.eris.input.events.KeyUp;
+import org.homonoia.eris.input.events.MouseButtonDown;
+import org.homonoia.eris.input.events.MouseButtonUp;
+import org.homonoia.eris.input.events.MouseMove;
+import org.homonoia.eris.input.events.MouseScroll;
+import org.homonoia.eris.input.events.Text;
 import org.homonoia.eris.scripting.ScriptBinding;
 import org.homonoia.eris.scripting.ScriptEngine;
 import org.joml.Vector2d;
-import org.lwjgl.glfw.*;
+import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWCharCallback;
+import org.lwjgl.glfw.GLFWCursorPosCallback;
+import org.lwjgl.glfw.GLFWKeyCallback;
+import org.lwjgl.glfw.GLFWMouseButtonCallback;
+import org.lwjgl.glfw.GLFWScrollCallback;
+import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
+import org.springframework.util.StringUtils;
 
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+
+import static org.lwjgl.glfw.GLFW.glfwGetKeyName;
+import static org.lwjgl.glfw.GLFW.glfwGetWindowPos;
+import static org.lwjgl.glfw.GLFW.glfwSetCursorPos;
+import static org.lwjgl.system.MemoryStack.stackPush;
 
 /**
  * Copyright (c) 2015-2016 the Eris project.
@@ -63,8 +81,6 @@ public class Input extends Contextual implements ScriptBinding {
             GLFW.glfwSetCursorPosCallback(renderWindow, glfwCursorPosCallback);
             GLFW.glfwSetScrollCallback(renderWindow, glfwScrollCallback);
             GLFW.glfwSetCharCallback(renderWindow, glfwCharCallback);
-
-            subscribe(this::handleBeginFrame, BeginFrame.class);
 
             initialized = true;
         }
@@ -120,28 +136,37 @@ public class Input extends Contextual implements ScriptBinding {
         return false;
     }
 
-    private void handleBeginFrame(final BeginFrame evt) {
-        update();
+    public void setMousePosition(int x, int y) {
+        try (MemoryStack stack = stackPush()) {
+            final IntBuffer xpos = stack.mallocInt(1);
+            final IntBuffer ypos = stack.mallocInt(1);
+            glfwGetWindowPos(renderWindow, xpos, ypos);
+            glfwSetCursorPos(renderWindow, x - xpos.get(0), y - ypos.get(0));
+        }
     }
 
     private void handleGLFWKeyCallback(long window, int key, int scancode, int action, int mods) {
         if (window == renderWindow) {
+            String keyName = glfwGetKeyName(key, scancode);
             if (action == GLFW.GLFW_PRESS) {
                 publish(KeyDown.builder()
                         .key(Key.valueOf(key))
                         .scancode(scancode)
+                        .character(!StringUtils.isEmpty(keyName) ? keyName.charAt(0) : Character.MIN_VALUE)
                         .mods(extractModifiers(mods))
                         .repeat(false));
             } else if (action == GLFW.GLFW_REPEAT) {
                 publish(KeyDown.builder()
                         .key(Key.valueOf(key))
                         .scancode(scancode)
+                        .character(!StringUtils.isEmpty(keyName) ? keyName.charAt(0) : Character.MIN_VALUE)
                         .mods(extractModifiers(mods))
                         .repeat(true));
             } else {
                 publish(KeyUp.builder()
                         .key(Key.valueOf(key))
                         .scancode(scancode)
+                        .character(!StringUtils.isEmpty(keyName) ? keyName.charAt(0) : Character.MIN_VALUE)
                         .mods(extractModifiers(mods)));
             }
         }
@@ -152,11 +177,13 @@ public class Input extends Contextual implements ScriptBinding {
             if (action == GLFW.GLFW_PRESS) {
                 publish(MouseButtonDown.builder()
                         .button(Button.valueOf(button))
-                        .mods(extractModifiers(mods)));
+                        .mods(extractModifiers(mods))
+                        .position(mouseLastPosition));
             } else {
                 publish(MouseButtonUp.builder()
                         .button(Button.valueOf(button))
-                        .mods(extractModifiers(mods)));
+                        .mods(extractModifiers(mods))
+                        .position(mouseLastPosition));
             }
         }
     }
@@ -179,7 +206,8 @@ public class Input extends Contextual implements ScriptBinding {
             double delta = xoffset > yoffset ? xoffset : -yoffset;
 
             publish(MouseScroll.builder()
-                    .delta(delta));
+                    .delta(delta)
+                    .position(mouseLastPosition));
         }
     }
 

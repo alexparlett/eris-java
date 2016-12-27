@@ -98,11 +98,6 @@ public class Texture2D extends Texture {
     }
 
     @Override
-    public void save(final OutputStream outputStream) throws IOException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public void use() {
         Objects.requireNonNull(handle, "Texture Handle must be set");
         glBindTexture(GL_TEXTURE_2D, handle);

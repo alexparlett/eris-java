@@ -30,11 +30,6 @@ public class Python extends Resource {
         contents = scriptEngine.getPythonInterpreter().compile(new InputStreamReader(inputStream), getPath().toString());
     }
 
-    @Override
-    public void save(OutputStream outputStream) throws IOException {
-        throw new UnsupportedOperationException();
-    }
-
     public PyCode getContents() {
         return contents;
     }

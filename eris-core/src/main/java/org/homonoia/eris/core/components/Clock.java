@@ -62,4 +62,8 @@ public class Clock extends Contextual {
     public double getElapsedTime() {
         return GLFW.glfwGetTime() * 1000.0;
     }
+
+    public long getCurrentTime() {
+        return System.currentTimeMillis();
+    }
 }

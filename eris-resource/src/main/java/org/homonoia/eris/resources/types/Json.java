@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -72,9 +73,9 @@ public class Json extends Resource {
     }
 
     @Override
-    public void save(final OutputStream outputStream) throws IOException {
-        try {
-            JsonWriter writer = new JsonWriter(new OutputStreamWriter(outputStream, "UTF-8"));
+    public void save() throws IOException {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(getLocation().toFile())) {
+            JsonWriter writer = new JsonWriter(new OutputStreamWriter(fileOutputStream, StandardCharsets.UTF_8));
             gson.toJson(root, writer);
         } catch (JsonParseException ex) {
             throw new IOException("Failed to save Json.", ex);

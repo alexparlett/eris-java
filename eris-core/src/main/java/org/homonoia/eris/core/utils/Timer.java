@@ -13,7 +13,7 @@ public class Timer {
     private double startTime;
 
     public Timer() {
-        startTime = GLFW.glfwGetTime()  * 1000.0;
+        startTime = GLFW.glfwGetTime() * 1000.0;
     }
 
     public double getElapsedTime() {
@@ -21,7 +21,7 @@ public class Timer {
     }
 
     public double getElapsedTime(boolean reset) {
-        double currentTime = GLFW.glfwGetTime()  * 1000.0;
+        double currentTime = GLFW.glfwGetTime() * 1000.0;
         double elapsedTime =  currentTime - startTime;
 
         if (reset) {
@@ -32,7 +32,7 @@ public class Timer {
     }
 
     public void reset() {
-        startTime = GLFW.glfwGetTime()  * 1000.0;
+        startTime = GLFW.glfwGetTime() * 1000.0;
     }
 
 }

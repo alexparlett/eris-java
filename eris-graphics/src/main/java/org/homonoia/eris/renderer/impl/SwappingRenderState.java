@@ -30,7 +30,7 @@ public class SwappingRenderState implements RenderState<CommandRenderFrame> {
     private static final Logger LOG = LoggerFactory.getLogger(SwappingRenderState.class);
 
     private final Pool<CommandRenderFrame> renderFramePool;
-    private final Queue<CommandRenderFrame> frames = new ArrayBlockingQueue<>(4);
+    private final Queue<CommandRenderFrame> frames = new ArrayBlockingQueue<>(8);
     private CommandRenderFrame lastFrame;
 
     public SwappingRenderState(Renderer renderer) {
@@ -44,7 +44,7 @@ public class SwappingRenderState implements RenderState<CommandRenderFrame> {
         synchronized (frames) {
             frames.add(renderFrame.sort());
         }
-        while (frameCount() > 2);
+        while (frameCount() > 4);
     }
 
     @Override

@@ -56,7 +56,7 @@ public class Settings extends Contextual implements ScriptBinding {
 
     void save() throws IOException {
         OutputStream outputStream = fileSystem.newOutputStream(FileSystem.getApplicationDataDirectory().resolve("settings.ini"));
-        ini.save(outputStream);
+        ini.save();
     }
 
     public Optional<String> getString(final String section, final String name) {

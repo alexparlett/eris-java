@@ -14,7 +14,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 
 import static org.hamcrest.Matchers.greaterThan;
@@ -69,25 +68,23 @@ public class ImageTest {
     public void testSave_Successful() throws IOException {
         Resource resource = new PathMatchingResourcePatternResolver().getResource("texture.jpg");
 
-        Image image = new Image(context);
-        image.load(resource.getInputStream());
+        File file = folder.newFile("test.png");
 
-        File file = folder.newFile("test.jpg");
-        try (FileOutputStream outputStream = new FileOutputStream(file)) {
-            image.save(outputStream);
-        }
+        Image image = new Image(context);
+        image.setLocation(file.toPath());
+        image.load(resource.getInputStream());
+        image.save();
 
         assertThat(file.length(), greaterThan(0L));
     }
 
     @Test(expected = IOException.class)
     public void testSave_NullStream() throws IOException {
-        Image image = new Image(context);
-
         File file = folder.newFile("test.jpg");
-        try (FileOutputStream outputStream = new FileOutputStream(file)) {
-            image.save(outputStream);
-        }
+
+        Image image = new Image(context);
+        image.setLocation(file.toPath());
+        image.save();
     }
 
     @Test

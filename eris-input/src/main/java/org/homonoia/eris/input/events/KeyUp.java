@@ -17,12 +17,14 @@ public class KeyUp extends Event {
     private final Key key;
     private final int scancode;
     private final List<Modifier> mods;
+    private final char character;
 
     protected KeyUp(final Builder builder) {
         super(builder);
         this.key = builder.key;
         this.scancode = builder.scancode;
         this.mods = builder.mods;
+        this.character = builder.character;
     }
 
     public Key getKey() {
@@ -37,6 +39,10 @@ public class KeyUp extends Event {
         return mods;
     }
 
+    public char getCharacter() {
+        return character;
+    }
+
     public static Builder builder() {
         return new Builder();
     }
@@ -46,6 +52,7 @@ public class KeyUp extends Event {
         private List<Modifier> mods;
         private Key key;
         private int scancode;
+        private char character;
 
         public Builder key(final Key key) {
             this.key = key;
@@ -54,6 +61,11 @@ public class KeyUp extends Event {
 
         public Builder scancode(final int scancode) {
             this.scancode = scancode;
+            return this;
+        }
+
+        public Builder character(final char character) {
+            this.character = character;
             return this;
         }
 

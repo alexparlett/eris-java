@@ -6,7 +6,6 @@ import org.homonoia.eris.core.Contextual;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Path;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -86,5 +85,7 @@ public abstract class Resource extends Contextual implements Closeable {
 
     public abstract void load(InputStream inputStream) throws IOException;
 
-    public abstract void save(OutputStream outputStream) throws IOException;
+    public void save() throws IOException {
+        throw new UnsupportedOperationException();
+    }
 }

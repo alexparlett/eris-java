@@ -5,7 +5,6 @@ buildscript {
     }
 
     dependencies {
-
     }
 }
 
@@ -17,26 +16,46 @@ configure(allprojects) {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
 
-        switch ( org.gradle.internal.os.OperatingSystem.current() ) {
-            case org.gradle.internal.os.OperatingSystem.WINDOWS:
-                project.ext.lwjglNatives = "natives-windows"
-                break
-            case org.gradle.internal.os.OperatingSystem.LINUX:
-                project.ext.lwjglNatives = "natives-linux"
-                break
-            case org.gradle.internal.os.OperatingSystem.MAC_OS:
-                project.ext.lwjglNatives = "natives-macos"
-                break
-        }
-
-        project.ext.lwjglVersion = "3.1.0"
-
         repositories {
             mavenCentral()
             jcenter()
         }
 
+        project.ext.lwjglVersion = "3.1.0"
+        project.ext.steamworks4jVersion = "1.5.0"
+        project.ext.jomlVersion = "+"
+
+        org.gradle.internal.os.OperatingSystem os = org.gradle.internal.os.OperatingSystem.current();
+        if (os.isWindows()) {
+            project.ext.lwjglNatives = "natives-windows"
+        } else if (os.isLinux()) {
+            project.ext.lwjglNatives = "natives-linux"
+        } else if (os.isMacOsX()) {
+            project.ext.lwjglNatives = "natives-macos"
+        }
+
         dependencies {
+            compile "org.lwjgl:lwjgl:${lwjglVersion}"
+            compile "org.lwjgl:lwjgl-glfw:${lwjglVersion}"
+            compile "org.lwjgl:lwjgl-jemalloc:${lwjglVersion}"
+            compile "org.lwjgl:lwjgl-nfd:${lwjglVersion}"
+            compile "org.lwjgl:lwjgl-openal:${lwjglVersion}"
+            compile "org.lwjgl:lwjgl-opengl:${lwjglVersion}"
+            compile "org.lwjgl:lwjgl-sse:${lwjglVersion}"
+            compile "org.lwjgl:lwjgl-stb:${lwjglVersion}"
+            compile "org.lwjgl:lwjgl-tinyfd:${lwjglVersion}"
+            runtime "org.lwjgl:lwjgl:${lwjglVersion}:${lwjglNatives}"
+            runtime "org.lwjgl:lwjgl-glfw:${lwjglVersion}:${lwjglNatives}"
+            runtime "org.lwjgl:lwjgl-jemalloc:${lwjglVersion}:${lwjglNatives}"
+            runtime "org.lwjgl:lwjgl-nfd:${lwjglVersion}:${lwjglNatives}"
+            runtime "org.lwjgl:lwjgl-nuklear:${lwjglVersion}:${lwjglNatives}"
+            runtime "org.lwjgl:lwjgl-openal:${lwjglVersion}:${lwjglNatives}"
+            runtime "org.lwjgl:lwjgl-sse:${lwjglVersion}:${lwjglNatives}"
+            runtime "org.lwjgl:lwjgl-stb:${lwjglVersion}:${lwjglNatives}"
+            runtime "org.lwjgl:lwjgl-tinyfd:${lwjglVersion}:${lwjglNatives}"
+            compile "com.code-disaster.steamworks4j:steamworks4j:${steamworks4jVersion}"
+            compile "org.joml:joml:${jomlVersion}"
+
             testCompile 'junit:junit:+'
             testCompile 'org.mockito:mockito-all:+'
             testCompile 'org.hamcrest:hamcrest-all:+'
@@ -49,34 +68,9 @@ configure(allprojects) {
             compile 'org.springframework:spring-beans:+'
             compile 'org.springframework:spring-context:+'
 
-            // LWJGL dependencies START
-            compile "org.lwjgl:lwjgl:${lwjglVersion}"
-            compile "org.lwjgl:lwjgl-glfw:${lwjglVersion}"
-            compile "org.lwjgl:lwjgl-jemalloc:${lwjglVersion}"
-            compile "org.lwjgl:lwjgl-nfd:${lwjglVersion}"
-            compile "org.lwjgl:lwjgl-openal:${lwjglVersion}"
-            compile "org.lwjgl:lwjgl-opengl:${lwjglVersion}"
-            compile "org.lwjgl:lwjgl-par:${lwjglVersion}"
-            compile "org.lwjgl:lwjgl-stb:${lwjglVersion}"
-            compile "org.lwjgl:lwjgl-tinyfd:${lwjglVersion}"
-            // LWJGL natives
-            runtime "org.lwjgl:lwjgl:${lwjglVersion}:${lwjglNatives}"
-            runtime "org.lwjgl:lwjgl-glfw:${lwjglVersion}:${lwjglNatives}"
-            runtime "org.lwjgl:lwjgl-jemalloc:${lwjglVersion}:${lwjglNatives}"
-            runtime "org.lwjgl:lwjgl-nfd:${lwjglVersion}:${lwjglNatives}"
-            runtime "org.lwjgl:lwjgl-openal:${lwjglVersion}:${lwjglNatives}"
-            runtime "org.lwjgl:lwjgl-par:${lwjglVersion}:${lwjglNatives}"
-            runtime "org.lwjgl:lwjgl-stb:${lwjglVersion}:${lwjglNatives}"
-            runtime "org.lwjgl:lwjgl-tinyfd:${lwjglVersion}:${lwjglNatives}"
-            // LWJGL dependencies END
-
-            compile 'org.joml:joml:+'
-
             compile 'net.sf.sociaal:jbullet:+'
 
             compile group: 'org.python', name: 'jython-standalone', version: '+'
-
-            compile 'com.github.nifty-gui:nifty:+'
 
             compile 'org.reflections:reflections:+'
         }

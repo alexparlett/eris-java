@@ -9,7 +9,6 @@ import org.homonoia.eris.events.graphics.ScreenMode;
 import org.homonoia.eris.graphics.drawables.RenderTarget;
 import org.homonoia.eris.resources.cache.ResourceCache;
 import org.homonoia.eris.resources.types.Image;
-import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
 import org.lwjgl.glfw.GLFWImage;
 import org.lwjgl.glfw.GLFWVidMode;
@@ -18,6 +17,7 @@ import org.lwjgl.glfw.GLFWWindowSizeCallback;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
+import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,6 +67,7 @@ import static org.lwjgl.glfw.GLFW.glfwShowWindow;
 import static org.lwjgl.glfw.GLFW.glfwSwapInterval;
 import static org.lwjgl.glfw.GLFW.glfwWindowHint;
 import static org.lwjgl.opengl.GL11.glGetString;
+import static org.lwjgl.system.MemoryStack.stackPush;
 
 /**
  * Copyright (c) 2015-2016 the Eris project.
@@ -364,10 +365,12 @@ public class Graphics extends Contextual {
             glfwSetWindowPos(renderWindow, (desktop.width() - getWidth()) / 2, (desktop.height() - getHeight()) / 2);
         }
 
-        IntBuffer widthBuffer = BufferUtils.createIntBuffer(1);
-        IntBuffer heightBuffer = BufferUtils.createIntBuffer(1);
-        glfwGetFramebufferSize(renderWindow, widthBuffer, heightBuffer);
-        this.defaultRenderTarget.width(widthBuffer.get()).height(heightBuffer.get());
+        try (MemoryStack stack = stackPush()) {
+            IntBuffer widthBuffer = stack.mallocInt(1);
+            IntBuffer heightBuffer = stack.mallocInt(1);
+            glfwGetFramebufferSize(renderWindow, widthBuffer, heightBuffer);
+            this.defaultRenderTarget.width(widthBuffer.get()).height(heightBuffer.get());
+        }
 
         if (isVsync()) {
             glfwSwapInterval(1);
@@ -439,6 +442,8 @@ public class Graphics extends Contextual {
     }
 
     private void handleFramebufferCallback(final long window, final int width, final int height) {
+        LOG.debug("framebuffer size changed w: {) h: {}", width, height);
+
         this.defaultRenderTarget.width(width)
             .height(height);
 
@@ -452,6 +457,8 @@ public class Graphics extends Contextual {
     }
 
     private void handleWindowSizeCallback(long window, int width, int height) {
+        LOG.debug("window size changed w: {) h: {}", width, height);
+
         this.width = width;
         this.height = height;
     }

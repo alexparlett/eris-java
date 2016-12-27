@@ -17,6 +17,7 @@ import org.homonoia.eris.resources.cache.ResourceCache;
 import org.homonoia.eris.resources.types.json.JsonException;
 import org.homonoia.eris.scripting.ScriptBinding;
 import org.homonoia.eris.scripting.ScriptEngine;
+import org.homonoia.eris.ui.UI;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.slf4j.Logger;
@@ -68,6 +69,9 @@ public class Engine extends Contextual implements ScriptBinding {
 
     @Autowired
     private ScriptEngine scriptEngine;
+
+    @Autowired
+    private UI ui;
 
     /**
      * Instantiates a new Engine.
@@ -133,6 +137,7 @@ public class Engine extends Contextual implements ScriptBinding {
         renderer.initialize();
         input.initialize();
         scriptEngine.initialize();
+        ui.initialize();
     }
 
     public void run() {
@@ -192,6 +197,7 @@ public class Engine extends Contextual implements ScriptBinding {
         LOG.info("Terminating...");
         LOG.info("Frames: {}", frameNumber);
         LOG.info("Milliseconds: {}", elapsedTime);
+        LOG.info("FPS: {}",  frameNumber / (elapsedTime / 1000));
         LOG.info("Exit Code: {}", getContext().getExitCode());
 
         log.shutdown();
