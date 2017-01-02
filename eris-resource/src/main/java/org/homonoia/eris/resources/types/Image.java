@@ -58,8 +58,9 @@ public class Image extends Resource {
 
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         int read;
-        while ((read = inputStream.read()) >= 0) {
-            baos.write(read);
+        byte[] buf = new byte[1024];
+        while ((read = inputStream.read(buf)) >= 0) {
+            baos.write(buf, 0, read);
         }
 
         if (baos.size() <= 0) {

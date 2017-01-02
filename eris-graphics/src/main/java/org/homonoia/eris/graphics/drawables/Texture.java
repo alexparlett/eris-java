@@ -28,8 +28,8 @@ public abstract class Texture extends Resource implements GPUResource {
     static {
         wrapMap.put("REPEAT", GL11.GL_REPEAT);
         wrapMap.put("MIRRORED_REPEAT", GL14.GL_MIRRORED_REPEAT);
-        wrapMap.put("CLAMP_TO_BORDER", GL12.GL_CLAMP_TO_EDGE);
-        wrapMap.put("CLAMP_TO_EDGE", GL13.GL_CLAMP_TO_BORDER);
+        wrapMap.put("CLAMP_TO_EDGE", GL12.GL_CLAMP_TO_EDGE);
+        wrapMap.put("CLAMP_TO_BORDER", GL13.GL_CLAMP_TO_BORDER);
     }
 
     protected boolean generateMipMaps = false;
@@ -117,7 +117,7 @@ public abstract class Texture extends Resource implements GPUResource {
                     .map(JsonPrimitive::getAsString)
                     .orElse("REPEAT"));
 
-            wWrapMode = wrapMap.get(Optional.ofNullable(wrap.getAsJsonPrimitive("u"))
+            wWrapMode = wrapMap.get(Optional.ofNullable(wrap.getAsJsonPrimitive("w"))
                     .map(JsonPrimitive::getAsString)
                     .orElse("REPEAT"));
         }

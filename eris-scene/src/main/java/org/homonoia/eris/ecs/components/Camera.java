@@ -3,6 +3,7 @@ package org.homonoia.eris.ecs.components;
 import org.homonoia.eris.ecs.Component;
 import org.homonoia.eris.ecs.annotations.Requires;
 import org.homonoia.eris.graphics.drawables.RenderTarget;
+import org.homonoia.eris.graphics.drawables.Skybox;
 import org.joml.Vector4f;
 
 import java.util.HashSet;
@@ -17,12 +18,13 @@ import java.util.Set;
 @Requires(classes = {Transform.class})
 public class Camera implements Component {
 
-    private Set<Integer> layerMask = new HashSet<>();
+    private Set<Integer> layerMask = new HashSet<>(8);
     private float near;
     private float far;
     private float fov;
     private RenderTarget renderTarget;
     private Vector4f backgroundColor;
+    private Skybox skybox;
 
     public Set<Integer> getLayerMask() {
         return layerMask;
@@ -48,6 +50,10 @@ public class Camera implements Component {
         return backgroundColor;
     }
 
+    public Skybox getSkybox() {
+        return skybox;
+    }
+
     public Camera near(float near) {
         this.near = near;
         return this;
@@ -70,6 +76,11 @@ public class Camera implements Component {
 
     public Camera backgroundColor(Vector4f backgroundColor) {
         this.backgroundColor = backgroundColor;
+        return this;
+    }
+
+    public Camera skybox(Skybox skybox) {
+        this.skybox = skybox;
         return this;
     }
 }

@@ -7,8 +7,6 @@ import org.homonoia.eris.core.exceptions.InitializationException;
 import org.homonoia.eris.core.utils.Timer;
 import org.homonoia.eris.events.graphics.ScreenMode;
 import org.homonoia.eris.graphics.Graphics;
-import org.homonoia.eris.renderer.commands.ClearColorCommand;
-import org.homonoia.eris.renderer.commands.ClearCommand;
 import org.homonoia.eris.renderer.impl.SwappingRenderState;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;
@@ -34,11 +32,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
 import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
-import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
-import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 import static org.lwjgl.opengl.GL11.GL_DOUBLE;
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL11.GL_INT;
+import static org.lwjgl.opengl.GL11.GL_LESS;
+import static org.lwjgl.opengl.GL11.glDepthFunc;
 import static org.lwjgl.opengl.GL11.glEnable;
 import static org.lwjgl.opengl.GL11.glViewport;
 import static org.lwjgl.opengl.GL13.GL_MULTISAMPLE;
@@ -109,30 +108,6 @@ public class Renderer extends Contextual implements Runnable {
         }
 
         subscribe(this::handleScreenMode, ScreenMode.class);
-
-        RenderFrame renderFrame = getState().newRenderFrame();
-        renderFrame.add(ClearCommand.newInstance()
-                .bitfield(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-                .renderKey(RenderKey.builder()
-                        .target(0)
-                        .targetLayer(0)
-                        .command(1)
-                        .extra(0)
-                        .depth(0)
-                        .material(0)
-                        .build()));
-
-        renderFrame.add(ClearColorCommand.newInstance()
-                .color(new Vector4f(0, 0, 0, 1))
-                .renderKey(RenderKey.builder()
-                        .target(0)
-                        .targetLayer(0)
-                        .command(0)
-                        .extra(0)
-                        .depth(0)
-                        .material(0)
-                        .build()));
-        getState().add(renderFrame);
 
         thread.setUncaughtExceptionHandler(this::handleRenderingThreadException);
         thread.start();
@@ -298,6 +273,8 @@ public class Renderer extends Contextual implements Runnable {
         glEnable(GL_MULTISAMPLE);
         glEnable(GL_TEXTURE_CUBE_MAP);
         glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LESS);
 
         glViewport(0, 0, width, height);
     }

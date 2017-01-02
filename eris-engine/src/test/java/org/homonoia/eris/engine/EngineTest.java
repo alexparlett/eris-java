@@ -11,6 +11,7 @@ import org.homonoia.eris.ecs.components.Transform;
 import org.homonoia.eris.ecs.exceptions.MissingRequiredComponentException;
 import org.homonoia.eris.graphics.Graphics;
 import org.homonoia.eris.graphics.drawables.Model;
+import org.homonoia.eris.graphics.drawables.Skybox;
 import org.homonoia.eris.resources.cache.ResourceCache;
 import org.joml.Vector4f;
 import org.junit.Test;
@@ -47,14 +48,22 @@ public class EngineTest {
         Graphics graphics = applicationContext.getBean(Graphics.class);
 
         Model model = resourceCache.get(Model.class, "Models/planet.mdl").get();
+        Skybox skybox = resourceCache.get(Skybox.class, "Skyboxes/spacescape.skybox").get();
 
         Entity entity0 = new Entity(context);
-        entity0.add(new Transform().translate(0,0,0));
-        entity0.add(new Camera().far(100).near(1).fov(55).backgroundColor(new Vector4f(0,0,0,1)).renderTarget(graphics.getDefaultRenderTarget()));
+        entity0.add(new Transform().translate(0, 0, 0));
+        entity0.add(new Camera()
+                .far(100)
+                .near(1)
+                .fov(55)
+                .backgroundColor(new Vector4f(255, 255, 255, 1))
+                .renderTarget(graphics.getDefaultRenderTarget())
+                .skybox(skybox)
+        );
         entityManager.add(entity0);
 
         Entity entity1 = new Entity(context);
-        entity1.add(new Transform().translate(0,0,-10));
+        entity1.add(new Transform().translate(0, 0, -10));
         entity1.add(new Mesh().model(model));
         entityManager.add(entity1);
 

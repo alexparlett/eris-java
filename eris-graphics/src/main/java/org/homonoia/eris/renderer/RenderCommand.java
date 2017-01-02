@@ -1,5 +1,10 @@
 package org.homonoia.eris.renderer;
 
+import org.homonoia.eris.graphics.drawables.ShaderProgram;
+import org.homonoia.eris.graphics.drawables.sp.Uniform;
+
+import java.util.Optional;
+
 /**
  * Copyright (c) 2015-2016 the Eris project.
  *
@@ -26,5 +31,11 @@ public abstract class RenderCommand<T extends RenderCommand> implements Comparab
     @Override
     public int compareTo(T o) {
         return this.getRenderKey().getKey().compareTo(o.getRenderKey().getKey());
+    }
+
+    protected void findAndBindUniform(String uniform, Renderer renderer, ShaderProgram shaderProgram, Object value) {
+        Optional<Uniform> shaderUniformMaybe = shaderProgram.getUniform(uniform);
+        Uniform shaderUniform = shaderUniformMaybe.orElseThrow(() -> new IllegalArgumentException("No uniforms in shader found for " + uniform));
+        renderer.bindUniform(shaderUniform.getLocation(), shaderUniform.getType(), value);
     }
 }

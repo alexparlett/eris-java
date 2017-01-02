@@ -1,0 +1,11 @@
+{
+  "program": "Shaders/skybox.shader",
+  "textures": [
+    {
+      "type": "cube",
+      "unit": "0",
+      "uniform": "diffuse",
+      "file": "Textures/spacescape.tex"
+    }
+  ]
+}

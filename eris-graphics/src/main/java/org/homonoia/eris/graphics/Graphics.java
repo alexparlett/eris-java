@@ -442,7 +442,7 @@ public class Graphics extends Contextual {
     }
 
     private void handleFramebufferCallback(final long window, final int width, final int height) {
-        LOG.debug("framebuffer size changed w: {) h: {}", width, height);
+        LOG.debug("framebuffer size changed w: {} h: {}", width, height);
 
         this.defaultRenderTarget.width(width)
             .height(height);
@@ -457,7 +457,7 @@ public class Graphics extends Contextual {
     }
 
     private void handleWindowSizeCallback(long window, int width, int height) {
-        LOG.debug("window size changed w: {) h: {}", width, height);
+        LOG.debug("window size changed w: {} h: {}", width, height);
 
         this.width = width;
         this.height = height;

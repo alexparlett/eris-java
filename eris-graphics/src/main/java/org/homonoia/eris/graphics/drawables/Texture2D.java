@@ -13,7 +13,6 @@ import org.lwjgl.system.MemoryUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
@@ -59,42 +58,38 @@ public class Texture2D extends Texture {
         Image image = resourceCache.getTemporary(Image.class, file)
                 .orElseThrow(() -> new IOException("Failed to load Texture2D. Metadata Json doesn't contain valid file: " + file));
 
-        try {
-            int format = getFormat(image);
+        int format = getFormat(image);
 
-            long win = GLFW.glfwGetCurrentContext();
-            Graphics graphics = getContext().getBean(Graphics.class);
-            GLFW.glfwMakeContextCurrent(win != MemoryUtil.NULL ? win : graphics.getBackgroundWindow());
+        long win = GLFW.glfwGetCurrentContext();
+        Graphics graphics = getContext().getBean(Graphics.class);
+        GLFW.glfwMakeContextCurrent(win != MemoryUtil.NULL ? win : graphics.getBackgroundWindow());
 
-            handle = glGenTextures();
-            glBindTexture(GL_TEXTURE_2D, handle);
+        handle = glGenTextures();
+        glBindTexture(GL_TEXTURE_2D, handle);
 
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, generateMipMaps ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, generateMipMaps ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, uWrapMode);
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, vWrapMode);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_S, uWrapMode);
+        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_WRAP_T, vWrapMode);
 
-            glGetError();
-            glTexImage2D(GL_TEXTURE_2D, 0, format, image.getWidth(), image.getHeight(), 0, format, GL_UNSIGNED_BYTE, image.getData());
+        glGetError();
+        glTexImage2D(GL_TEXTURE_2D, 0, format, image.getWidth(), image.getHeight(), 0, format, GL_UNSIGNED_BYTE, image.getData());
 
-            int glErrorCode = glGetError();
-            if (glErrorCode != GL_NO_ERROR) {
-                GLFW.glfwMakeContextCurrent(win);
-                glBindTexture(GL_TEXTURE_2D, 0);
-                glDeleteTextures(handle);
-                throw new IOException(MessageFormat.format("Failed to load TextureCube {0}. OpenGL Error {1}", image.getPath(), glErrorCode));
-            }
-
-            if (generateMipMaps) {
-                glGenerateMipmap(GL_TEXTURE_2D);
-            }
-
-            glBindTexture(GL_TEXTURE_2D, 0);
+        int glErrorCode = glGetError();
+        if (glErrorCode != GL_NO_ERROR) {
             GLFW.glfwMakeContextCurrent(win);
-        } finally {
-             image.release();
+            glBindTexture(GL_TEXTURE_2D, 0);
+            glDeleteTextures(handle);
+            throw new IOException(MessageFormat.format("Failed to load TextureCube {0}. OpenGL Error {1}", image.getPath(), glErrorCode));
         }
+
+        if (generateMipMaps) {
+            glGenerateMipmap(GL_TEXTURE_2D);
+        }
+
+        glBindTexture(GL_TEXTURE_2D, 0);
+        GLFW.glfwMakeContextCurrent(win);
     }
 
     @Override

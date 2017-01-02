@@ -13,7 +13,8 @@ import org.homonoia.eris.renderer.RenderKey;
 import org.homonoia.eris.renderer.commands.CameraCommand;
 import org.homonoia.eris.renderer.commands.ClearColorCommand;
 import org.homonoia.eris.renderer.commands.ClearCommand;
-import org.homonoia.eris.renderer.commands.Draw3dCommand;
+import org.homonoia.eris.renderer.commands.DrawModelCommand;
+import org.homonoia.eris.renderer.commands.DrawSkyboxCommand;
 import org.homonoia.eris.renderer.commands.EnableCommand;
 import org.joml.FrustumIntersection;
 import org.joml.Matrix4f;
@@ -22,6 +23,7 @@ import java.util.concurrent.Callable;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import static java.util.Objects.nonNull;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
@@ -97,6 +99,7 @@ public final class CameraSceneParser implements Callable<Boolean> {
                         .material(0)
                         .build()));
 
+
         Matrix4f frustum = new Matrix4f().perspective(camera.getFov(), aspectRatio, camera.getNear(), camera.getFar())
                 .translate(transform.getTranslation())
                 .rotate(transform.getRotation());
@@ -108,6 +111,19 @@ public final class CameraSceneParser implements Callable<Boolean> {
                 .filter(filterEntities(camera, intersection))
                 .spliterator()
                 .forEachRemaining(processEntity(transform, camera));
+
+        if (nonNull(camera.getSkybox())) {
+            renderFrame.add(DrawSkyboxCommand.newInstance()
+                    .skybox(camera.getSkybox())
+                    .renderKey(RenderKey.builder()
+                            .target(camera.getRenderTarget().getHandle())
+                            .targetLayer(0)
+                            .command(5)
+                            .extra(0)
+                            .depth(0)
+                            .material(camera.getSkybox().getMaterial().getHandle())
+                            .build()));
+        }
 
         return true;
     }
@@ -123,7 +139,7 @@ public final class CameraSceneParser implements Callable<Boolean> {
     }
 
     protected Consumer<SubModel> processSubModel(Transform transform, Camera camera, Transform rndrTransform) {
-        return subModel -> renderFrame.add(Draw3dCommand.newInstance()
+        return subModel -> renderFrame.add(DrawModelCommand.newInstance()
                 .model(subModel)
                 .transform(rndrTransform.get())
                 .renderKey(buildRenderKey(transform, camera, rndrTransform, subModel)));

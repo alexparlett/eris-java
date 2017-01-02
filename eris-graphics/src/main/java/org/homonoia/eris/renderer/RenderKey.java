@@ -28,7 +28,7 @@ public class RenderKey {
         material = builder.material;
 
         if (transparency != 0L) {
-            key = target << 62;
+            key = -target << 62;
             key |= targetLayer << 60;
             key |= command << 58;
             key |= transparency << 57;
@@ -36,7 +36,7 @@ public class RenderKey {
             key |= -depth << 32;
             key |= material;
         } else {
-            key = target << 62;
+            key = -target << 62;
             key |= targetLayer << 60;
             key |= command << 58;
             key |= transparency << 57;

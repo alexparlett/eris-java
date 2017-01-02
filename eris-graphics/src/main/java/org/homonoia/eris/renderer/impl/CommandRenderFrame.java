@@ -7,6 +7,8 @@ import org.homonoia.eris.renderer.Renderer;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.util.Comparator.comparing;
+
 /**
  * Copyright (c) 2015-2016 the Eris project.
  *
@@ -30,7 +32,7 @@ public class CommandRenderFrame implements RenderFrame<CommandRenderFrame> {
 
     @Override
     public CommandRenderFrame sort() {
-        renderCommands.sort((o1, o2) -> o1.getRenderKey().getKey().compareTo(o2.getRenderKey().getKey()));
+        renderCommands.sort(comparing(o -> o.getRenderKey().getKey()));
         return this;
     }
 

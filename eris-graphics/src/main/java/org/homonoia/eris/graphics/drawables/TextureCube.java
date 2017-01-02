@@ -8,25 +8,35 @@ import org.homonoia.eris.graphics.Graphics;
 import org.homonoia.eris.resources.cache.ResourceCache;
 import org.homonoia.eris.resources.types.Image;
 import org.homonoia.eris.resources.types.Json;
-import org.lwjgl.glfw.GLFW;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
-import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL30;
 import org.lwjgl.system.MemoryUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.text.MessageFormat;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
+import static org.lwjgl.glfw.GLFW.glfwGetCurrentContext;
+import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
+import static org.lwjgl.opengl.GL11.GL_LINEAR;
+import static org.lwjgl.opengl.GL11.GL_LINEAR_MIPMAP_LINEAR;
+import static org.lwjgl.opengl.GL11.GL_NO_ERROR;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_MAG_FILTER;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_MIN_FILTER;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_S;
+import static org.lwjgl.opengl.GL11.GL_TEXTURE_WRAP_T;
 import static org.lwjgl.opengl.GL11.GL_UNSIGNED_BYTE;
 import static org.lwjgl.opengl.GL11.glBindTexture;
+import static org.lwjgl.opengl.GL11.glDeleteTextures;
+import static org.lwjgl.opengl.GL11.glGenTextures;
+import static org.lwjgl.opengl.GL11.glGetError;
+import static org.lwjgl.opengl.GL11.glTexImage2D;
+import static org.lwjgl.opengl.GL11.glTexParameteri;
+import static org.lwjgl.opengl.GL12.GL_TEXTURE_WRAP_R;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE_CUBE_MAP;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+import static org.lwjgl.opengl.GL30.glGenerateMipmap;
 
 /**
  * Copyright (c) 2015-2016 the Eris project.
@@ -49,94 +59,98 @@ public class TextureCube extends Texture {
 
         JsonObject root = json.getRoot()
                 .map(JsonElement::getAsJsonObject)
-                .orElseThrow(() -> new IOException("Failed to load Texture2D. Metadata Json invalid."));
+                .orElseThrow(() -> new IOException("Failed to load TextureCube. Metadata Json invalid."));
 
-        Map<Integer, Image> faces = new HashMap<>();
-        try {
-            for (JsonElement face : root.getAsJsonArray("faces")) {
-                JsonObject asJsonObject = face.getAsJsonObject();
+        List<Image> faces = new ArrayList();
 
-                int pos = parsePosition(asJsonObject.get("pos").getAsString());
-                Path file = Paths.get(asJsonObject.get("file").getAsString());
+        String right = root.getAsJsonPrimitive("right").getAsString();
+        String left = root.getAsJsonPrimitive("left").getAsString();
+        String top = root.getAsJsonPrimitive("top").getAsString();
+        String bottom = root.getAsJsonPrimitive("bottom").getAsString();
+        String front = root.getAsJsonPrimitive("front").getAsString();
+        String back = root.getAsJsonPrimitive("back").getAsString();
 
-                Image image = resourceCache.getTemporary(Image.class, file)
-                        .orElseThrow(() -> new IOException(MessageFormat.format("Failed to load TextureCube. Face {0} at {1} does not exist.", pos, file)));
+        faces.add(resourceCache.getTemporary(Image.class, right)
+                .orElseThrow(() -> new IOException(MessageFormat.format("Failed to load TextureCube. right face at {0} does not exist.", right))));
 
-                faces.put(pos, image);
-            }
+        faces.add(resourceCache.getTemporary(Image.class, left)
+                .orElseThrow(() -> new IOException(MessageFormat.format("Failed to load TextureCube. left face at {0} does not exist.", left))));
 
-            parseParameters(root);
-            compile(faces);
-        } finally {
-            faces.forEach((face, image) -> {
-                if (Objects.nonNull(image)) {
-                    image.release();
-                }
-            });
-        }
+        faces.add(resourceCache.getTemporary(Image.class, top)
+                .orElseThrow(() -> new IOException(MessageFormat.format("Failed to load TextureCube. top face at {0} does not exist.", top))));
+
+        faces.add(resourceCache.getTemporary(Image.class, bottom)
+                .orElseThrow(() -> new IOException(MessageFormat.format("Failed to load TextureCube. bottom face at {0} does not exist.", bottom))));
+
+        faces.add(resourceCache.getTemporary(Image.class, front)
+                .orElseThrow(() -> new IOException(MessageFormat.format("Failed to load TextureCube. front face at {0} does not exist.", front))));
+
+        faces.add(resourceCache.getTemporary(Image.class, back)
+                .orElseThrow(() -> new IOException(MessageFormat.format("Failed to load TextureCube. back face at {0} does not exist.", back))));
+
+        parseParameters(root);
+        compile(faces);
     }
 
     @Override
     public void use() {
         Objects.requireNonNull(handle, "Texture Handle must be set");
-        glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, handle);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, handle);
     }
 
     private int parsePosition(final String pos) throws IOException {
         switch (pos) {
-            case "x":
-                return GL13.GL_TEXTURE_CUBE_MAP_POSITIVE_X;
-            case "-x":
-                return GL13.GL_TEXTURE_CUBE_MAP_NEGATIVE_X;
-            case "y":
-                return GL13.GL_TEXTURE_CUBE_MAP_POSITIVE_Y;
-            case "-y":
-                return GL13.GL_TEXTURE_CUBE_MAP_NEGATIVE_Y;
-            case "z":
-                return GL13.GL_TEXTURE_CUBE_MAP_POSITIVE_Z;
-            case "-z":
-                return GL13.GL_TEXTURE_CUBE_MAP_NEGATIVE_Z;
+            case "right":
+                return 0;
+            case "left":
+                return 1;
+            case "top":
+                return 2;
+            case "bottom":
+                return 3;
+            case "front":
+                return 4;
+            case "back":
+                return 5;
         }
         throw new IOException(MessageFormat.format("Failed to load TextureCube. Invalid Face Position {0}.", pos));
     }
 
-    private void compile(final Map<Integer, Image> faces) throws IOException {
-        long win = GLFW.glfwGetCurrentContext();
-        GLFW.glfwMakeContextCurrent(win != MemoryUtil.NULL ? win : getContext().getBean(Graphics.class).getBackgroundWindow());
+    private void compile(final List<Image> faces) throws IOException {
+        long win = glfwGetCurrentContext();
+        glfwMakeContextCurrent(win != MemoryUtil.NULL ? win : getContext().getBean(Graphics.class).getBackgroundWindow());
 
-        handle = GL11.glGenTextures();
-        GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, handle);
+        handle = glGenTextures();
+        glBindTexture(GL_TEXTURE_CUBE_MAP, handle);
 
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, generateMipMaps ? GL11.GL_LINEAR_MIPMAP_LINEAR : GL11.GL_LINEAR);
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, generateMipMaps ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_WRAP_S, uWrapMode);
-        GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL11.GL_TEXTURE_WRAP_T, vWrapMode);
-        GL11.glTexParameteri(GL13.GL_TEXTURE_CUBE_MAP, GL12.GL_TEXTURE_WRAP_R, vWrapMode);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, uWrapMode);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, vWrapMode);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, vWrapMode);
 
-        for (Map.Entry<Integer, Image> face : faces.entrySet())
-        {
-            int unit = face.getKey();
-            int format = getFormat(face.getValue());
+        for (int i = 0; i < faces.size(); i++) {
+            Image face = faces.get(i);
+            int format = getFormat(face);
 
-            GL11.glGetError();
-            GL11.glTexImage2D(unit, 0, format, face.getValue().getWidth(), face.getValue().getHeight(), 0, format, GL_UNSIGNED_BYTE, face.getValue().getData());
+            glGetError();
+            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, format, face.getWidth(), face.getHeight(), 0, format, GL_UNSIGNED_BYTE, face.getData());
 
-            int glErrorCode = GL11.glGetError();
-            if (glErrorCode != GL11.GL_NO_ERROR)
-            {
-                GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, 0);
-                GL11.glDeleteTextures(handle);
-                GLFW.glfwMakeContextCurrent(win);
-                throw new IOException(MessageFormat.format("Failed to load TextureCube {0}. OpenGL Error {1}", face.getValue().getPath(), glErrorCode));
+            int glErrorCode = glGetError();
+            if (glErrorCode != GL_NO_ERROR) {
+                glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+                glDeleteTextures(handle);
+                glfwMakeContextCurrent(win);
+                throw new IOException(MessageFormat.format("Failed to load TextureCube {0}. OpenGL Error {1}", face.getPath(), glErrorCode));
             }
         }
 
         if (generateMipMaps) {
-            GL30.glGenerateMipmap(GL13.GL_TEXTURE_CUBE_MAP);
+            glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
         }
 
-        GL11.glBindTexture(GL13.GL_TEXTURE_CUBE_MAP, 0);
-        GLFW.glfwMakeContextCurrent(win);
+        glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+        glfwMakeContextCurrent(win);
     }
 }

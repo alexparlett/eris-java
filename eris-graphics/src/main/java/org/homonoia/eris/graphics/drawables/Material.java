@@ -41,15 +41,18 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Function;
+
+import static org.lwjgl.opengl.GL11.glCullFace;
 
 /**
  * Created by alexparlett on 20/04/2016.
  */
 public class Material extends Resource implements GPUResource {
 
-    private int handle = UUID.randomUUID().hashCode();
+    private static int uuid = 1;
+
+    private int handle = uuid++;
     private ShaderProgram shaderProgram;
     private Map<String, Uniform> uniforms = new HashMap<>();
     private List<TextureUnit> textureUnits = new ArrayList<>();
@@ -191,7 +194,7 @@ public class Material extends Resource implements GPUResource {
 
     @Override
     public void use() {
-        GL11.glCullFace(cullMode.getGlCull());
+        glCullFace(cullMode.getGlCull());
 
         shaderProgram.use();
 
