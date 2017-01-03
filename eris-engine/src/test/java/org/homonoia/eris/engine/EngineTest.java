@@ -56,7 +56,7 @@ public class EngineTest {
                 .far(100)
                 .near(1)
                 .fov(55)
-                .backgroundColor(new Vector4f(255, 255, 255, 1))
+                .backgroundColor(new Vector4f(0, 0, 0, 1))
                 .renderTarget(graphics.getDefaultRenderTarget())
                 .skybox(skybox)
         );

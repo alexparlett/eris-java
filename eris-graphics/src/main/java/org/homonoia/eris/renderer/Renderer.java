@@ -134,6 +134,7 @@ public class Renderer extends Contextual implements Runnable {
             if (viewportDirty.get()) {
                 glViewport(0, 0, graphics.getDefaultRenderTarget().getWidth(), graphics.getDefaultRenderTarget().getHeight());
                 glfwSwapBuffers(window);
+                viewportDirty.set(false);
             }
 
             frameCount++;
@@ -274,6 +275,7 @@ public class Renderer extends Contextual implements Runnable {
         glEnable(GL_TEXTURE_CUBE_MAP);
         glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
         glEnable(GL_DEPTH_TEST);
+
         glDepthFunc(GL_LESS);
 
         glViewport(0, 0, width, height);
