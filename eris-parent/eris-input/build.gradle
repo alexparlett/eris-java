@@ -1,0 +1,6 @@
+dependencies {
+    compile project(':eris-parent:eris-event')
+    compile project(':eris-parent:eris-scripting')
+    compile project(':eris-parent:eris-core')
+    compile project(':eris-parent:eris-graphics')
+}
