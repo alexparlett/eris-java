@@ -84,7 +84,7 @@ public final class CameraSceneParser implements Callable<Boolean> {
                         .material(0)
                         .build()));
 
-        Matrix4f view = transform.get().invert(new Matrix4f());
+        Matrix4f view = transform.get();
         float aspectRatio = (float) camera.getRenderTarget().getWidth() / camera.getRenderTarget().getHeight();
         Matrix4f perspective = new Matrix4f().identity().perspective(camera.getFov(), aspectRatio, camera.getNear(), camera.getFar());
         renderFrame.add(CameraCommand.newInstance()
@@ -120,7 +120,7 @@ public final class CameraSceneParser implements Callable<Boolean> {
                             .targetLayer(0)
                             .command(5)
                             .extra(0)
-                            .depth(0)
+                            .depth(Integer.MAX_VALUE)
                             .material(camera.getSkybox().getMaterial().getHandle())
                             .build()));
         }

@@ -106,7 +106,7 @@ public class Transform extends Component {
     }
 
     public Transform rotate(float x, float y, float z) {
-        return set(get().rotateXYZ(x, y, z, tempTransform.get()));
+        return set(get().rotateXYZ((float) Math.toRadians(x), (float) Math.toRadians(y), (float) Math.toRadians(z), tempTransform.get()));
     }
 
     public Transform scale(float xyz) {

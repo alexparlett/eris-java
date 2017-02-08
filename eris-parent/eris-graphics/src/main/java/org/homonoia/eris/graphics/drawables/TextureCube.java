@@ -76,17 +76,17 @@ public class TextureCube extends Texture {
         faces.add(resourceCache.getTemporary(Image.class, left)
                 .orElseThrow(() -> new IOException(MessageFormat.format("Failed to load TextureCube. left face at {0} does not exist.", left))));
 
-        faces.add(resourceCache.getTemporary(Image.class, bottom)
-                .orElseThrow(() -> new IOException(MessageFormat.format("Failed to load TextureCube. bottom face at {0} does not exist.", bottom))));
-
         faces.add(resourceCache.getTemporary(Image.class, top)
                 .orElseThrow(() -> new IOException(MessageFormat.format("Failed to load TextureCube. top face at {0} does not exist.", top))));
 
-        faces.add(resourceCache.getTemporary(Image.class, front)
-                .orElseThrow(() -> new IOException(MessageFormat.format("Failed to load TextureCube. front face at {0} does not exist.", front))));
+        faces.add(resourceCache.getTemporary(Image.class, bottom)
+                .orElseThrow(() -> new IOException(MessageFormat.format("Failed to load TextureCube. bottom face at {0} does not exist.", bottom))));
 
         faces.add(resourceCache.getTemporary(Image.class, back)
                 .orElseThrow(() -> new IOException(MessageFormat.format("Failed to load TextureCube. back face at {0} does not exist.", back))));
+
+        faces.add(resourceCache.getTemporary(Image.class, front)
+                .orElseThrow(() -> new IOException(MessageFormat.format("Failed to load TextureCube. front face at {0} does not exist.", front))));
 
         parseParameters(root);
         compile(faces);
