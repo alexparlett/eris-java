@@ -3,7 +3,7 @@
     "material": "Materials/fighter.mat",
     "mesh": "Meshes/MS Fighter.obj",
     "origin": "0 0 0",
-    "scale": 1,
+    "scale": 0.01,
     "animations": []
   }
 ]

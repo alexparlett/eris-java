@@ -76,11 +76,11 @@ public class TextureCube extends Texture {
         faces.add(resourceCache.getTemporary(Image.class, left)
                 .orElseThrow(() -> new IOException(MessageFormat.format("Failed to load TextureCube. left face at {0} does not exist.", left))));
 
-        faces.add(resourceCache.getTemporary(Image.class, top)
-                .orElseThrow(() -> new IOException(MessageFormat.format("Failed to load TextureCube. top face at {0} does not exist.", top))));
-
         faces.add(resourceCache.getTemporary(Image.class, bottom)
                 .orElseThrow(() -> new IOException(MessageFormat.format("Failed to load TextureCube. bottom face at {0} does not exist.", bottom))));
+
+        faces.add(resourceCache.getTemporary(Image.class, top)
+                .orElseThrow(() -> new IOException(MessageFormat.format("Failed to load TextureCube. top face at {0} does not exist.", top))));
 
         faces.add(resourceCache.getTemporary(Image.class, front)
                 .orElseThrow(() -> new IOException(MessageFormat.format("Failed to load TextureCube. front face at {0} does not exist.", front))));
@@ -96,24 +96,6 @@ public class TextureCube extends Texture {
     public void use() {
         Objects.requireNonNull(handle, "Texture Handle must be set");
         glBindTexture(GL_TEXTURE_CUBE_MAP, handle);
-    }
-
-    private int parsePosition(final String pos) throws IOException {
-        switch (pos) {
-            case "right":
-                return 0;
-            case "left":
-                return 1;
-            case "top":
-                return 2;
-            case "bottom":
-                return 3;
-            case "front":
-                return 4;
-            case "back":
-                return 5;
-        }
-        throw new IOException(MessageFormat.format("Failed to load TextureCube. Invalid Face Position {0}.", pos));
     }
 
     private void compile(final List<Image> faces) throws IOException {
