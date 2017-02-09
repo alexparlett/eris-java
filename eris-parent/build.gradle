@@ -20,6 +20,9 @@ configure(allprojects) {
         repositories {
             mavenCentral()
             jcenter()
+            maven {
+                url 'https://oss.sonatype.org/content/repositories/snapshots'
+            }
         }
 
         project.ext.lwjglVersion = "3.+"
@@ -57,17 +60,17 @@ configure(allprojects) {
             compile "com.code-disaster.steamworks4j:steamworks4j:${steamworks4jVersion}"
             compile "org.joml:joml:${jomlVersion}"
 
-            testCompile 'junit:junit:+'
-            testCompile 'org.mockito:mockito-all:+'
-            testCompile 'org.hamcrest:hamcrest-all:+'
+            testCompile 'junit:junit:4.12'
+            testCompile 'org.mockito:mockito-all:2.+'
+            testCompile 'org.hamcrest:hamcrest-all:1.3'
             testCompile 'org.springframework:spring-test:+'
 
             compile 'org.slf4j:jcl-over-slf4j:+'
             compile 'ch.qos.logback:logback-classic:+'
             compile 'io.reactivex:rxjava:+'
 
-            compile 'org.springframework:spring-beans:+'
-            compile 'org.springframework:spring-context:+'
+            compile 'org.springframework:spring-beans:4.+'
+            compile 'org.springframework:spring-context:4.+'
 
             compile 'net.sf.sociaal:jbullet:+'
 
