@@ -19,7 +19,6 @@ import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nonnull;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -124,7 +123,7 @@ public class ShaderProgram extends Resource implements GPUResource {
         }
     }
 
-    private void compile(@Nonnull final StringBuffer fragBuffer, @Nonnull final StringBuffer vertBuffer) throws IOException {
+    private void compile(final StringBuffer fragBuffer, final StringBuffer vertBuffer) throws IOException {
         Objects.requireNonNull(fragBuffer);
         Objects.requireNonNull(vertBuffer);
 

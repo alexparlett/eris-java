@@ -1,0 +1,4 @@
+{
+  "version": "${project.describe}",
+  "commit": "${project.commit}"
+}

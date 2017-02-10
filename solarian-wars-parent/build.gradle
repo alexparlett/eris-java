@@ -8,55 +8,49 @@ buildscript {
     }
 }
 
-configure(allprojects) {
-    apply plugin: 'idea'
+configure(subprojects) {
+    apply plugin: 'java'
 
-    configure(subprojects) {
-        apply plugin: 'java'
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
 
-        sourceCompatibility = 1.8
-        targetCompatibility = 1.8
-
-        repositories {
-            mavenCentral()
-            jcenter()
-        }
-
-        project.ext.jomlVersion = "+"
-
-        dependencies {
-            compile "org.joml:joml:${jomlVersion}"
-
-            testCompile 'junit:junit:+'
-            testCompile 'org.mockito:mockito-all:+'
-            testCompile 'org.hamcrest:hamcrest-all:+'
-            testCompile 'org.springframework:spring-test:+'
-
-            compile 'org.slf4j:jcl-over-slf4j:+'
-            compile 'ch.qos.logback:logback-classic:+'
-            compile 'io.reactivex:rxjava:+'
-
-            compile 'org.springframework:spring-beans:+'
-            compile 'org.springframework:spring-context:+'
-
-            compile group: 'org.python', name: 'jython-standalone', version: '+'
-
-            compile 'org.reflections:reflections:+'
-
-            compileOnly "org.projectlombok:lombok:1.16.4"
-        }
-
-        configurations.all {
-            exclude group: 'commons-logging', module: 'commons-logging'
-        }
-
-        idea {
-            module {
-                downloadJavadoc true
-                downloadSources true
-            }
-        }
+    repositories {
+        mavenCentral()
+        jcenter()
     }
 
-    version '0.1-SNAPSHOT'
+    project.ext.jomlVersion = "+"
+
+    dependencies {
+        compile "org.joml:joml:${jomlVersion}"
+
+        testCompile 'junit:junit:+'
+        testCompile 'org.mockito:mockito-all:+'
+        testCompile 'org.hamcrest:hamcrest-all:+'
+        testCompile 'org.springframework:spring-test:+'
+
+        compile 'org.slf4j:jcl-over-slf4j:+'
+        compile 'ch.qos.logback:logback-classic:+'
+        compile 'io.reactivex:rxjava:+'
+
+        compile 'org.springframework:spring-beans:+'
+        compile 'org.springframework:spring-context:+'
+
+        compile group: 'org.python', name: 'jython-standalone', version: '+'
+
+        compile 'org.reflections:reflections:+'
+
+        compileOnly "org.projectlombok:lombok:1.16.4"
+    }
+
+    configurations.all {
+        exclude group: 'commons-logging', module: 'commons-logging'
+    }
+
+    idea {
+        module {
+            downloadJavadoc true
+            downloadSources true
+        }
+    }
 }

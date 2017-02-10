@@ -1,6 +1,7 @@
 package org.homonoia.eris.engine;
 
 
+import com.google.gson.Gson;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.ExitCode;
@@ -8,6 +9,7 @@ import org.homonoia.eris.core.components.Clock;
 import org.homonoia.eris.core.components.FileSystem;
 import org.homonoia.eris.core.exceptions.InitializationException;
 import org.homonoia.eris.core.utils.Timer;
+import org.homonoia.eris.engine.properties.EngineProperties;
 import org.homonoia.eris.events.core.ExitRequested;
 import org.homonoia.eris.events.frame.Update;
 import org.homonoia.eris.graphics.Graphics;
@@ -25,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -39,6 +42,7 @@ public class Engine extends Contextual implements ScriptBinding {
 
     private AtomicBoolean shouldExit = new AtomicBoolean(false);
     private GLFWErrorCallback glfwErrorCallback;
+    private EngineProperties engineProperties;
 
     @Autowired
     private ResourceCache resourceCache;
@@ -73,6 +77,9 @@ public class Engine extends Contextual implements ScriptBinding {
     @Autowired
     private UI ui;
 
+    @Autowired
+    private Gson gson;
+
     /**
      * Instantiates a new Engine.
      *
@@ -81,7 +88,6 @@ public class Engine extends Contextual implements ScriptBinding {
     @Autowired
     public Engine(final Context context) {
         super(context);
-
         subscribe(this::handleExitRequest, ExitRequested.class);
     }
 
@@ -92,6 +98,12 @@ public class Engine extends Contextual implements ScriptBinding {
     }
 
     public void initialize() throws InitializationException {
+        try (InputStreamReader isr = new InputStreamReader(getClass().getClassLoader().getResourceAsStream("engine.json"))) {
+            engineProperties = gson.fromJson(isr, EngineProperties.class);
+        } catch (IOException e) {
+            throw new InitializationException("Failed to load Engine Properties.", ExitCode.FATAL_ERROR, e);
+        }
+
         // Initialize Base Components
         initializationLog();
 
@@ -188,17 +200,18 @@ public class Engine extends Contextual implements ScriptBinding {
         log.initialize();
 
         LOG.info("Initializing...");
+        LOG.info("Version: {}", engineProperties.getVersion());
         LOG.info("OS: {}", System.getProperty("os.name"));
         LOG.info("Arch: {}", System.getProperty("os.arch"));
         LOG.info("Cores: {}", Runtime.getRuntime().availableProcessors());
         LOG.info("Memory: {}", FileSystem.readableFileSize(Runtime.getRuntime().totalMemory()));
-}
+    }
 
     private void shutdownLog(final double elapsedTime, final int frameNumber) {
         LOG.info("Terminating...");
         LOG.info("Frames: {}", frameNumber);
         LOG.info("Milliseconds: {}", elapsedTime);
-        LOG.info("FPS: {}",  frameNumber / (elapsedTime / 1000));
+        LOG.info("FPS: {}", frameNumber / (elapsedTime / 1000));
         LOG.info("Exit Code: {}", getContext().getExitCode());
 
         log.shutdown();

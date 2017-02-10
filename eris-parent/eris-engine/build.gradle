@@ -8,3 +8,11 @@ dependencies {
     compile project(':eris-parent:eris-scripting')
     compile project(':eris-parent:eris-ui')
 }
+
+processResources {
+    filesMatching('**/engine.json') {
+        expand project.properties
+    }
+}
+
+compileJava.dependsOn(processResources)
