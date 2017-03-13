@@ -12,7 +12,6 @@ import org.homonoia.eris.renderer.RenderFrame;
 import org.homonoia.eris.renderer.Renderer;
 
 import java.util.concurrent.CompletionService;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
@@ -46,7 +45,7 @@ public class RenderSystem extends EntitySystem {
             RenderFrame renderFrame = renderer.getState().newRenderFrame();
 
             long totalCount = cameraFamily.getEntities().stream()
-                    .map(entity -> completionService.submit(new CameraSceneParser(renderFrame, renderableFamily, entity)))
+                    .map(entity -> completionService.submit(new CameraSceneParser(renderFrame, renderableFamily, entity, renderer.getDebugMode())))
                     .count();
             long currentCount = 0L;
             try {
@@ -57,7 +56,7 @@ public class RenderSystem extends EntitySystem {
                         currentCount++;
                     }
                 }
-            } catch (InterruptedException | ExecutionException e) {
+            } catch (Exception e) {
                 throw new RenderingException("Failed processing scene", e);
             }
 

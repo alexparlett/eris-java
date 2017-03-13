@@ -10,6 +10,7 @@ import org.homonoia.eris.core.exceptions.ParseException;
 import org.homonoia.eris.core.parsers.Vector3fParser;
 import org.homonoia.eris.graphics.GPUResource;
 import org.homonoia.eris.graphics.Graphics;
+import org.homonoia.eris.graphics.drawables.model.AxisAlignedBoundingBox;
 import org.homonoia.eris.graphics.drawables.model.SubModel;
 import org.homonoia.eris.renderer.Renderer;
 import org.homonoia.eris.resources.Resource;
@@ -34,6 +35,7 @@ public class Model extends Resource implements GPUResource {
     private int handle = UUID.randomUUID().hashCode();
     private List<SubModel> subModels = new ArrayList<>();
     private Renderer renderer;
+    private AxisAlignedBoundingBox axisAlignedBoundingBox;
 
     public Model(final Context context) {
         super(context);
@@ -97,6 +99,8 @@ public class Model extends Resource implements GPUResource {
 
         Graphics graphics = getContext().getBean(Graphics.class);
         subModels.forEach(subModel -> subModel.compile(graphics));
+
+        axisAlignedBoundingBox = AxisAlignedBoundingBox.generate(this);
     }
 
     @Override
@@ -117,6 +121,10 @@ public class Model extends Resource implements GPUResource {
 
     public List<SubModel> getSubModels() {
         return subModels;
+    }
+
+    public AxisAlignedBoundingBox getAxisAlignedBoundingBox() {
+        return axisAlignedBoundingBox;
     }
 
     @Override

@@ -51,7 +51,7 @@ public class EngineTest {
         Skybox skybox = resourceCache.get(Skybox.class, "Skyboxes/spacescape.skybox").get();
 
         Entity entity0 = new Entity(context);
-        entity0.add(new Transform().rotate(0,90,0));
+        entity0.add(new Transform().rotate(0,0,0));
         entity0.add(new Camera()
                 .far(100)
                 .near(5)
@@ -63,7 +63,7 @@ public class EngineTest {
         entityManager.add(entity0);
 
         Entity entity1 = new Entity(context);
-        entity1.add(new Transform().translate(0,-15,0));
+        entity1.add(new Transform().translate(0,0,-15));
         entity1.add(new Mesh().model(model));
         entityManager.add(entity1);
 

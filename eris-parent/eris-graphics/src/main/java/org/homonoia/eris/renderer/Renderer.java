@@ -95,6 +95,7 @@ public class Renderer extends Contextual implements Runnable {
     private final RenderState state = new SwappingRenderState(this);
     private int frameCount = 0;
     private double elapsedTime = 0.0;
+    private DebugMode debugMode = new DebugMode();
 
     @Autowired
     public Renderer(final Context context, final Graphics graphics) {
@@ -154,7 +155,7 @@ public class Renderer extends Contextual implements Runnable {
         LOG.info("Terminating Renderer...");
         LOG.info("Frames: {}", frameCount);
         LOG.info("Milliseconds: {}", elapsedTime);
-        LOG.info("FPS: {}",  frameCount / (elapsedTime / 1000));
+        LOG.info("FPS: {}", frameCount / (elapsedTime / 1000));
 
         try {
             thread.join();
@@ -255,6 +256,10 @@ public class Renderer extends Contextual implements Runnable {
 
     public RenderState getState() {
         return state;
+    }
+
+    public DebugMode getDebugMode() {
+        return debugMode;
     }
 
     private void initializeOpenGl(final long window, final int width, final int height) throws InitializationException {
