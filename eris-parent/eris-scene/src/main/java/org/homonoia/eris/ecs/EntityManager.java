@@ -4,13 +4,15 @@ import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.events.EntityAdded;
 import org.homonoia.eris.events.EntityRemoved;
+import org.homonoia.eris.scripting.ScriptBinding;
+import org.homonoia.eris.scripting.ScriptEngine;
 
 import java.util.*;
 
 /**
  * Created by alexparlett on 30/05/2016.
  */
-public class EntityManager extends Contextual {
+public class EntityManager extends Contextual implements ScriptBinding {
 
     private Map<Long, Entity> idToEntity = new TreeMap<>();
 
@@ -56,5 +58,10 @@ public class EntityManager extends Contextual {
 
             iterator.remove();
         }
+    }
+
+    @Override
+    public void bind(ScriptEngine scriptEngine) {
+        scriptEngine.bindGlobal("entityManager", this);
     }
 }

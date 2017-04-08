@@ -12,4 +12,5 @@ public abstract class Component {
 
     private Entity entity;
 
+    public void update(float delta) {}
 }

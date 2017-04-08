@@ -98,22 +98,24 @@ public class Cube implements Primitive {
         };
 
         FloatBuffer vertices = memAllocFloat(verticesArray.length);
-        vertices.put(verticesArray);
-        vertices.flip();
+        try {
+            vertices.put(verticesArray);
+            vertices.flip();
 
-        vao = glGenVertexArrays();
-        vbo = glGenBuffers();
+            vao = glGenVertexArrays();
+            vbo = glGenBuffers();
 
-        glBindVertexArray(vao);
-        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+            glBindVertexArray(vao);
+            glBindBuffer(GL_ARRAY_BUFFER, vbo);
 
-        glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
+            glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
 
-        glEnableVertexAttribArray(0);
-        glVertexAttribPointer(0, 3, GL_FLOAT, false, 3 * Float.BYTES, 0);
+            glEnableVertexAttribArray(0);
+            glVertexAttribPointer(0, 3, GL_FLOAT, false, 3 * Float.BYTES, 0);
 
-        glBindVertexArray(0);
-
-        memFree(vertices);
+            glBindVertexArray(0);
+        } finally {
+            memFree(vertices);
+        }
     }
 }

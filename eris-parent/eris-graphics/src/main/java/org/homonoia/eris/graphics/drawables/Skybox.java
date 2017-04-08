@@ -18,9 +18,11 @@ import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.Optional;
 
+import static org.lwjgl.opengl.GL11.GL_DEPTH_FUNC;
 import static org.lwjgl.opengl.GL11.GL_LEQUAL;
 import static org.lwjgl.opengl.GL11.GL_LESS;
 import static org.lwjgl.opengl.GL11.glDepthFunc;
+import static org.lwjgl.opengl.GL11.glGetInteger;
 
 /**
  * Copyright (c) 2015-2016 Homonoia Studios.
@@ -67,9 +69,10 @@ public class Skybox extends Resource implements GPUResource {
 
     @Override
     public void use() {
+        int originalDepthFunction = glGetInteger(GL_DEPTH_FUNC);
         glDepthFunc(GL_LEQUAL);
         cube.use();
-        glDepthFunc(GL_LESS);
+        glDepthFunc(originalDepthFunction);
     }
 
     @Override

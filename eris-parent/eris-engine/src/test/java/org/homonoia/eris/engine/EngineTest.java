@@ -34,7 +34,7 @@ public class EngineTest {
     public void testEngine() throws InitializationException, MissingRequiredComponentException {
 
         Path currentDir = FileSystem.getApplicationDirectory();
-        System.setProperty("user.dir", currentDir.resolve("../assets").toString());
+        System.setProperty("user.dir", currentDir.resolve("../../assets").toString());
 
         AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext(EngineTest.class);
 
