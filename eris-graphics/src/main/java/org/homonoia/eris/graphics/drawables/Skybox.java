@@ -20,7 +20,6 @@ import java.util.Optional;
 
 import static org.lwjgl.opengl.GL11.GL_DEPTH_FUNC;
 import static org.lwjgl.opengl.GL11.GL_LEQUAL;
-import static org.lwjgl.opengl.GL11.GL_LESS;
 import static org.lwjgl.opengl.GL11.glDepthFunc;
 import static org.lwjgl.opengl.GL11.glGetInteger;
 

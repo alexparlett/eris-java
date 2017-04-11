@@ -7,7 +7,6 @@ import org.homonoia.eris.core.exceptions.InitializationException;
 import org.homonoia.eris.core.utils.Timer;
 import org.homonoia.eris.events.graphics.ScreenMode;
 import org.homonoia.eris.graphics.Graphics;
-import org.homonoia.eris.graphics.drawables.Material;
 import org.homonoia.eris.graphics.drawables.Model;
 import org.homonoia.eris.graphics.drawables.primitives.Cube;
 import org.homonoia.eris.graphics.drawables.primitives.PrimitiveFactory;
