@@ -9,20 +9,100 @@ buildscript {
 
     dependencies {
         classpath 'org.ajoberstar:gradle-git:+'
-        classpath 'gradle.plugin.de.fuerstenau:BuildConfigPlugin:1.1.8'
     }
 }
 
 configure(allprojects) {
     apply plugin: 'idea'
+    apply plugin: 'java'
+    apply plugin: 'application'
     apply plugin: 'org.ajoberstar.grgit'
-    apply plugin: 'de.fuerstenau.buildconfig'
 
     project.ext.describe = grgit.describe()
     project.ext.commit = grgit.head().abbreviatedId
 
     group 'org.homonoia'
     version grgit.describe().split('-')[0]
+
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    repositories {
+        mavenCentral()
+        jcenter()
+        maven {
+            url 'https://oss.sonatype.org/content/repositories/snapshots'
+        }
+    }
+
+    project.ext.lwjglVersion = "3.+"
+    project.ext.steamworks4jVersion = "1.5.0"
+    project.ext.jomlVersion = "+"
+
+    org.gradle.internal.os.OperatingSystem os = org.gradle.internal.os.OperatingSystem.current();
+    if (os.isWindows()) {
+        project.ext.lwjglNatives = "natives-windows"
+    } else if (os.isLinux()) {
+        project.ext.lwjglNatives = "natives-linux"
+    } else if (os.isMacOsX()) {
+        project.ext.lwjglNatives = "natives-macos"
+    }
+
+    dependencies {
+        compile "org.lwjgl:lwjgl:${lwjglVersion}"
+        compile "org.lwjgl:lwjgl-glfw:${lwjglVersion}"
+        compile "org.lwjgl:lwjgl-jemalloc:${lwjglVersion}"
+        compile "org.lwjgl:lwjgl-nfd:${lwjglVersion}"
+        compile "org.lwjgl:lwjgl-openal:${lwjglVersion}"
+        compile "org.lwjgl:lwjgl-opengl:${lwjglVersion}"
+        compile "org.lwjgl:lwjgl-sse:${lwjglVersion}"
+        compile "org.lwjgl:lwjgl-stb:${lwjglVersion}"
+        compile "org.lwjgl:lwjgl-tinyfd:${lwjglVersion}"
+        runtime "org.lwjgl:lwjgl:${lwjglVersion}:${lwjglNatives}"
+        runtime "org.lwjgl:lwjgl-glfw:${lwjglVersion}:${lwjglNatives}"
+        runtime "org.lwjgl:lwjgl-jemalloc:${lwjglVersion}:${lwjglNatives}"
+        runtime "org.lwjgl:lwjgl-nfd:${lwjglVersion}:${lwjglNatives}"
+        runtime "org.lwjgl:lwjgl-openal:${lwjglVersion}:${lwjglNatives}"
+        runtime "org.lwjgl:lwjgl-opengl:${lwjglVersion}:${lwjglNatives}"
+        runtime "org.lwjgl:lwjgl-sse:${lwjglVersion}:${lwjglNatives}"
+        runtime "org.lwjgl:lwjgl-stb:${lwjglVersion}:${lwjglNatives}"
+        runtime "org.lwjgl:lwjgl-tinyfd:${lwjglVersion}:${lwjglNatives}"
+        compile "com.code-disaster.steamworks4j:steamworks4j:${steamworks4jVersion}"
+        compile "org.joml:joml:${jomlVersion}"
+
+        testCompile 'org.mockito:mockito-core:2.+'
+        testCompile 'org.hamcrest:hamcrest-all:+'
+        testCompile 'org.springframework:spring-test:+'
+        testCompile 'junit:junit:4.12'
+
+        compile 'org.slf4j:jcl-over-slf4j:1.7.+'
+        compile 'ch.qos.logback:logback-classic:+'
+        compile 'io.reactivex:rxjava:+'
+
+        compile 'org.springframework:spring-beans:4.+'
+        compile 'org.springframework:spring-context:4.+'
+
+        compile 'net.sf.sociaal:jbullet:+'
+
+        compile group: 'org.python', name: 'jython-standalone', version: '+'
+
+        compile 'org.reflections:reflections:+'
+
+        compileOnly "org.projectlombok:lombok:1.16.10"
+    }
+
+    configurations.all {
+        exclude group: 'commons-logging', module: 'commons-logging'
+    }
+
+    compileJava.dependsOn(processResources)
+
+    idea {
+        module {
+            downloadJavadoc true
+            downloadSources true
+        }
+    }
 }
 
 task wrapper(type: Wrapper) {

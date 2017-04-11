@@ -1,9 +1,9 @@
 [
   {
-    "material": "Materials/planet.mat",
-    "mesh": "Meshes/sphere.obj",
+    "material": "Materials/outline.mat",
+    "mesh": "Meshes/cube.obj",
     "origin": "0 0 0",
-    "scale": 1,
+    "scale": 10,
     "animations": []
   }
 ]
