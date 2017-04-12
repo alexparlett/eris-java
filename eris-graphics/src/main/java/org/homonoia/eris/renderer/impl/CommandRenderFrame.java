@@ -32,7 +32,7 @@ public class CommandRenderFrame implements RenderFrame<CommandRenderFrame> {
 
     @Override
     public CommandRenderFrame sort() {
-        renderCommands.sort(comparing(o -> o.getRenderKey().getKey()));
+        renderCommands.sort(comparing(o -> o.getRenderKey()));
         return this;
     }
 

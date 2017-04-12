@@ -144,14 +144,14 @@ public final class CameraSceneParser implements Callable<Boolean> {
                 renderFrame.add(DrawBoundingBoxCommand.newInstance()
                         .boundingBox(mesh.getModel().getAxisAlignedBoundingBox())
                         .transform(rndrTransform.get())
-                        .model(mesh.getModel().getSubModels().get(0))
+                        .model(debugMode.getBoundingBoxCube().getSubModels().get(0))
                         .renderKey(RenderKey.builder()
                                 .target(camera.getRenderTarget().getHandle())
                                 .targetLayer(rndrTransform.getLayer())
-                                .command(3)
+                                .command(2)
                                 .transparency(1)
                                 .depth((long) rndrTransform.getTranslation().distance(cameraTransform.getTranslation()))
-                                .material(mesh.getModel().getSubModels().get(0).getMaterial().getHandle())
+                                .material(debugMode.getBoundingBoxCube().getSubModels().get(0).getMaterial().getHandle())
                                 .build()));
             }
 

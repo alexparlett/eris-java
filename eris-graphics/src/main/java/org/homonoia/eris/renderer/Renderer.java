@@ -273,8 +273,12 @@ public class Renderer extends Contextual implements Runnable {
     }
 
     private void configureDebugMode() throws Exception {
-        Model cube = resourceCache.get(Model.class, "Models/cube.mdl").orElseThrow(() -> new InitializationException("Debug Model not available"));
+        Model cube = resourceCache.get(Model.class, "Models/bounding-box.mdl").orElseThrow(() -> new InitializationException("Debug Model not available"));
         debugMode.setBoundingBoxCube(cube);
+
+        debugMode.setAxis(getContext().isDebugEnabled());
+        debugMode.setBoundingBoxes(getContext().isDebugEnabled());
+        debugMode.setFrustum(getContext().isDebugEnabled());
     }
 
     private void initializeOpenGl(final long window, final int width, final int height) throws InitializationException {

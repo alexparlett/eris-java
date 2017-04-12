@@ -39,7 +39,7 @@ public class EngineConfiguration {
     @ContextualBean
     public Context context(Environment environment) {
         Context context = new Context();
-        context.setDebugEnabled(environment.getProperty("debug", boolean.class, false));
+        context.setDebugEnabled(environment.containsProperty("debug"));
         return context;
     }
 

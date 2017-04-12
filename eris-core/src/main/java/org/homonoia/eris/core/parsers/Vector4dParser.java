@@ -10,8 +10,8 @@ import java.text.ParseException;
 public class Vector4dParser {
     public static Vector4d parse(final String asString) throws ParseException {
         String[] tokens = asString.trim().split(" ");
-        if (tokens.length != 2) {
-            throw new ParseException("Cannot parse Vector2d from " + asString + " invalid number of arguments", 0);
+        if (tokens.length != 4) {
+            throw new ParseException("Cannot parse Vector4d from " + asString + " invalid number of arguments", 0);
         }
 
         return new Vector4d(Double.parseDouble(tokens[0]),

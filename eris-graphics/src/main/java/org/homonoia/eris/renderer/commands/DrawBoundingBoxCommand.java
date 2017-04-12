@@ -8,8 +8,13 @@ import org.homonoia.eris.renderer.RenderCommand;
 import org.homonoia.eris.renderer.RenderKey;
 import org.homonoia.eris.renderer.Renderer;
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 import static java.util.Objects.isNull;
+import static org.lwjgl.opengl.GL11.GL_FILL;
+import static org.lwjgl.opengl.GL11.GL_FRONT_AND_BACK;
+import static org.lwjgl.opengl.GL11.GL_LINE;
+import static org.lwjgl.opengl.GL11.glPolygonMode;
 
 /**
  * Copyright (c) 2015-2016 the Eris project.
@@ -33,11 +38,12 @@ public class DrawBoundingBoxCommand extends RenderCommand<DrawBoundingBoxCommand
             findAndBindUniform("projection", renderer, model.getMaterial().getShaderProgram(), renderer.getCurrentProjection());
         }
 
-        findAndBindUniform("model", renderer, model.getMaterial().getShaderProgram(), transform);
+        Vector3f scale = aabb.getMax().sub(aabb.getMin(), new Vector3f());
+        findAndBindUniform("model", renderer, model.getMaterial().getShaderProgram(), transform.scale(scale));
 
-//        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         model.draw(renderer);
-//        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 
     @Override

@@ -17,3 +17,5 @@ gradle/wrapper
 # Python
 ###
 *$py.class
+
+*.log

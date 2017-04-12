@@ -28,8 +28,10 @@ public class SolarianWarsMain {
 
         CommandLinePropertySource clps = new SimpleCommandLinePropertySource(args);
 
-        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext(SolarianWarsMain.class);
+        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
         applicationContext.getEnvironment().getPropertySources().addFirst(clps);
+        applicationContext.register(SolarianWarsMain.class);
+        applicationContext.refresh();
 
         Engine engine = applicationContext.getBean(Engine.class);
         engine.initialize();

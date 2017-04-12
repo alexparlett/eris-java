@@ -1,9 +1,9 @@
 [
   {
-    "material": "Materials/outline.mat",
+    "material": "Materials/bounding-box.mat",
     "mesh": "Meshes/cube.obj",
     "origin": "0 0 0",
-    "scale": 10,
+    "scale": 1,
     "animations": []
   }
 ]
