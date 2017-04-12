@@ -1,9 +1,6 @@
 package org.homonoia.eris.engine;
 
 import ch.qos.logback.classic.LoggerContext;
-import ch.qos.logback.classic.joran.JoranConfigurator;
-import ch.qos.logback.core.joran.spi.JoranException;
-import ch.qos.logback.core.util.StatusPrinter;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.components.FileSystem;
@@ -34,24 +31,9 @@ public class Log extends Contextual implements ScriptBinding {
         scriptEngine.bindGlobal("log", this);
     }
 
-    public void initialize() {
-        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-
-        try {
-            JoranConfigurator configurator = new JoranConfigurator();
-            configurator.setContext(context);
-            // Call context.reset() to clear any previous configuration, e.g. default
-            // configuration. For multi-step configuration, omit calling context.reset().
-            context.reset();
-            context.putProperty("APP_DIR", FileSystem.getApplicationDataDirectory().toString());
-            context.putProperty("LEVEL", getContext().isDebugEnabled() ? "DEBUG" : "INFO");
-            configurator.doConfigure(ClassLoader.getSystemResource("logback.xml"));
-        } catch (JoranException je) {
-            // StatusPrinter will handle this
-        }
-
-        context.start();
-        StatusPrinter.printInCaseOfErrorsOrWarnings(context);
+    public static void initialize(boolean debug) {
+        System.setProperty("log.APP_DIR", FileSystem.getApplicationDataDirectory().toString());
+        System.setProperty("log.LEVEL", debug ? "DEBUG" : "INFO");
     }
 
     public void shutdown() {

@@ -203,8 +203,6 @@ public class Engine extends Contextual implements ScriptBinding {
     }
 
     private void initializationLog() {
-        log.initialize();
-
         LOG.info("Initializing...");
         LOG.info("Version: {}", engineProperties.getVersion());
         LOG.info("OS: {}", System.getProperty("os.name"));

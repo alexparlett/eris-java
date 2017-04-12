@@ -2,20 +2,18 @@ buildscript {
     repositories {
         mavenCentral()
         jcenter()
-        maven {
-            url 'https://plugins.gradle.org/m2/'
-        }
-    }
-
-    dependencies {
-        classpath 'org.ajoberstar:gradle-git:+'
     }
 }
 
-configure(allprojects) {
+plugins {
+    id 'java'
+    id 'idea'
+    id 'org.ajoberstar.grgit' version '1.7.1'
+}
+
+allprojects { project ->
     apply plugin: 'idea'
     apply plugin: 'java'
-    apply plugin: 'application'
     apply plugin: 'org.ajoberstar.grgit'
 
     project.ext.describe = grgit.describe()
@@ -75,6 +73,7 @@ configure(allprojects) {
         testCompile 'org.springframework:spring-test:+'
         testCompile 'junit:junit:4.12'
 
+        compile 'org.codehaus.janino:janino:3.0.7'
         compile 'org.slf4j:jcl-over-slf4j:1.7.+'
         compile 'ch.qos.logback:logback-classic:+'
         compile 'io.reactivex:rxjava:+'
