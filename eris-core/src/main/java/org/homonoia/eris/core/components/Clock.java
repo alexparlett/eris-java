@@ -5,7 +5,6 @@ import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.events.frame.BeginFrame;
 import org.homonoia.eris.events.frame.EndFrame;
 import org.lwjgl.glfw.GLFW;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Copyright (c) 2015-2016 the Eris project.
@@ -18,7 +17,6 @@ public class Clock extends Contextual {
     private double timeStep;
     private int frameNumber;
 
-    @Autowired
     public Clock(final Context context) {
         super(context);
         timeStep = 0L;

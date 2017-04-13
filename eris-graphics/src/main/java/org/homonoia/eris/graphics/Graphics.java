@@ -21,7 +21,6 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.nio.IntBuffer;
@@ -101,7 +100,6 @@ public class Graphics extends Contextual {
      *
      * @param context the context
      */
-    @Autowired
     public Graphics(final Context context, final ResourceCache resourceCache) {
         super(context);
         this.resourceCache = resourceCache;

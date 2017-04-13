@@ -2,6 +2,7 @@ package org.homonoia.eris.engine;
 
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.ExitCode;
@@ -24,10 +25,11 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.DateFormat;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -44,40 +46,17 @@ public class Engine extends Contextual implements ScriptBinding {
     private GLFWErrorCallback glfwErrorCallback;
     private EngineProperties engineProperties;
 
-    @Autowired
     private ResourceCache resourceCache;
-
-    @Autowired
     private Graphics graphics;
-
-    @Autowired
     private Clock clock;
-
-    @Autowired
     private Renderer renderer;
-
-    @Autowired
     private Settings settings;
-
-    @Autowired
     private Locale locale;
-
-    @Autowired
     private FileSystem fileSystem;
-
-    @Autowired
     private Log log;
-
-    @Autowired
     private Input input;
-
-    @Autowired
     private ScriptEngine scriptEngine;
-
-    @Autowired
     private UI ui;
-
-    @Autowired
     private Gson gson;
 
     /**
@@ -85,9 +64,31 @@ public class Engine extends Contextual implements ScriptBinding {
      *
      * @param context the context
      */
-    @Autowired
     public Engine(final Context context) {
         super(context);
+
+        context.registerBean(Executors.newWorkStealingPool());
+
+        gson = context.registerBean(new GsonBuilder()
+                .setVersion(1.0)
+                .serializeNulls()
+                .setDateFormat(DateFormat.LONG)
+                .enableComplexMapKeySerialization()
+                .setPrettyPrinting()
+                .create());
+
+        log = new Log(context);
+        clock = new Clock(context);
+        fileSystem = new FileSystem(context);
+        resourceCache = new ResourceCache(context, fileSystem);
+        graphics = new Graphics(context, resourceCache);
+        settings = new Settings(context, resourceCache, fileSystem);
+        input = new Input(context, graphics);
+        locale = new Locale(context, resourceCache);
+        scriptEngine = new ScriptEngine(context);
+        ui = new UI(context);
+        renderer = new Renderer(context, graphics, resourceCache);
+
         subscribe(this::handleExitRequest, ExitRequested.class);
     }
 
@@ -217,8 +218,6 @@ public class Engine extends Contextual implements ScriptBinding {
         LOG.info("Milliseconds: {}", elapsedTime);
         LOG.info("FPS: {}", frameNumber / (elapsedTime / 1000));
         LOG.info("Exit Code: {}", getContext().getExitCode());
-
-        log.shutdown();
     }
 
     private void handleExitRequest(final ExitRequested exitRequest) {

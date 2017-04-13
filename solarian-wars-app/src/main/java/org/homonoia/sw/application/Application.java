@@ -3,6 +3,7 @@ package org.homonoia.sw.application;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.exceptions.InitializationException;
+import org.homonoia.eris.core.CommandLineArgs;
 import org.homonoia.eris.engine.Engine;
 import org.homonoia.sw.state.events.StateChange;
 import org.homonoia.sw.state.events.StateCreate;
@@ -17,10 +18,12 @@ import org.homonoia.sw.state.impl.TestState;
 public class Application extends Contextual {
 
     private Engine engine;
+    private StateMachine stateMachine;
 
-    public Application(Context context) {
-        super(context);
-        this.engine = context.getBean(Engine.class);
+    public Application(CommandLineArgs commandLineArgs) {
+        super(new Context(commandLineArgs));
+        engine = new Engine(getContext());
+        stateMachine = new StateMachine(getContext());
     }
 
     public void startup() throws InitializationException {

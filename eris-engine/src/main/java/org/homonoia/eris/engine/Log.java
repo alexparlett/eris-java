@@ -1,6 +1,5 @@
 package org.homonoia.eris.engine;
 
-import ch.qos.logback.classic.LoggerContext;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.components.FileSystem;
@@ -8,7 +7,6 @@ import org.homonoia.eris.scripting.ScriptBinding;
 import org.homonoia.eris.scripting.ScriptEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -21,7 +19,6 @@ import java.nio.file.Paths;
  */
 public class Log extends Contextual implements ScriptBinding {
 
-    @Autowired
     public Log(final Context context) {
         super(context);
     }
@@ -34,11 +31,6 @@ public class Log extends Contextual implements ScriptBinding {
     public static void initialize(boolean debug) {
         System.setProperty("log.APP_DIR", FileSystem.getApplicationDataDirectory().toString());
         System.setProperty("log.LEVEL", debug ? "DEBUG" : "INFO");
-    }
-
-    public void shutdown() {
-        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-        context.stop();
     }
 
     public void info(String src, String msg, Object... args) {

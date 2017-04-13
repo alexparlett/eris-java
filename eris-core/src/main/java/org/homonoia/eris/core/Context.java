@@ -1,9 +1,7 @@
 package org.homonoia.eris.core;
 
+import lombok.extern.slf4j.Slf4j;
 import org.homonoia.eris.events.Event;
-import org.springframework.beans.BeansException;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.subjects.PublishSubject;
@@ -11,18 +9,23 @@ import rx.subjects.SerializedSubject;
 import rx.subjects.Subject;
 
 import javax.annotation.PreDestroy;
-import java.lang.annotation.Annotation;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import static java.util.Objects.nonNull;
 
 /**
  * The type Contextual.
  */
-public class Context implements ApplicationContextAware {
+@Slf4j
+public class Context {
 
     public final static <T extends Event> Predicate<T> eventClassPredicate(Class eventClass) {
         return event -> Optional.ofNullable(eventClass)
@@ -39,7 +42,13 @@ public class Context implements ApplicationContextAware {
     private final AtomicBoolean debugEnabled = new AtomicBoolean(false);
     private final AtomicReference<ExitCode> exitCode = new AtomicReference<>(ExitCode.SUCCESS);
     private final Subject<Event, Event> subject = new SerializedSubject<>(PublishSubject.create());
-    private ApplicationContext applicationContext;
+    private final Map<Class, Object> beans = new HashMap<>();
+    private final CommandLineArgs commandLineArgs;
+
+    public Context(CommandLineArgs commandLineArgs) {
+        this.commandLineArgs = commandLineArgs;
+        this.debugEnabled.set(commandLineArgs.containsOption("debug"));
+    }
 
     /**
      * Ensures that all subscriptions to the context are properly unsubscribed when it is deleted.
@@ -85,25 +94,33 @@ public class Context implements ApplicationContextAware {
         return debugEnabled.get();
     }
 
-    public void setDebugEnabled(final Boolean debugEnabled) {
-        this.debugEnabled.set(debugEnabled);
-    }
-
-    @Override
-    public void setApplicationContext(final ApplicationContext applicationContext) throws BeansException {
-        this.applicationContext = applicationContext;
-    }
-
-    public ApplicationContext getApplicationContext() {
-        return applicationContext;
-    }
-
     public <T> T getBean(Class<T> clazz) {
-        return applicationContext.getBean(clazz);
+        Object found = beans.get(clazz);
+        if (nonNull(found)) {
+            return (T) found;
+        }
+
+        return beans.entrySet().stream()
+                .filter(classObjectEntry -> clazz.isAssignableFrom(classObjectEntry.getKey()))
+                .findFirst()
+                .map(classObjectEntry -> (T) classObjectEntry.getValue())
+                .orElse(null);
     }
 
-    public <T extends Annotation> Map<String, Object> getBeansWithAnnotation(Class<T> clazz) {
-        return applicationContext.getBeansWithAnnotation(clazz);
+    public <T> List<T> getBeans(Class<T> clazz) {
+        return beans.entrySet().stream()
+                .filter(classObjectEntry -> clazz.isAssignableFrom(classObjectEntry.getKey()))
+                .map(classObjectEntry -> (T) classObjectEntry.getValue())
+                .collect(Collectors.toList());
     }
 
+    public <T> T registerBean(T bean) {
+        log.info("Registering Bean {}", bean.getClass().getCanonicalName());
+        beans.put(bean.getClass(), bean);
+        return bean;
+    }
+
+    public CommandLineArgs getCommandLineArgs() {
+        return commandLineArgs;
+    }
 }

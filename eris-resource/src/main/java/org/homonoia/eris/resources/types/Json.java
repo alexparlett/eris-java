@@ -1,16 +1,23 @@
 package org.homonoia.eris.resources.types;
 
-import com.google.gson.*;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonStreamParser;
 import com.google.gson.stream.JsonWriter;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.resources.Resource;
 import org.homonoia.eris.resources.types.json.JsonException;
 import org.homonoia.eris.resources.types.json.JsonPatch;
 import org.homonoia.eris.resources.types.json.JsonType;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,14 +32,12 @@ import java.util.Optional;
  */
 public class Json extends Resource {
 
-    private static final Logger LOG = LoggerFactory.getLogger(Json.class);
-
     private final Gson gson;
     private JsonElement root;
 
     public Json(final Context context) {
         super(context);
-        this.gson = context.getApplicationContext().getBean(Gson.class);
+        this.gson = context.getBean(Gson.class);
     }
 
     public void createRoot(JsonType rootType) {

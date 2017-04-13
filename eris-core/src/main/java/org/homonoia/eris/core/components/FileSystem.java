@@ -3,7 +3,6 @@ package org.homonoia.eris.core.components;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.lwjgl.system.Platform;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,7 +25,6 @@ public class FileSystem extends Contextual {
 
     private final List<Path> allowedPaths = new ArrayList<>();
 
-    @Autowired
     public FileSystem(final Context context) {
         super(context);
     }

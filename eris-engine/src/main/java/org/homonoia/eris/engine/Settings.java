@@ -11,7 +11,6 @@ import org.homonoia.eris.scripting.ScriptBinding;
 import org.homonoia.eris.scripting.ScriptEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -38,7 +37,6 @@ public class Settings extends Contextual implements ScriptBinding {
      *
      * @param context the context
      */
-    @Autowired
     public Settings(final Context context, final ResourceCache resourceCache, final FileSystem fileSystem) {
         super(context);
         this.resourceCache = resourceCache;

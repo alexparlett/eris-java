@@ -83,18 +83,13 @@ allprojects { project ->
 
         testCompile 'org.mockito:mockito-core:2.+'
         testCompile 'org.hamcrest:hamcrest-all:+'
-        testCompile 'org.springframework:spring-test:+'
         testCompile 'junit:junit:4.12'
 
         compile 'org.codehaus.janino:janino:3.0.7'
         compile 'org.slf4j:jcl-over-slf4j:1.7.+'
         compile 'ch.qos.logback:logback-classic:+'
         compile 'io.reactivex:rxjava:+'
-
-        compile 'org.springframework:spring-beans:4.+'
-        compile 'org.springframework:spring-context:4.+'
-
-        compile 'net.sf.sociaal:jbullet:+'
+        compile 'org.apache.commons:commons-lang3:3.5'
 
         compile group: 'org.python', name: 'jython-standalone', version: '+'
 

@@ -8,7 +8,7 @@ import org.homonoia.eris.core.exceptions.ParseException;
 import org.homonoia.eris.graphics.GPUResource;
 import org.homonoia.eris.graphics.drawables.model.GenerationState;
 import org.homonoia.eris.graphics.drawables.primitives.Cube;
-import org.homonoia.eris.graphics.drawables.primitives.CubeFactory;
+import org.homonoia.eris.graphics.drawables.primitives.factory.CubeFactory;
 import org.homonoia.eris.resources.Resource;
 import org.homonoia.eris.resources.cache.ResourceCache;
 import org.homonoia.eris.resources.types.Json;

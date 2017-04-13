@@ -1,17 +1,27 @@
 package org.homonoia.eris.resources.types;
 
+import org.apache.commons.lang3.StringUtils;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.resources.Resource;
 import org.homonoia.eris.resources.types.ini.IniException;
 import org.homonoia.eris.resources.types.ini.IniSection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Spliterator;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

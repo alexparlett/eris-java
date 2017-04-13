@@ -12,13 +12,18 @@ import org.homonoia.eris.resources.types.Json;
 import org.homonoia.eris.resources.types.json.JsonException;
 import org.homonoia.eris.scripting.ScriptBinding;
 import org.homonoia.eris.scripting.ScriptEngine;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Copyright (c) 2015-2016 the Eris project.
@@ -40,7 +45,6 @@ public class Locale extends Contextual implements ScriptBinding {
      *
      * @param context the context
      */
-    @Autowired
     public Locale(final Context context, ResourceCache resourceCache) {
         super(context);
         this.resourceCache = resourceCache;

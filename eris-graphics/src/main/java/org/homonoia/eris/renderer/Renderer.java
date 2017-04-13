@@ -9,7 +9,8 @@ import org.homonoia.eris.events.graphics.ScreenMode;
 import org.homonoia.eris.graphics.Graphics;
 import org.homonoia.eris.graphics.drawables.Model;
 import org.homonoia.eris.graphics.drawables.primitives.Cube;
-import org.homonoia.eris.graphics.drawables.primitives.PrimitiveFactory;
+import org.homonoia.eris.graphics.drawables.primitives.factory.CubeFactory;
+import org.homonoia.eris.graphics.drawables.primitives.factory.PrimitiveFactory;
 import org.homonoia.eris.renderer.impl.SwappingRenderState;
 import org.homonoia.eris.resources.cache.ResourceCache;
 import org.joml.Matrix3f;
@@ -28,7 +29,6 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.FloatBuffer;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -103,12 +103,11 @@ public class Renderer extends Contextual implements Runnable {
     private double elapsedTime = 0.0;
     private DebugMode debugMode = new DebugMode();
 
-    @Autowired
-    public Renderer(final Context context, final Graphics graphics, final ResourceCache resourceCache, final PrimitiveFactory<Cube> cubePrimitiveFactory) {
+    public Renderer(final Context context, final Graphics graphics, final ResourceCache resourceCache) {
         super(context);
         this.graphics = graphics;
         this.resourceCache = resourceCache;
-        this.cubePrimitiveFactory = cubePrimitiveFactory;
+        this.cubePrimitiveFactory = context.registerBean(new CubeFactory());
     }
 
     public void initialize() throws Exception {

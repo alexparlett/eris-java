@@ -5,11 +5,11 @@ import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.components.FileSystem;
 import org.homonoia.eris.scripting.io.ErrWriter;
 import org.homonoia.eris.scripting.io.OutWriter;
+import org.homonoia.eris.scripting.utils.ClassMapper;
 import org.python.core.Py;
 import org.python.core.PyStringMap;
 import org.python.core.PySystemState;
 import org.python.util.PythonInterpreter;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,11 +25,11 @@ import static java.util.Objects.nonNull;
  */
 public class ScriptEngine extends Contextual {
 
+    ClassMapper classMapper = new ClassMapper();
     ScriptClassLoader scriptClassLoader = new ScriptClassLoader();
     Map<String, Object> pythonGlobalsTable = new HashMap<>();
     PythonInterpreter pythonInterpreter;
 
-    @Autowired
     private List<ScriptBinding> bindings;
 
     /**
@@ -39,6 +39,7 @@ public class ScriptEngine extends Contextual {
      */
     public ScriptEngine(Context context) {
         super(context);
+
     }
 
     public void bindGlobal(String name, Object global) {
@@ -55,6 +56,9 @@ public class ScriptEngine extends Contextual {
     }
 
     public void initialize() {
+        classMapper.bind(this);
+        
+        bindings = getContext().getBeans(ScriptBinding.class);
         bindings.forEach(scriptBinding -> scriptBinding.bind(this));
 
         PySystemState pySystemState = Py.getSystemState();

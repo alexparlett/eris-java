@@ -1,5 +1,6 @@
 package org.homonoia.eris.input;
 
+import org.apache.commons.lang3.StringUtils;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.exceptions.InitializationException;
@@ -22,7 +23,6 @@ import org.lwjgl.glfw.GLFWMouseButtonCallback;
 import org.lwjgl.glfw.GLFWScrollCallback;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
-import org.springframework.util.StringUtils;
 
 import java.nio.IntBuffer;
 import java.util.ArrayList;
