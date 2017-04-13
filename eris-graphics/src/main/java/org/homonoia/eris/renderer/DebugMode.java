@@ -14,7 +14,6 @@ public class DebugMode {
 
     private boolean boundingBoxes = false;
     private boolean axis = false;
-    private boolean frustum = false;
 
     private Model boundingBoxCube;
 }

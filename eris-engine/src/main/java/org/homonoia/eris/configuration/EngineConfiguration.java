@@ -4,13 +4,11 @@ import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.annotations.ContextualBean;
 import org.homonoia.eris.core.components.Clock;
 import org.homonoia.eris.core.components.FileSystem;
-import org.homonoia.eris.ecs.EntityManager;
-import org.homonoia.eris.ecs.EntitySystemManager;
-import org.homonoia.eris.ecs.FamilyManager;
 import org.homonoia.eris.engine.Engine;
 import org.homonoia.eris.engine.Locale;
 import org.homonoia.eris.engine.Log;
 import org.homonoia.eris.engine.Settings;
+import org.homonoia.eris.engine.StateMachine;
 import org.homonoia.eris.graphics.Graphics;
 import org.homonoia.eris.graphics.drawables.primitives.Cube;
 import org.homonoia.eris.graphics.drawables.primitives.PrimitiveFactory;
@@ -94,15 +92,6 @@ public class EngineConfiguration {
     }
 
     @ContextualBean
-    public EntitySystemManager entitySystemManager(Context context) { return new EntitySystemManager(context); }
-
-    @ContextualBean
-    public EntityManager entityManager(Context context) { return new EntityManager(context); }
-
-    @ContextualBean
-    public FamilyManager familyManager(Context context) { return new FamilyManager(context); }
-
-    @ContextualBean
     public ScriptEngine scriptEngine(Context context) { return new ScriptEngine(context); }
 
     @ContextualBean
@@ -113,5 +102,10 @@ public class EngineConfiguration {
     @ContextualBean
     public UI ui(Context context) {
         return new UI(context);
+    }
+
+    @ContextualBean
+    public StateMachine stateMachine(Context context) {
+        return new StateMachine(context);
     }
 }
