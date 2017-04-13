@@ -57,7 +57,7 @@ public class ScriptEngine extends Contextual {
 
     public void initialize() {
         classMapper.bind(this);
-        
+
         bindings = getContext().getBeans(ScriptBinding.class);
         bindings.forEach(scriptBinding -> scriptBinding.bind(this));
 
