@@ -39,6 +39,7 @@ public class Settings extends Contextual implements ScriptBinding {
      */
     public Settings(final Context context, final ResourceCache resourceCache, final FileSystem fileSystem) {
         super(context);
+        context.registerBean(this);
         this.resourceCache = resourceCache;
         this.fileSystem = fileSystem;
     }

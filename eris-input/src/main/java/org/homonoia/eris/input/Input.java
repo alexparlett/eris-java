@@ -56,6 +56,7 @@ public class Input extends Contextual implements ScriptBinding {
 
     public Input(final Context context, final Graphics graphics) {
         super(context);
+        context.registerBean(this);
         this.graphics = graphics;
     }
 

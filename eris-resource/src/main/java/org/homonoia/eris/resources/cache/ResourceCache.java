@@ -56,6 +56,7 @@ public class ResourceCache extends Contextual implements ScriptBinding {
      */
     public ResourceCache(final Context context, final FileSystem fileSystem) {
         super(context);
+        context.registerBean(this);
         this.loader = new ResourceLoader(context, fileSystem);
         this.fileSystem = fileSystem;
     }

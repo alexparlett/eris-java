@@ -21,6 +21,7 @@ public class Log extends Contextual implements ScriptBinding {
 
     public Log(final Context context) {
         super(context);
+        context.registerBean(this);
     }
 
     @Override

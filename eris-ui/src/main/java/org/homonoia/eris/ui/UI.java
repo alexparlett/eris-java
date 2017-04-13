@@ -21,6 +21,7 @@ public class UI extends Contextual implements ScriptBinding {
      */
     public UI(Context context) {
         super(context);
+        context.registerBean(this);
     }
 
     public void initialize() throws InitializationException {

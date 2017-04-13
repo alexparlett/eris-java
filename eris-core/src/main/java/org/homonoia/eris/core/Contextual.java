@@ -31,7 +31,6 @@ public abstract class Contextual {
      */
     public Contextual(final Context context) {
         this.context = context;
-        this.context.registerBean(this);
     }
 
     /**

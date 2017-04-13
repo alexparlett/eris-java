@@ -27,6 +27,7 @@ public class FileSystem extends Contextual {
 
     public FileSystem(final Context context) {
         super(context);
+        context.registerBean(this);
     }
 
     public void addPath(final Path path) {

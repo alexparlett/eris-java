@@ -19,6 +19,7 @@ public class Clock extends Contextual {
 
     public Clock(final Context context) {
         super(context);
+        context.registerBean(this);
         timeStep = 0L;
         frameNumber = 0;
     }

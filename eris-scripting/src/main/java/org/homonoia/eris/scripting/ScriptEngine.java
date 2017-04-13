@@ -39,7 +39,7 @@ public class ScriptEngine extends Contextual {
      */
     public ScriptEngine(Context context) {
         super(context);
-
+        context.registerBean(this);
     }
 
     public void bindGlobal(String name, Object global) {

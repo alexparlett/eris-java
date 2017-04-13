@@ -67,6 +67,7 @@ public class Engine extends Contextual implements ScriptBinding {
     public Engine(final Context context) {
         super(context);
 
+        context.registerBean(this);
         context.registerBean(Executors.newWorkStealingPool());
 
         gson = context.registerBean(new GsonBuilder()

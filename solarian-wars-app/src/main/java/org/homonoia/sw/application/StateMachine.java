@@ -33,10 +33,15 @@ public class StateMachine extends Contextual implements ScriptBinding {
 
     public StateMachine(Context context) {
         super(context);
+        context.registerBean(this);
         subscribe(this::handleFrame, BeginFrame.class);
         subscribe(this::handleCreate, StateCreate.class);
         subscribe(this::handleChange, StateChange.class);
         subscribe(this::handleDelete, StateDelete.class);
+    }
+
+    public <T extends State> T findState(Long id) {
+        return (T) states.get(id);
     }
 
     private void handleCreate(StateCreate evt) {

@@ -47,6 +47,7 @@ public class Locale extends Contextual implements ScriptBinding {
      */
     public Locale(final Context context, ResourceCache resourceCache) {
         super(context);
+        context.registerBean(this);
         this.resourceCache = resourceCache;
     }
 

@@ -105,6 +105,7 @@ public class Renderer extends Contextual implements Runnable {
 
     public Renderer(final Context context, final Graphics graphics, final ResourceCache resourceCache) {
         super(context);
+        context.registerBean(this);
         this.graphics = graphics;
         this.resourceCache = resourceCache;
         this.cubePrimitiveFactory = context.registerBean(new CubeFactory());

@@ -102,6 +102,7 @@ public class Graphics extends Contextual {
      */
     public Graphics(final Context context, final ResourceCache resourceCache) {
         super(context);
+        context.registerBean(this);
         this.resourceCache = resourceCache;
     }
 
