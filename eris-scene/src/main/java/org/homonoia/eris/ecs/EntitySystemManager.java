@@ -3,8 +3,6 @@ package org.homonoia.eris.ecs;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.exceptions.ErisException;
-import org.homonoia.eris.ecs.systems.InputSystem;
-import org.homonoia.eris.ecs.systems.RenderSystem;
 import org.homonoia.eris.events.frame.Update;
 import org.homonoia.eris.scripting.ScriptBinding;
 import org.homonoia.eris.scripting.ScriptEngine;
@@ -32,9 +30,6 @@ public class EntitySystemManager extends Contextual implements ScriptBinding {
     public EntitySystemManager(final Context context) {
         super(context);
         subscribe(this::handleUpdate, Update.class);
-
-        add(new RenderSystem(context));
-        add(new InputSystem(context));
     }
 
     public EntitySystemManager add(EntitySystem entitySystem) {

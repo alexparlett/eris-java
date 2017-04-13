@@ -1,4 +1,4 @@
-package org.homonoia.eris.state.events;
+package org.homonoia.sw.state.events;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

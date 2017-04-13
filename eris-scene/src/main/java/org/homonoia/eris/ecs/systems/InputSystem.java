@@ -3,6 +3,7 @@ package org.homonoia.eris.ecs.systems;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.exceptions.ErisException;
 import org.homonoia.eris.ecs.EntitySystem;
+import org.homonoia.eris.ecs.FamilyManager;
 import org.homonoia.eris.events.frame.Update;
 import org.homonoia.eris.input.Input;
 
@@ -16,8 +17,8 @@ public class InputSystem extends EntitySystem {
 
     private final Input input;
 
-    public InputSystem(Context context) {
-        super(context, MAX_PRIORITY);
+    public InputSystem(Context context, final FamilyManager familyManager) {
+        super(context, familyManager, MAX_PRIORITY);
         this.input = context.getBean(Input.class);
     }
 

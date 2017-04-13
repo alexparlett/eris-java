@@ -1,4 +1,4 @@
-package org.homonoia.eris.state;
+package org.homonoia.sw.state;
 
 /**
  * Copyright (c) 2015-2017 Homonoia Studios.

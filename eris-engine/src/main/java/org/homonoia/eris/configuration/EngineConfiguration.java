@@ -8,7 +8,6 @@ import org.homonoia.eris.engine.Engine;
 import org.homonoia.eris.engine.Locale;
 import org.homonoia.eris.engine.Log;
 import org.homonoia.eris.engine.Settings;
-import org.homonoia.eris.engine.StateMachine;
 import org.homonoia.eris.graphics.Graphics;
 import org.homonoia.eris.graphics.drawables.primitives.Cube;
 import org.homonoia.eris.graphics.drawables.primitives.PrimitiveFactory;
@@ -102,10 +101,5 @@ public class EngineConfiguration {
     @ContextualBean
     public UI ui(Context context) {
         return new UI(context);
-    }
-
-    @ContextualBean
-    public StateMachine stateMachine(Context context) {
-        return new StateMachine(context);
     }
 }

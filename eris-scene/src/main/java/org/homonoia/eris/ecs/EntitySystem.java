@@ -25,18 +25,19 @@ public abstract class EntitySystem extends Contextual implements Comparable<Enti
      *
      * @param context the context
      */
-    public EntitySystem(final Context context) {
-        this(context, MAX_PRIORITY);
+    public EntitySystem(final Context context, final FamilyManager familyManager) {
+        this(context, familyManager, MAX_PRIORITY);
     }
 
     /**
      * Instantiates a new EntitySystem.
      *
      * @param context the context
+     * @param familyManager
      */
-    public EntitySystem(final Context context, final int priority) {
+    public EntitySystem(final Context context, FamilyManager familyManager, final int priority) {
         super(context);
-        this.familyManager = context.getBean(FamilyManager.class);
+        this.familyManager = familyManager;
         this.priority = priority;
         this.enabled = true;
     }

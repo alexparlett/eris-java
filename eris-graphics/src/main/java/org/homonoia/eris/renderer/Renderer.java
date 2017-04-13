@@ -278,7 +278,6 @@ public class Renderer extends Contextual implements Runnable {
 
         debugMode.setAxis(getContext().isDebugEnabled());
         debugMode.setBoundingBoxes(getContext().isDebugEnabled());
-        debugMode.setFrustum(getContext().isDebugEnabled());
     }
 
     private void initializeOpenGl(final long window, final int width, final int height) throws InitializationException {

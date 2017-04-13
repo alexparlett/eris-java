@@ -1,14 +1,14 @@
-package org.homonoia.eris.engine;
+package org.homonoia.sw.application;
 
 import lombok.extern.slf4j.Slf4j;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.events.frame.BeginFrame;
 import org.homonoia.eris.scripting.ScriptBinding;
-import org.homonoia.eris.state.State;
-import org.homonoia.eris.state.events.StateChange;
-import org.homonoia.eris.state.events.StateCreate;
-import org.homonoia.eris.state.events.StateDelete;
+import org.homonoia.sw.state.State;
+import org.homonoia.sw.state.events.StateChange;
+import org.homonoia.sw.state.events.StateCreate;
+import org.homonoia.sw.state.events.StateDelete;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,7 +40,7 @@ public class StateMachine extends Contextual implements ScriptBinding {
     }
 
     private void handleCreate(StateCreate evt) {
-        if (evt.getId() <= 0L) {
+        if (evt.getId() > 0L) {
             if (!states.containsKey(evt.getId()) && !awaitingCreate.containsKey(evt.getId())) {
                 awaitingCreate.put(evt.getId(), evt.getState());
             } else {
@@ -52,7 +52,7 @@ public class StateMachine extends Contextual implements ScriptBinding {
     }
 
     private void handleChange(StateChange evt) {
-        if (evt.getId() <= 0L) {
+        if (evt.getId() > 0L) {
             if (states.containsKey(evt.getId()) || awaitingCreate.containsKey(evt.getId())) {
                 nextState = evt.getId();
             } else {
@@ -64,7 +64,7 @@ public class StateMachine extends Contextual implements ScriptBinding {
     }
 
     private void handleDelete(StateDelete evt) {
-        if (evt.getId() <= 0L) {
+        if (evt.getId() > 0L) {
             if (states.containsKey(evt.getId()) && !Objects.equals(evt.getId(), currentState) && !Objects.equals(evt.getId(), nextState)) {
                 awaitingDelete.put(evt.getId(), states.remove(evt.getId()));
             } else {

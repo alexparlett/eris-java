@@ -3,6 +3,7 @@ package org.homonoia.eris.ecs.systems;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.ecs.EntitySystem;
 import org.homonoia.eris.ecs.Family;
+import org.homonoia.eris.ecs.FamilyManager;
 import org.homonoia.eris.ecs.components.Camera;
 import org.homonoia.eris.ecs.components.Mesh;
 import org.homonoia.eris.ecs.exceptions.RenderingException;
@@ -31,8 +32,8 @@ public class RenderSystem extends EntitySystem {
     private final Family cameraFamily;
     private final Family renderableFamily;
 
-    public RenderSystem(final Context context) {
-        super(context, MIN_PRIORITY);
+    public RenderSystem(final Context context, final FamilyManager familyManager) {
+        super(context, familyManager, MIN_PRIORITY);
         this.completionService = new ExecutorCompletionService<>(context.getBean(ExecutorService.class));
         this.cameraFamily = familyManager.get(Camera.class);
         this.renderableFamily = familyManager.get(Mesh.class);

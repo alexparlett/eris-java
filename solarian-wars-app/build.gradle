@@ -8,4 +8,4 @@ dependencies {
     compile project(':eris-engine')
 }
 
-mainClassName = 'org.homonoia.sw.SolarianWarsMain'
+mainClassName = 'org.homonoia.sw.Main'
