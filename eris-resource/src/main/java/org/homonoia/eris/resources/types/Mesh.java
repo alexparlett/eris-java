@@ -1,38 +1,51 @@
 package org.homonoia.eris.resources.types;
 
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.homonoia.eris.core.Context;
-import org.homonoia.eris.core.parsers.Vector2fParser;
-import org.homonoia.eris.core.parsers.Vector3fParser;
+import org.homonoia.eris.resources.Resource;
+import org.homonoia.eris.resources.types.mesh.Vertex;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
-import org.homonoia.eris.resources.Resource;
-import org.homonoia.eris.resources.types.mesh.Face;
-import org.homonoia.eris.resources.types.mesh.Vertex;
+import org.lwjgl.PointerBuffer;
+import org.lwjgl.assimp.AIFace;
+import org.lwjgl.assimp.AIMesh;
+import org.lwjgl.assimp.AIScene;
+import org.lwjgl.assimp.AIVector3D;
+import org.lwjgl.assimp.Assimp;
 
-import java.io.*;
-import java.text.ParseException;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.regex.Pattern;
+
+import static java.util.Objects.isNull;
+import static java.util.Objects.nonNull;
+import static org.lwjgl.assimp.Assimp.AI_SCENE_FLAGS_INCOMPLETE;
+import static org.lwjgl.assimp.Assimp.aiProcess_FixInfacingNormals;
+import static org.lwjgl.assimp.Assimp.aiProcess_GenNormals;
+import static org.lwjgl.assimp.Assimp.aiProcess_GenUVCoords;
+import static org.lwjgl.assimp.Assimp.aiProcess_JoinIdenticalVertices;
+import static org.lwjgl.assimp.Assimp.aiProcess_OptimizeGraph;
+import static org.lwjgl.assimp.Assimp.aiProcess_OptimizeMeshes;
+import static org.lwjgl.assimp.Assimp.aiProcess_Triangulate;
+import static org.lwjgl.system.MemoryUtil.memAlloc;
+import static org.lwjgl.system.MemoryUtil.memFree;
 
 /**
  * Created by alexparlett on 07/05/2016.
  */
+@Slf4j
+@Getter
 public class Mesh extends Resource {
 
-    public static final String OBJ_GEOMETRY_VERTEX = "v";
-    public static final String OBJ_TEXTURE_COORDS = "vt";
-    public static final String OBJ_NORMAL = "vn";
-    public static final String OBJ_FACE = "f";
-    public static final String OBJ_COMMENT = "#";
-    public static final Pattern OBJ_FACE_POINT_PATTERN = Pattern.compile("(\\s)");
-    public static final Pattern OBJ_FACE_PATTERN = Pattern.compile("(\\/)");
-
-    private List<Vector3f> geometry = new ArrayList<>();
-    private List<Vector2f> textureCoords = new ArrayList<>();
-    private List<Vector3f> normals = new ArrayList<>();
-    private List<Face> faces = new ArrayList<>();
+    private List<Vertex> vertices = new ArrayList<>();
+    private List<Integer> indicies = new ArrayList<>();
 
     public Mesh(final Context context) {
         super(context);
@@ -40,180 +53,88 @@ public class Mesh extends Resource {
 
     @Override
     public void load(final InputStream inputStream) throws IOException {
-        Objects.requireNonNull(inputStream);
+        Objects.requireNonNull(inputStream, "Input Stream must not be null.");
 
-        reset();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        int read;
+        byte[] buf = new byte[1024];
+        while ((read = inputStream.read(buf)) >= 0) {
+            baos.write(buf, 0, read);
+        }
 
-        BufferedReader br = new BufferedReader(new InputStreamReader(inputStream));
+        if (baos.size() <= 0) {
+            throw new IOException(MessageFormat.format("Failed to load Image {0}. File empty.", getLocation()));
+        }
 
-        String line;
+        ByteBuffer byteBuffer = memAlloc(baos.size());
         try {
-            while ((line = br.readLine()) != null) {
-                if (line.startsWith(OBJ_COMMENT)) {
-                    continue;
-                } else if (line.startsWith(OBJ_TEXTURE_COORDS)) {
-                    textureCoords.add(processTextureCoord(line));
-                } else if (line.startsWith(OBJ_NORMAL)) {
-                    normals.add(processNormal(line));
-                } else if (line.startsWith(OBJ_GEOMETRY_VERTEX)) {
-                    geometry.add(processGeometry(line));
-                } else if (line.startsWith(OBJ_FACE)) {
-                    faces.add(processFace(line));
+            byteBuffer.put(baos.toByteArray());
+            byteBuffer.flip();
+
+            int pFlags = aiProcess_Triangulate |
+                    aiProcess_GenNormals |
+                    aiProcess_FixInfacingNormals |
+                    aiProcess_GenUVCoords |
+                    aiProcess_JoinIdenticalVertices |
+                    aiProcess_OptimizeGraph |
+                    aiProcess_OptimizeMeshes;
+
+            AIScene aiScene = Assimp.aiImportFileFromMemory(byteBuffer, pFlags, "");
+
+            if (isNull(aiScene) || aiScene.mFlags() == AI_SCENE_FLAGS_INCOMPLETE || isNull(aiScene.mRootNode())) {
+                throw new IOException("Failed loading Model, " + Assimp.aiGetErrorString());
+            }
+
+            if (aiScene.mNumMeshes() <= 0) {
+                throw new IOException("Failed loading Model, no meshes found.");
+            }
+
+            PointerBuffer meshes = aiScene.mMeshes();
+            for (int i = 0; i < meshes.remaining(); i++) {
+                AIMesh aiMesh = AIMesh.create(meshes.get(i));
+
+                AIVector3D.Buffer aiVertices = aiMesh.mVertices();
+                AIVector3D.Buffer aiNormals = aiMesh.mNormals();
+                AIVector3D.Buffer aiTextureCoords = aiMesh.mTextureCoords().capacity() > 0 ? aiMesh.mTextureCoords(0) : null;
+                for (int j = 0; j < aiVertices.remaining(); j++) {
+                    AIVector3D vertex = aiVertices.get(j);
+                    AIVector3D normal = aiNormals.get(j);
+
+                    Vertex.Builder builder = Vertex.builder()
+                            .position(new Vector3f(vertex.x(), vertex.y(), vertex.z()))
+                            .normal(new Vector3f(normal.x(), normal.y(), normal.z()));
+
+                    if (nonNull(aiTextureCoords)) {
+                        AIVector3D texCoords = aiTextureCoords.get(j);
+                        builder.texCoords(new Vector2f(texCoords.x(), texCoords.y()));
+                    }
+                    else {
+                        builder.texCoords(new Vector2f(0.f));
+                    }
+
+                    vertices.add(builder.build());
+                }
+
+                AIFace.Buffer aiFaces = aiMesh.mFaces();
+                for (int j = 0; j < aiFaces.remaining(); j++)
+                {
+                    AIFace aiFace = aiFaces.get(j);
+                    IntBuffer aiIndices = aiFace.mIndices();
+                    while(aiIndices.hasRemaining()) {
+                        indicies.add(aiIndices.get());
+                    }
                 }
             }
-        } catch (ParseException | IndexOutOfBoundsException ex) {
-            throw new IOException("Failed to parse obj", ex);
+
+            Assimp.aiReleaseImport(aiScene);
+        } finally {
+            memFree(byteBuffer);
         }
     }
 
     @Override
     public void reset() {
-        geometry.clear();
-        textureCoords.clear();
-        normals.clear();
-        faces.clear();
-    }
-
-    public List<Vector3f> getGeometry() {
-        return geometry;
-    }
-
-    public void setGeometry(final List<Vector3f> geometry) {
-        this.geometry = geometry;
-    }
-
-    public List<Vector2f> getTextureCoords() {
-        return textureCoords;
-    }
-
-    public void setTextureCoords(final List<Vector2f> textureCoords) {
-        this.textureCoords = textureCoords;
-    }
-
-    public List<Vector3f> getNormals() {
-        return normals;
-    }
-
-    public void setNormals(final List<Vector3f> normals) {
-        this.normals = normals;
-    }
-
-    public List<Face> getFaces() {
-        return faces;
-    }
-
-    public void setFaces(final List<Face> faces) {
-        this.faces = faces;
-    }
-
-    private Face processFace(String line) throws ParseException {
-        String[] groups = OBJ_FACE_POINT_PATTERN.split(line.substring(OBJ_FACE.length() + 1));
-        if (groups.length != 3) {
-            throw new ParseException("Invalid Face, obj must be in triangle format", 0);
-        }
-
-        Face face = new Face();
-        for (String group : groups) {
-            int indicesCounts = countCharacterOccurence(group, "/");
-
-            String[] indices = OBJ_FACE_PATTERN.split(group);
-            if (indicesCounts == 0) {
-                int geometryIndex = Integer.parseInt(indices[0]) - 1;
-
-                Vector3f position = geometry.get(geometryIndex);
-
-                Vertex vertex = Vertex.builder()
-                        .position(position)
-                        .texCoords(new Vector2f(0,0))
-                        .build();
-
-                face.addVertex(vertex);
-             } else if (indicesCounts == 1) {
-                int geometryIndex = Integer.parseInt(indices[0]) - 1;
-                int textureCoordsIndex = Integer.parseInt(indices[1]) - 1;
-
-                Vector3f position = geometry.get(geometryIndex);
-                Vector2f texCoord = textureCoords.get(textureCoordsIndex);
-
-                Vertex vertex = Vertex.builder()
-                        .position(position)
-                        .texCoords(texCoord)
-                        .build();
-
-                face.addVertex(vertex);
-             } else if (indicesCounts == 2) {
-                int geometryIndex = Integer.parseInt(indices[0]) - 1;
-                int textureCoordsIndex = Integer.parseInt(indices[1]) - 1;
-                int normalIndex = Integer.parseInt(indices[2]) - 1;
-
-                Vector3f position = geometry.get(geometryIndex);
-                Vector3f normal = normals.get(normalIndex);
-                Vector2f texCoord = textureCoords.get(textureCoordsIndex);
-
-                Vertex vertex = Vertex.builder()
-                        .position(position)
-                        .normal(normal)
-                        .texCoords(texCoord)
-                        .build();
-
-                face.addVertex(vertex);
-            }
-        }
-
-        if (normals.isEmpty()) {
-            generateNormals(face);
-        }
-
-        return face;
-    }
-
-    private int countCharacterOccurence(final String string, final String character) {
-        return string.length() - string.substring(0).replaceAll(character, "").length();
-    }
-
-    private Vector3f processNormal(String line) throws ParseException {
-        return Vector3fParser.parse(line.substring(OBJ_NORMAL.length() + 1));
-    }
-
-    private Vector2f processTextureCoord(String line) throws ParseException {
-        String substring = line.substring(OBJ_TEXTURE_COORDS.length() + 1);
-        try {
-            return Vector2fParser.parse(substring);
-        } catch (ParseException pe) {
-            Vector3f parse = Vector3fParser.parse(substring);
-            return new Vector2f(parse.x(), parse.y());
-        }
-    }
-
-    private Vector3f processGeometry(String line) throws ParseException {
-        return Vector3fParser.parse(line.substring(OBJ_GEOMETRY_VERTEX.length() + 1));
-    }
-
-    private void generateNormals(Face face) {
-
-    }
-
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        Mesh mesh = (Mesh) o;
-
-        if (geometry != null ? !geometry.equals(mesh.geometry) : mesh.geometry != null) return false;
-        if (textureCoords != null ? !textureCoords.equals(mesh.textureCoords) : mesh.textureCoords != null)
-            return false;
-        if (normals != null ? !normals.equals(mesh.normals) : mesh.normals != null) return false;
-        return faces != null ? faces.equals(mesh.faces) : mesh.faces == null;
-
-    }
-
-    @Override
-    public int hashCode() {
-        int result = geometry != null ? geometry.hashCode() : 0;
-        result = 31 * result + (textureCoords != null ? textureCoords.hashCode() : 0);
-        result = 31 * result + (normals != null ? normals.hashCode() : 0);
-        result = 31 * result + (faces != null ? faces.hashCode() : 0);
-        return result;
+        vertices.clear();
+        indicies.clear();
     }
 }

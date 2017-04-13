@@ -5,7 +5,6 @@ import org.homonoia.eris.graphics.Graphics;
 import org.homonoia.eris.graphics.drawables.Material;
 import org.homonoia.eris.renderer.Renderer;
 import org.homonoia.eris.resources.types.Mesh;
-import org.homonoia.eris.resources.types.mesh.Face;
 import org.homonoia.eris.resources.types.mesh.Vertex;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
@@ -17,10 +16,6 @@ import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
@@ -93,7 +88,7 @@ public class SubModel {
         return ebo;
     }
 
-   public void compile(Graphics graphics) {
+    public void compile(Graphics graphics) {
         long win = GLFW.glfwGetCurrentContext();
         glfwMakeContextCurrent(win != MemoryUtil.NULL ? win : graphics.getBackgroundWindow());
 
@@ -103,20 +98,8 @@ public class SubModel {
             generationState = GenerationState.LOADER;
         }
 
-        int currentUniqueVertexIndex = 0;
-        Map<Vertex, Integer> indexMap = new HashMap<>();
-        List<Vertex> vertexList = new ArrayList<>();
-        for (Face face : mesh.getFaces()) {
-            for (Vertex vertex : face.getVertices()) {
-                if (!indexMap.containsKey(vertex)) {
-                    indexMap.put(vertex, currentUniqueVertexIndex++);
-                    vertexList.add(vertex);
-                }
-            }
-        }
-
-        vertices = memAllocFloat(vertexList.size() * Vertex.COUNT);
-        vertexList.forEach(vertex -> {
+        vertices = memAllocFloat(mesh.getVertices().size() * Vertex.COUNT);
+        mesh.getVertices().forEach(vertex -> {
             vertices.put((vertex.getPosition().x + origin.x) * scale);
             vertices.put((vertex.getPosition().y + origin.y) * scale);
             vertices.put((vertex.getPosition().z + origin.z) * scale);
@@ -130,12 +113,8 @@ public class SubModel {
         });
         vertices.flip();
 
-        indices = memAllocInt(mesh.getFaces().size() * 3);
-        for (Face face : mesh.getFaces()) {
-            for (Vertex vertex : face.getVertices()) {
-                indices.put(indexMap.get(vertex));
-            }
-        }
+        indices = memAllocInt(mesh.getIndicies().size());
+        mesh.getIndicies().forEach(index -> indices.put(index));
         indices.flip();
 
         compileInternal();
