@@ -2,9 +2,11 @@ package org.homonoia.eris.scripting;
 
 import lombok.extern.slf4j.Slf4j;
 import org.codehaus.janino.CachingJavaSourceClassLoader;
-import org.codehaus.janino.util.resource.DirectoryResourceFinder;
+import org.codehaus.janino.util.resource.JarDirectoriesResourceFinder;
 import org.codehaus.janino.util.resource.MapResourceCreator;
 import org.codehaus.janino.util.resource.MapResourceFinder;
+import org.codehaus.janino.util.resource.MultiResourceFinder;
+import org.codehaus.janino.util.resource.PathResourceFinder;
 import org.codehaus.janino.util.resource.ResourceCreator;
 import org.codehaus.janino.util.resource.ResourceFinder;
 import org.homonoia.eris.core.Context;
@@ -12,6 +14,7 @@ import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.events.resource.DirectoryAdded;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Objects.nonNull;
@@ -50,7 +53,8 @@ public class ScriptEngine extends Contextual {
     private void handleDirectoryAdded(DirectoryAdded evt) {
         File scriptDirectory = evt.getPath().resolve("Scripts").toFile();
         if (scriptDirectory.exists()) {
-            ResourceFinder resourceFinder = new DirectoryResourceFinder(scriptDirectory);
+            File[] directories = {scriptDirectory};
+            ResourceFinder resourceFinder = new MultiResourceFinder(Arrays.asList(new PathResourceFinder(directories), new JarDirectoriesResourceFinder(directories)));
             if (nonNull(classLoader)) {
                 classLoader = new CachingJavaSourceClassLoader(classLoader, resourceFinder, null, cacheResourceFinder, cacheResourceCreator);
 
