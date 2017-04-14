@@ -3,6 +3,7 @@ package org.homonoia.eris.resources.cache;
 import lombok.extern.slf4j.Slf4j;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
+import org.homonoia.eris.core.Statistics;
 import org.homonoia.eris.core.components.FileSystem;
 import org.homonoia.eris.core.utils.ThreadUtils;
 import org.homonoia.eris.resources.GPUResource;
@@ -15,7 +16,6 @@ import java.text.MessageFormat;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * Copyright (c) 2015-2016 the Eris project.
@@ -28,7 +28,8 @@ class ResourceLoader extends Contextual {
 
 
     private final FileSystem fileSystem;
-    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+    private final ExecutorService executorService;
+    private final Statistics statistics;
 
     /**
      * Instantiates a new Contextual.
@@ -38,6 +39,8 @@ class ResourceLoader extends Contextual {
     public ResourceLoader(final Context context, final FileSystem fileSystem) {
         super(context);
         this.fileSystem = fileSystem;
+        statistics = context.getBean(Statistics.class);
+        executorService = context.getBean(ExecutorService.class);
     }
 
     public void shutdown() {
@@ -76,6 +79,7 @@ class ResourceLoader extends Contextual {
 
     private void process(LoadingTask loadingTask) {
         if (loadingTask.resource != null && loadingTask.path != null) {
+            statistics.getCurrent().startSegment();
             loadingTask.resource.setState(Resource.AsyncState.LOADING);
             try (InputStream inputStream = fileSystem.newInputStream(loadingTask.path)) {
                 loadingTask.resource.load(inputStream);
@@ -87,6 +91,7 @@ class ResourceLoader extends Contextual {
                 loadingTask.resource.setState(Resource.AsyncState.FAILED);
                 log.error("Failed to load {} {}", loadingTask.resource.getClass().getSimpleName(), loadingTask.path, e);
             }
+            statistics.getCurrent().endSegment("Resource Loaded " + loadingTask.resource.getClass().getSimpleName());
         }
     }
 
