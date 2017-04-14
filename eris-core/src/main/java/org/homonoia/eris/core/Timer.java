@@ -1,6 +1,4 @@
-package org.homonoia.eris.core.utils;
-
-import org.lwjgl.glfw.GLFW;
+package org.homonoia.eris.core;
 
 /**
  * Copyright (c) 2015-2016 the Eris project.
@@ -13,7 +11,7 @@ public class Timer {
     private double startTime;
 
     public Timer() {
-        startTime = GLFW.glfwGetTime() * 1000.0;
+        startTime = System.currentTimeMillis();
     }
 
     public double getElapsedTime() {
@@ -21,7 +19,7 @@ public class Timer {
     }
 
     public double getElapsedTime(boolean reset) {
-        double currentTime = GLFW.glfwGetTime() * 1000.0;
+        double currentTime = System.currentTimeMillis();
         double elapsedTime =  currentTime - startTime;
 
         if (reset) {
@@ -32,7 +30,7 @@ public class Timer {
     }
 
     public void reset() {
-        startTime = GLFW.glfwGetTime() * 1000.0;
+        startTime = System.currentTimeMillis();
     }
 
 }

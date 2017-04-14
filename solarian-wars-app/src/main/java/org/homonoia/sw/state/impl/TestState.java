@@ -34,6 +34,7 @@ public class TestState extends Contextual implements State {
     private EntityManager entityManager;
     private FamilyManager familyManager;
     private EntitySystemManager entitySystemManager;
+    private ResourceCache resourceCache;
 
     /**
      * Instantiates a new Contextual.
@@ -53,11 +54,14 @@ public class TestState extends Contextual implements State {
         entitySystemManager.add(new InputSystem(getContext(), familyManager));
         entitySystemManager.add(new UpdateSystem(getContext(), familyManager));
         entitySystemManager.add(new RenderSystem(getContext(), familyManager));
+
+        resourceCache = getContext().getBean(ResourceCache.class);
+        resourceCache.add(Model.class, "Models/fighter.mdl", false);
+        resourceCache.add(Skybox.class, "Skyboxes/spacescape.skybox", false);
     }
 
     @Override
     public void start() {
-        ResourceCache resourceCache = getContext().getBean(ResourceCache.class);
         Graphics graphics = getContext().getBean(Graphics.class);
         ComponentFactory componentFactory = getContext().getBean(ComponentFactory.class);
 

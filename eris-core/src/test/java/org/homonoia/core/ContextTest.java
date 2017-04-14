@@ -1,10 +1,11 @@
 package org.homonoia.core;
 
 import org.hamcrest.CoreMatchers;
+import org.homonoia.eris.core.CommandLineArgs;
 import org.homonoia.eris.core.Context;
-import org.homonoia.eris.core.components.Clock;
+import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.events.Event;
-import org.homonoia.eris.events.frame.EndFrame;
+import org.homonoia.eris.events.core.Pause;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,11 +27,11 @@ public class ContextTest {
     @Test
     public void testEventBus_WithoutClass() throws Exception {
 
-        Context publisher = new Context();
+        Context publisher = new Context(new CommandLineArgs());
 
         List<Event> events = new ArrayList<>();
-        publisher.subscribe(endFrame -> events.add(endFrame), Context.eventClassPredicate(null).and(Context.eventSourcePredicate(null)));
-        publisher.publish(EndFrame.builder().build());
+        publisher.subscribe(Pause -> events.add(Pause), Context.eventClassPredicate(null).and(Context.eventSourcePredicate(null)));
+        publisher.publish(Pause.builder().build());
 
         Assert.assertThat(events.size(), CoreMatchers.is(1));
     }
@@ -38,11 +39,11 @@ public class ContextTest {
     @Test
     public void testEventBus_WithClass() throws Exception {
 
-        Context publisher = new Context();
+        Context publisher = new Context(new CommandLineArgs());
 
         List<Event> events = new ArrayList<>();
-        publisher.subscribe(endFrame -> events.add(endFrame), Context.eventClassPredicate(EndFrame.class).and(Context.eventSourcePredicate(null)));
-        publisher.publish(EndFrame.builder().build());
+        publisher.subscribe(Pause -> events.add(Pause), Context.eventClassPredicate(Pause.class).and(Context.eventSourcePredicate(null)));
+        publisher.publish(Pause.builder().build());
 
         Assert.assertThat(events.size(), CoreMatchers.is(1));
     }
@@ -50,11 +51,13 @@ public class ContextTest {
     @Test
     public void testEventBus_WithSourceNotMatched() throws Exception {
 
-        Context publisher = new Context();
+        Context publisher = new Context(new CommandLineArgs());
+        Contextual eventSrc = new Contextual(publisher) {
+        };
 
         List<Event> events = new ArrayList<>();
-        publisher.subscribe(endFrame -> events.add(endFrame), Context.eventClassPredicate(EndFrame.class).and(Context.eventSourcePredicate(new Clock(publisher))));
-        publisher.publish(EndFrame.builder().source(new Object()).build());
+        publisher.subscribe(Pause -> events.add(Pause), Context.eventClassPredicate(Pause.class).and(Context.eventSourcePredicate(eventSrc)));
+        publisher.publish(Pause.builder().source(new Object()).build());
 
         Assert.assertThat(events.size(), CoreMatchers.is(0));
     }
@@ -62,12 +65,13 @@ public class ContextTest {
     @Test
     public void testEventBus_WithSourceMatched() throws Exception {
 
-        Context publisher = new Context();
-        Clock eventSrc = new Clock(publisher);
+        Context publisher = new Context(new CommandLineArgs());
+        Contextual eventSrc = new Contextual(publisher) {
+        };
 
         List<Event> events = new ArrayList<>();
-        publisher.subscribe(endFrame -> events.add(endFrame), Context.eventClassPredicate(EndFrame.class).and(Context.eventSourcePredicate(eventSrc)));
-        publisher.publish(EndFrame.builder().source(eventSrc).build());
+        publisher.subscribe(Pause -> events.add(Pause), Context.eventClassPredicate(Pause.class).and(Context.eventSourcePredicate(eventSrc)));
+        publisher.publish(Pause.builder().source(eventSrc).build());
 
         Assert.assertThat(events.size(), CoreMatchers.is(1));
     }
@@ -75,12 +79,12 @@ public class ContextTest {
     @Test
     public void testEventBus_MultipleSubscriptions() throws Exception {
 
-        Context publisher = new Context();
+        Context publisher = new Context(new CommandLineArgs());
 
         List<Event> events = new ArrayList<>();
-        publisher.subscribe(endFrame -> events.add(endFrame), Context.eventClassPredicate(null).and(Context.eventSourcePredicate(null)));
-        publisher.subscribe(endFrame -> events.add(endFrame), Context.eventClassPredicate(null).and(Context.eventSourcePredicate(null)));
-        publisher.publish(EndFrame.builder().build());
+        publisher.subscribe(Pause -> events.add(Pause), Context.eventClassPredicate(null).and(Context.eventSourcePredicate(null)));
+        publisher.subscribe(Pause -> events.add(Pause), Context.eventClassPredicate(null).and(Context.eventSourcePredicate(null)));
+        publisher.publish(Pause.builder().build());
 
         Assert.assertThat(events.size(), CoreMatchers.is(2));
     }
@@ -88,12 +92,12 @@ public class ContextTest {
     @Test
     public void testEventBus_MultipleSubscriptions_DontPropagate() throws Exception {
 
-        Context publisher = new Context();
+        Context publisher = new Context(new CommandLineArgs());
 
         List<Event> events = new ArrayList<>();
-        publisher.subscribe(endFrame -> { events.add(endFrame); endFrame.stopPropagation();}, Context.eventClassPredicate(null).and(Context.eventSourcePredicate(null)));
-        publisher.subscribe(endFrame -> events.add(endFrame), Context.eventClassPredicate(null).and(Context.eventSourcePredicate(null)));
-        publisher.publish(EndFrame.builder().build());
+        publisher.subscribe(Pause -> { events.add(Pause); Pause.stopPropagation();}, Context.eventClassPredicate(null).and(Context.eventSourcePredicate(null)));
+        publisher.subscribe(Pause -> events.add(Pause), Context.eventClassPredicate(null).and(Context.eventSourcePredicate(null)));
+        publisher.publish(Pause.builder().build());
 
         Assert.assertThat(events.size(), CoreMatchers.is(1));
     }

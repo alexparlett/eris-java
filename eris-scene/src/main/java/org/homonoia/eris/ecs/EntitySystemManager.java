@@ -2,6 +2,7 @@ package org.homonoia.eris.ecs;
 
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
+import org.homonoia.eris.core.Statistics;
 import org.homonoia.eris.core.exceptions.ErisException;
 import org.homonoia.eris.events.frame.Update;
 import org.slf4j.Logger;
@@ -17,6 +18,7 @@ import java.util.TreeSet;
 public class EntitySystemManager extends Contextual {
 
     private static final Logger LOG = LoggerFactory.getLogger(EntitySystemManager.class);
+    private final Statistics statistics;
 
     private SortedSet<EntitySystem> entitySystems = new TreeSet<>();
 
@@ -27,6 +29,9 @@ public class EntitySystemManager extends Contextual {
      */
     public EntitySystemManager(final Context context) {
         super(context);
+
+        statistics = context.getBean(Statistics.class);
+
         subscribe(this::handleUpdate, Update.class);
     }
 
@@ -49,6 +54,7 @@ public class EntitySystemManager extends Contextual {
     }
 
     private void handleUpdate(final Update update) {
+        statistics.getCurrent().startSegment();
         entitySystems.stream()
                 .filter(EntitySystem::isEnabled)
                 .forEachOrdered(entitySystem -> {
@@ -59,5 +65,6 @@ public class EntitySystemManager extends Contextual {
                         return;
                     }
                 });
+        statistics.getCurrent().endSegment("Entity System Update");
     }
 }

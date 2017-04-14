@@ -47,7 +47,7 @@ public class ResourceLoaderTest {
 
     @Before
     public void setup() {
-        resourceLoader = new ResourceLoader(context, fileSystem);
+        resourceLoader = new ResourceLoader(context, fileSystem, resourceLoaderThreadFactory);
     }
 
     @Test

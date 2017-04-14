@@ -1,6 +1,7 @@
 package org.homonoia.eris.ecs.systems;
 
 import org.homonoia.eris.core.Context;
+import org.homonoia.eris.core.Statistics;
 import org.homonoia.eris.ecs.EntitySystem;
 import org.homonoia.eris.ecs.Family;
 import org.homonoia.eris.ecs.FamilyManager;
@@ -31,6 +32,7 @@ public class RenderSystem extends EntitySystem {
     private final Renderer renderer;
     private final Family cameraFamily;
     private final Family renderableFamily;
+    private final Statistics statistics;
 
     public RenderSystem(final Context context, final FamilyManager familyManager) {
         super(context, familyManager, MIN_PRIORITY);
@@ -38,10 +40,12 @@ public class RenderSystem extends EntitySystem {
         this.cameraFamily = familyManager.get(Camera.class);
         this.renderableFamily = familyManager.get(Mesh.class);
         this.renderer = this.getContext().getBean(Renderer.class);
+        this.statistics = context.getBean(Statistics.class);
     }
 
     @Override
     public void update(final Update update) throws RenderingException {
+        statistics.getCurrent().startSegment();
         if (!cameraFamily.getEntities().isEmpty()) {
             RenderFrame renderFrame = renderer.getState().newRenderFrame();
 
@@ -63,6 +67,7 @@ public class RenderSystem extends EntitySystem {
 
             renderer.getState().add(renderFrame);
         }
+        statistics.getCurrent().endSegment("Scene Render");
     }
 
 }

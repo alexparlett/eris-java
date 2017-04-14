@@ -4,13 +4,10 @@ import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.ExitCode;
 import org.homonoia.eris.core.exceptions.InitializationException;
-import org.homonoia.eris.core.utils.Timer;
+import org.homonoia.eris.events.frame.Render;
 import org.homonoia.eris.events.graphics.ScreenMode;
 import org.homonoia.eris.graphics.Graphics;
 import org.homonoia.eris.graphics.drawables.Model;
-import org.homonoia.eris.graphics.drawables.primitives.Cube;
-import org.homonoia.eris.graphics.drawables.primitives.factory.CubeFactory;
-import org.homonoia.eris.graphics.drawables.primitives.factory.PrimitiveFactory;
 import org.homonoia.eris.renderer.impl.SwappingRenderState;
 import org.homonoia.eris.resources.cache.ResourceCache;
 import org.joml.Matrix3f;
@@ -84,23 +81,18 @@ import static org.lwjgl.system.MemoryStack.stackPush;
  * @author alexparlett
  * @since 06/02/2016
  */
-public class Renderer extends Contextual implements Runnable {
+public class Renderer extends Contextual {
 
     private static final Logger LOG = LoggerFactory.getLogger(Renderer.class);
 
     private final Graphics graphics;
     private final ResourceCache resourceCache;
-    private final PrimitiveFactory<Cube> cubePrimitiveFactory;
 
     private boolean initialized = false;
-    private final AtomicBoolean threadExit = new AtomicBoolean(false);
     private final AtomicBoolean viewportDirty = new AtomicBoolean(false);
     private Matrix4f view = new Matrix4f();
     private Matrix4f projection = new Matrix4f();
-    private final Thread thread = new Thread(this);
     private final RenderState state = new SwappingRenderState(this);
-    private int frameCount = 0;
-    private double elapsedTime = 0.0;
     private DebugMode debugMode = new DebugMode();
 
     public Renderer(final Context context, final Graphics graphics, final ResourceCache resourceCache) {
@@ -108,7 +100,6 @@ public class Renderer extends Contextual implements Runnable {
         context.registerBean(this);
         this.graphics = graphics;
         this.resourceCache = resourceCache;
-        this.cubePrimitiveFactory = context.registerBean(new CubeFactory());
     }
 
     public void initialize() throws Exception {
@@ -117,61 +108,19 @@ public class Renderer extends Contextual implements Runnable {
         }
 
         subscribe(this::handleScreenMode, ScreenMode.class);
+        subscribe(this::handleRenderEvent, Render.class);
 
         configureDebugMode();
 
-        thread.setUncaughtExceptionHandler(this::handleRenderingThreadException);
-        thread.start();
-    }
-
-    @Override
-    public void run() {
-
-        long window = graphics.getRenderWindow();
-
-        try {
-            initializeOpenGl(window, graphics.getDefaultRenderTarget().getWidth(), graphics.getDefaultRenderTarget().getHeight());
-        } catch (InitializationException e) {
-            LOG.error("Initialization Error in Renderer", e);
-            getContext().setExitCode(e.getError());
-            glfwSetWindowShouldClose(graphics.getRenderWindow(), true);
-        }
-
-        Timer timer = new Timer();
-        while (!threadExit.get()) {
-            state.process();
-            glfwSwapBuffers(window);
-
-            if (viewportDirty.get()) {
-                glViewport(0, 0, graphics.getDefaultRenderTarget().getWidth(), graphics.getDefaultRenderTarget().getHeight());
-                glfwSwapBuffers(window);
-                viewportDirty.set(false);
-            }
-
-            frameCount++;
-            double frameElapsedTime = timer.getElapsedTime(true);
-            elapsedTime += frameElapsedTime;
-        }
-
-        glfwMakeContextCurrent(MemoryUtil.NULL);
+        initializeOpenGl();
     }
 
     public void shutdown() {
         initialized = false;
-        threadExit.set(true);
 
         unsubscribe();
 
         LOG.info("Terminating Renderer...");
-        LOG.info("Frames: {}", frameCount);
-        LOG.info("Milliseconds: {}", elapsedTime);
-        LOG.info("FPS: {}", frameCount / (elapsedTime / 1000));
-
-        try {
-            thread.join();
-        } catch (InterruptedException e) {
-
-        }
     }
 
     public Matrix4f getCurrentView() {
@@ -280,8 +229,8 @@ public class Renderer extends Contextual implements Runnable {
         debugMode.setBoundingBoxes(getContext().isDebugEnabled());
     }
 
-    private void initializeOpenGl(final long window, final int width, final int height) throws InitializationException {
-
+    private void initializeOpenGl() throws InitializationException {
+        long window = graphics.getRenderWindow();
         if (window != MemoryUtil.NULL) {
             glfwMakeContextCurrent(window);
         } else {
@@ -301,7 +250,7 @@ public class Renderer extends Contextual implements Runnable {
 
         glDepthFunc(GL_LESS);
 
-        glViewport(0, 0, width, height);
+        glViewport(0, 0, graphics.getDefaultRenderTarget().getWidth(), graphics.getDefaultRenderTarget().getHeight());
     }
 
     private void handleScreenMode(final ScreenMode evt) {
@@ -312,5 +261,18 @@ public class Renderer extends Contextual implements Runnable {
         LOG.error("Uncaught Exception in Rendering Thread", throwable);
         getContext().setExitCode(ExitCode.RUNTIME);
         glfwSetWindowShouldClose(graphics.getRenderWindow(), true);
+    }
+
+    private void handleRenderEvent(final Render evt) {
+        long window = graphics.getRenderWindow();
+
+        state.process();
+        glfwSwapBuffers(window);
+
+        if (viewportDirty.get()) {
+            glViewport(0, 0, graphics.getDefaultRenderTarget().getWidth(), graphics.getDefaultRenderTarget().getHeight());
+            glfwSwapBuffers(window);
+            viewportDirty.set(false);
+        }
     }
 }

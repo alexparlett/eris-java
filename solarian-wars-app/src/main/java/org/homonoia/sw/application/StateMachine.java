@@ -3,7 +3,8 @@ package org.homonoia.sw.application;
 import lombok.extern.slf4j.Slf4j;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
-import org.homonoia.eris.events.frame.BeginFrame;
+import org.homonoia.eris.core.Statistics;
+import org.homonoia.eris.events.frame.Begin;
 import org.homonoia.sw.state.State;
 import org.homonoia.sw.state.events.StateChange;
 import org.homonoia.sw.state.events.StateCreate;
@@ -24,6 +25,7 @@ import static java.util.Objects.nonNull;
 @Slf4j
 public class StateMachine extends Contextual {
 
+    private final Statistics statistics;
     private Map<Long, State> states = new HashMap<>();
     private Map<Long, State> awaitingCreate = new HashMap<>();
     private Map<Long, State> awaitingDelete = new HashMap<>();
@@ -33,7 +35,10 @@ public class StateMachine extends Contextual {
     public StateMachine(Context context) {
         super(context);
         context.registerBean(this);
-        subscribe(this::handleFrame, BeginFrame.class);
+
+        statistics = context.getBean(Statistics.class);
+
+        subscribe(this::handleFrame, Begin.class);
         subscribe(this::handleCreate, StateCreate.class);
         subscribe(this::handleChange, StateChange.class);
         subscribe(this::handleDelete, StateDelete.class);
@@ -79,12 +84,14 @@ public class StateMachine extends Contextual {
         }
     }
 
-    private void handleFrame(BeginFrame evt) {
+    private void handleFrame(Begin evt) {
+        statistics.getCurrent().startSegment();
         if (!awaitingCreate.isEmpty() || nonNull(nextState) || !awaitingDelete.isEmpty()) {
             createStates();
             switchToNext();
             deleteStates();
         }
+        statistics.getCurrent().endSegment("State Change");
     }
 
     private void createStates() {

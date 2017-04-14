@@ -8,8 +8,6 @@ import org.homonoia.eris.renderer.Renderer;
 import org.homonoia.eris.renderer.commands.ClearColorCommand;
 import org.homonoia.eris.renderer.commands.ClearCommand;
 import org.joml.Vector4f;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Objects;
 import java.util.Queue;
@@ -27,24 +25,18 @@ import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
  */
 public class SwappingRenderState implements RenderState<CommandRenderFrame> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SwappingRenderState.class);
-
     private final Pool<CommandRenderFrame> renderFramePool;
     private final Queue<CommandRenderFrame> frames = new ArrayBlockingQueue<>(8);
     private CommandRenderFrame lastFrame;
 
     public SwappingRenderState(Renderer renderer) {
         renderFramePool = new ExpandingPool<>(4, 8, new CommandRenderFrameFactory(renderer));
-
         addDefaultFrame();
     }
 
     @Override
     public void add(final CommandRenderFrame renderFrame) {
-        synchronized (frames) {
-            frames.add(renderFrame.sort());
-        }
-        while (frameCount() > 4);
+        frames.add(renderFrame.sort());
     }
 
     @Override
@@ -68,10 +60,8 @@ public class SwappingRenderState implements RenderState<CommandRenderFrame> {
 
     @Override
     public void clear() {
-        synchronized (frames) {
-            frames.forEach(commandRenderFrame -> renderFramePool.free(commandRenderFrame));
-            frames.clear();
-        }
+        frames.forEach(commandRenderFrame -> renderFramePool.free(commandRenderFrame));
+        frames.clear();
         lastFrame = null;
         addDefaultFrame();
     }
@@ -100,7 +90,7 @@ public class SwappingRenderState implements RenderState<CommandRenderFrame> {
                         .build()));
 
         renderFrame.add(ClearColorCommand.newInstance()
-                .color(new Vector4f(0,0,0,1))
+                .color(new Vector4f(0, 0, 0, 1))
                 .renderKey(RenderKey.builder()
                         .target(0)
                         .targetLayer(0)

@@ -7,6 +7,7 @@ import org.homonoia.eris.core.exceptions.InitializationException;
 import org.homonoia.eris.events.core.ExitRequested;
 import org.homonoia.eris.events.graphics.ScreenMode;
 import org.homonoia.eris.graphics.drawables.RenderTarget;
+import org.homonoia.eris.graphics.drawables.primitives.factory.CubeFactory;
 import org.homonoia.eris.resources.cache.ResourceCache;
 import org.homonoia.eris.resources.types.Image;
 import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
@@ -103,6 +104,7 @@ public class Graphics extends Contextual {
     public Graphics(final Context context, final ResourceCache resourceCache) {
         super(context);
         context.registerBean(this);
+        context.registerBean(new CubeFactory());
         this.resourceCache = resourceCache;
     }
 

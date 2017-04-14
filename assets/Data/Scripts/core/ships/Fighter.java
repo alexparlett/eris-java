@@ -10,6 +10,5 @@ public class Fighter extends Component {
 
     @Override
     public void update(double delta) {
-        LOG.info("Update");
     }
 }

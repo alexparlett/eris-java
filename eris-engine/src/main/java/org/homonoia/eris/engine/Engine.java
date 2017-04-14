@@ -5,14 +5,18 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
+import org.homonoia.eris.core.EmptyStatistics;
 import org.homonoia.eris.core.ExitCode;
-import org.homonoia.eris.core.components.Clock;
+import org.homonoia.eris.core.Statistics;
 import org.homonoia.eris.core.components.FileSystem;
 import org.homonoia.eris.core.exceptions.InitializationException;
-import org.homonoia.eris.core.utils.Timer;
+import org.homonoia.eris.core.Timer;
 import org.homonoia.eris.ecs.ComponentFactory;
 import org.homonoia.eris.engine.properties.EngineProperties;
 import org.homonoia.eris.events.core.ExitRequested;
+import org.homonoia.eris.events.frame.Begin;
+import org.homonoia.eris.events.frame.End;
+import org.homonoia.eris.events.frame.Render;
 import org.homonoia.eris.events.frame.Update;
 import org.homonoia.eris.graphics.Graphics;
 import org.homonoia.eris.input.Input;
@@ -42,13 +46,12 @@ public class Engine extends Contextual {
 
     private static final Logger LOG = LoggerFactory.getLogger(Engine.class);
     private AtomicBoolean shouldExit = new AtomicBoolean(false);
-
     private GLFWErrorCallback glfwErrorCallback;
+
     private EngineProperties engineProperties;
     private ResourceCache resourceCache;
-
     private Graphics graphics;
-    private Clock clock;
+
     private Renderer renderer;
     private Settings settings;
     private Locale locale;
@@ -58,7 +61,7 @@ public class Engine extends Contextual {
     private UI ui;
     private Gson gson;
     private ScriptEngine scriptEngine;
-    private ComponentFactory componentFactory;
+    private Statistics statistics;
 
     /**
      * Instantiates a new Engine.
@@ -70,6 +73,7 @@ public class Engine extends Contextual {
 
         context.registerBean(this);
         context.registerBean(Executors.newWorkStealingPool());
+        context.registerBean(new ComponentFactory(context));
 
         gson = context.registerBean(new GsonBuilder()
                 .setVersion(1.0)
@@ -80,7 +84,6 @@ public class Engine extends Contextual {
                 .create());
 
         log = new Log(context);
-        clock = new Clock(context);
         fileSystem = new FileSystem(context);
         resourceCache = new ResourceCache(context, fileSystem);
         graphics = new Graphics(context, resourceCache);
@@ -90,7 +93,7 @@ public class Engine extends Contextual {
         ui = new UI(context);
         renderer = new Renderer(context, graphics, resourceCache);
         scriptEngine = new ScriptEngine(context);
-        componentFactory = new ComponentFactory(context);
+        statistics = context.registerBean(context.isDebugEnabled() ? new Statistics() : new EmptyStatistics());
 
         subscribe(this::handleExitRequest, ExitRequested.class);
     }
@@ -161,18 +164,42 @@ public class Engine extends Contextual {
         double delta = 0.0;
         double rate = 1000.0 / 60.0;
 
+        Begin.Builder beginBuilder = Begin.builder();
+        End.Builder endBuilder = End.builder();
         Update.Builder updateBuilder = Update.builder();
+        Render.Builder renderBuilder = Render.builder();
+
         Timer timer = new Timer();
 
         graphics.show();
         try {
             while (!shouldExit.get()) {
-                delta += timer.getElapsedTime(true);
                 if (delta >= rate) {
-                    clock.beginFrame(delta);
-                    publish(updateBuilder.timeStep(delta));
-                    clock.endFrame();
-                    delta -= rate;
+                    statistics.beginFrame();
+                    {
+                        statistics.getCurrent().startSegment();
+                        publish(beginBuilder.timeStep(delta));
+                        statistics.getCurrent().endSegment("Begin");
+                    }
+                    {
+                        statistics.getCurrent().startSegment();
+                        publish(updateBuilder.timeStep(delta));
+                        statistics.getCurrent().endSegment("Update");
+                    }
+                    {
+                        statistics.getCurrent().startSegment();
+                        publish(renderBuilder.timeStep(delta));
+                        statistics.getCurrent().endSegment("Render");
+                    }
+                    {
+                        statistics.getCurrent().startSegment();
+                        publish(endBuilder.timeStep(delta));
+                        statistics.getCurrent().endSegment("End");
+                    }
+                    statistics.endFrame(delta);
+                    delta = timer.getElapsedTime(true);
+                } else {
+                    delta = timer.getElapsedTime(false);
                 }
             }
         } catch (Throwable t) {
@@ -190,14 +217,11 @@ public class Engine extends Contextual {
         resourceCache.shutdown();
         graphics.shutdown();
 
-        double elapsedTime = clock.getElapsedTime();
-        int frameNumber = clock.getFrameNumber();
-
         glfwErrorCallback.free();
 
         GLFW.glfwTerminate();
 
-        shutdownLog(elapsedTime, frameNumber);
+        shutdownLog();
     }
 
     private void initializationLog() {
@@ -209,11 +233,11 @@ public class Engine extends Contextual {
         LOG.info("Memory: {}", FileSystem.readableFileSize(Runtime.getRuntime().totalMemory()));
     }
 
-    private void shutdownLog(final double elapsedTime, final int frameNumber) {
+    private void shutdownLog() {
         LOG.info("Terminating...");
-        LOG.info("Frames: {}", frameNumber);
-        LOG.info("Milliseconds: {}", elapsedTime);
-        LOG.info("FPS: {}", frameNumber / (elapsedTime / 1000));
+        LOG.info("Frames: {}", statistics.getTotalFrames());
+        LOG.info("Milliseconds: {}", statistics.getElapsedTime());
+        LOG.info("FPS: {}", statistics.getTotalFrames() / (statistics.getElapsedTime() / 1000));
         LOG.info("Exit Code: {}", getContext().getExitCode());
     }
 

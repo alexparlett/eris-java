@@ -8,7 +8,7 @@ import org.homonoia.eris.core.ExitCode;
  * @author alexparlett
  * @since 06/02/2016
  */
-public class InitializationException extends ErisException {
+public class InitializationException extends ErisRuntimeExcecption {
 
     private final ExitCode error;
 

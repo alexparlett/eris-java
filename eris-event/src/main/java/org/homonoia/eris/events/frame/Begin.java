@@ -3,24 +3,15 @@ package org.homonoia.eris.events.frame;
 import org.homonoia.eris.events.Event;
 
 /**
- * Copyright (c) 2015-2016 the Eris project.
- *
- * @author alexparlett
- * @since 12/12/2015
+ * Created by alexparlett on 26/05/2016.
  */
-public class BeginFrame extends Event {
+public class Begin extends Event {
 
-    private final int frameNumber;
     private final double timeStep;
 
-    private BeginFrame(Builder builder) {
+    private Begin(Builder builder) {
         super(builder);
-        this.frameNumber = builder.frameNumber;
         this.timeStep = builder.timeStep;
-    }
-
-    public int getFrameNumber() {
-        return frameNumber;
     }
 
     public double getTimeStep() {
@@ -32,20 +23,14 @@ public class BeginFrame extends Event {
     }
 
     public static final class Builder extends EventBuilder<Builder> {
-        private int frameNumber;
         private double timeStep;
 
         private Builder() {
         }
 
         @Override
-        public BeginFrame build() {
-            return new BeginFrame(this);
-        }
-
-        public Builder frameNumber(int frameNumber) {
-            this.frameNumber = frameNumber;
-            return this;
+        public Begin build() {
+            return new Begin(this);
         }
 
         public Builder timeStep(double timeStep) {

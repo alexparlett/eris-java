@@ -81,6 +81,6 @@ public abstract class EntitySystem extends Contextual implements Comparable<Enti
 
     @Override
     public int compareTo(final EntitySystem o) {
-        return Integer.compare(o.getPriority(), getPriority());
+        return Integer.compare(getPriority(), o.getPriority());
     }
 }
