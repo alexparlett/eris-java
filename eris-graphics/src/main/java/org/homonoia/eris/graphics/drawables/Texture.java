@@ -3,7 +3,7 @@ package org.homonoia.eris.graphics.drawables;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import org.homonoia.eris.core.Context;
-import org.homonoia.eris.graphics.GPUResource;
+import org.homonoia.eris.resources.GPUResource;
 import org.homonoia.eris.resources.Resource;
 import org.homonoia.eris.resources.types.Image;
 import org.lwjgl.opengl.*;

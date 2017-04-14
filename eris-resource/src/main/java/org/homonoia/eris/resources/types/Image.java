@@ -89,6 +89,8 @@ public class Image extends Resource {
         } finally {
             memFree(byteBuffer);
         }
+
+        setState(AsyncState.SUCCESS);
     }
 
     @Override

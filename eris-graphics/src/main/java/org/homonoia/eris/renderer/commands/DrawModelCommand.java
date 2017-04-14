@@ -33,7 +33,7 @@ public class DrawModelCommand extends RenderCommand<DrawModelCommand> {
 
         findAndBindUniform("model", renderer, model.getMaterial().getShaderProgram(), transform);
 
-        model.draw(renderer);
+        model.draw();
     }
 
     @Override

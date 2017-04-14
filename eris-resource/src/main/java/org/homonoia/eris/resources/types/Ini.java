@@ -80,6 +80,7 @@ public class Ini extends Resource implements Iterable<Map.Entry<String, IniSecti
             throw new IOException(MessageFormat.format("Failed to load Ini {0}.", getPath()), ex);
         }
 
+        setState(AsyncState.SUCCESS);
     }
 
     @Override

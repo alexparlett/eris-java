@@ -4,15 +4,13 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import org.homonoia.eris.core.Context;
-import org.homonoia.eris.graphics.GPUResource;
-import org.homonoia.eris.graphics.Graphics;
 import org.homonoia.eris.graphics.drawables.sp.Uniform;
 import org.homonoia.eris.renderer.Renderer;
+import org.homonoia.eris.resources.GPUResource;
 import org.homonoia.eris.resources.Resource;
 import org.homonoia.eris.resources.cache.ResourceCache;
 import org.homonoia.eris.resources.types.Json;
 import org.homonoia.eris.resources.types.Stream;
-import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
@@ -33,7 +31,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 
-import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
 import static org.lwjgl.opengl.GL20.glGetActiveUniform;
 import static org.lwjgl.opengl.GL20.glGetUniformLocation;
 import static org.lwjgl.system.MemoryStack.stackPush;
@@ -47,6 +44,8 @@ public class ShaderProgram extends Resource implements GPUResource {
     private int handle;
     private Map<String, Uniform> uniforms = new HashMap<>();
     private Renderer renderer;
+    private StringBuffer vertBuffer;
+    private StringBuffer fragBuffer;
 
     public ShaderProgram(final Context context) {
         super(context);
@@ -55,7 +54,6 @@ public class ShaderProgram extends Resource implements GPUResource {
 
     @Override
     public void load(final InputStream inputStream) throws IOException {
-
         ResourceCache resourceCache = getContext().getBean(ResourceCache.class);
 
         Json json = new Json(getContext());
@@ -75,7 +73,6 @@ public class ShaderProgram extends Resource implements GPUResource {
 
         ShaderPreprocessor shaderPreprocessor = new ShaderPreprocessor();
 
-        StringBuffer fragBuffer, vertBuffer;
         try (InputStream fragStream = resourceCache.get(Stream.class, Paths.get(frag))
                 .map(Stream::asInputStream)
                 .orElseThrow(() -> new IOException(frag + " not found."))) {
@@ -92,7 +89,7 @@ public class ShaderProgram extends Resource implements GPUResource {
             vertBuffer = shaderPreprocessor.process(vertStream, vert);
         }
 
-        compile(fragBuffer, vertBuffer);
+        setState(AsyncState.GPU_READY);
     }
 
     @Override
@@ -123,15 +120,12 @@ public class ShaderProgram extends Resource implements GPUResource {
         }
     }
 
-    private void compile(final StringBuffer fragBuffer, final StringBuffer vertBuffer) throws IOException {
+    @Override
+    public void compile() throws IOException {
         Objects.requireNonNull(fragBuffer);
         Objects.requireNonNull(vertBuffer);
 
         try (MemoryStack stack = stackPush()) {
-            long win = GLFW.glfwGetCurrentContext();
-            Graphics graphics = getContext().getBean(Graphics.class);
-            glfwMakeContextCurrent(win != MemoryUtil.NULL ? win : graphics.getBackgroundWindow());
-
             int vertex = GL20.glCreateShader(GL20.GL_VERTEX_SHADER);
             GL20.glShaderSource(vertex, vertBuffer.toString());
             GL20.glCompileShader(vertex);
@@ -143,8 +137,6 @@ public class ShaderProgram extends Resource implements GPUResource {
                 String shaderInfoLog = GL20.glGetShaderInfoLog(vertex);
 
                 GL20.glDeleteShader(vertex);
-                glfwMakeContextCurrent(win);
-
                 throw new IOException("Vertex Shader compile error\n" + shaderInfoLog);
             }
 
@@ -158,8 +150,6 @@ public class ShaderProgram extends Resource implements GPUResource {
                 String shaderInfoLog = GL20.glGetShaderInfoLog(fragment);
 
                 GL20.glDeleteShader(fragment);
-                glfwMakeContextCurrent(win);
-
                 throw new IOException("Fragment Shader compile error\n" + shaderInfoLog);
             }
 
@@ -178,8 +168,6 @@ public class ShaderProgram extends Resource implements GPUResource {
                 GL20.glDeleteShader(fragment);
                 GL20.glDeleteProgram(handle);
                 handle = 0;
-
-                glfwMakeContextCurrent(win);
 
                 throw new IOException("Fragment Shader link error\n" + programInfoLog);
             }
@@ -208,9 +196,9 @@ public class ShaderProgram extends Resource implements GPUResource {
 
                 uniforms.put(name, uniform);
             }
-
-            glfwMakeContextCurrent(win);
         }
+
+        setState(AsyncState.SUCCESS);
     }
 
     public final static class ShaderPreprocessor {

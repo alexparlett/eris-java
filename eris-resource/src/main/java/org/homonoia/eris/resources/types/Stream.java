@@ -26,7 +26,7 @@ public class Stream extends Resource {
 
     @Override
     public void load(final InputStream inputStream) throws IOException {
-
+        setState(AsyncState.SUCCESS);
     }
 
     @Override

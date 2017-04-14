@@ -1,11 +1,12 @@
 package org.homonoia.eris.resources.cache;
 
+import lombok.extern.slf4j.Slf4j;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.components.FileSystem;
+import org.homonoia.eris.core.utils.ThreadUtils;
+import org.homonoia.eris.resources.GPUResource;
 import org.homonoia.eris.resources.Resource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,9 +23,9 @@ import java.util.concurrent.Executors;
  * @author alexparlett
  * @since 19/02/2016
  */
+@Slf4j
 class ResourceLoader extends Contextual {
 
-    private static final Logger LOG = LoggerFactory.getLogger(ResourceLoader.class);
 
     private final FileSystem fileSystem;
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
@@ -61,7 +62,9 @@ class ResourceLoader extends Contextual {
         task.resource = resource;
         task.path = resource.getLocation();
 
-        if (!immediate) {
+        if (ThreadUtils.isMainThread() && resource.getState().equals(Resource.AsyncState.GPU_READY)) {
+            ((GPUResource) resource).compile();
+        } else if (!immediate) {
             if (!resource.getState().equals(Resource.AsyncState.QUEUED)) {
                 resource.setState(Resource.AsyncState.QUEUED);
                 executorService.submit(task);
@@ -76,11 +79,13 @@ class ResourceLoader extends Contextual {
             loadingTask.resource.setState(Resource.AsyncState.LOADING);
             try (InputStream inputStream = fileSystem.newInputStream(loadingTask.path)) {
                 loadingTask.resource.load(inputStream);
-                loadingTask.resource.setState(Resource.AsyncState.SUCCESS);
-                LOG.info("Loaded {} {}", loadingTask.resource.getClass().getSimpleName(), loadingTask.path);
+                if (ThreadUtils.isMainThread() && loadingTask.resource.getState().equals(Resource.AsyncState.GPU_READY)) {
+                    ((GPUResource) loadingTask.resource).compile();
+                }
+                log.info("Loaded {} {}", loadingTask.resource.getClass().getSimpleName(), loadingTask.path);
             } catch (IOException e) {
                 loadingTask.resource.setState(Resource.AsyncState.FAILED);
-                LOG.error("Failed to load {} {}", loadingTask.resource.getClass().getSimpleName(), loadingTask.path, e);
+                log.error("Failed to load {} {}", loadingTask.resource.getClass().getSimpleName(), loadingTask.path, e);
             }
         }
     }

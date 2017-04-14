@@ -5,10 +5,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.exceptions.ParseException;
-import org.homonoia.eris.graphics.GPUResource;
-import org.homonoia.eris.graphics.drawables.model.GenerationState;
 import org.homonoia.eris.graphics.drawables.primitives.Cube;
 import org.homonoia.eris.graphics.drawables.primitives.factory.CubeFactory;
+import org.homonoia.eris.resources.GPUResource;
 import org.homonoia.eris.resources.Resource;
 import org.homonoia.eris.resources.cache.ResourceCache;
 import org.homonoia.eris.resources.types.Json;
@@ -18,6 +17,7 @@ import java.io.InputStream;
 import java.nio.file.Paths;
 import java.util.Optional;
 
+import static java.util.Objects.nonNull;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_FUNC;
 import static org.lwjgl.opengl.GL11.GL_LEQUAL;
 import static org.lwjgl.opengl.GL11.glDepthFunc;
@@ -31,7 +31,6 @@ import static org.lwjgl.opengl.GL11.glGetInteger;
  */
 public class Skybox extends Resource implements GPUResource {
 
-    private GenerationState generationState = GenerationState.LOADER;
     private Material material;
     private Cube cube;
 
@@ -47,7 +46,6 @@ public class Skybox extends Resource implements GPUResource {
     @Override
     public void load(InputStream inputStream) throws IOException {
         ResourceCache resourceCache = getContext().getBean(ResourceCache.class);
-        CubeFactory cubeFactory = getContext().getBean(CubeFactory.class);
 
         Json json = new Json(getContext());
         json.load(inputStream);
@@ -63,7 +61,20 @@ public class Skybox extends Resource implements GPUResource {
                 .orElseThrow(() -> new ParseException("material specified for {0} not found", getPath()))
                 .orElseThrow(() -> new ParseException("material is required for skybox, e.g. 'material': 'Materials/skybox.mat'"));
 
+        setState(AsyncState.GPU_READY);
+    }
+
+    @Override
+    public void compile() throws IOException {
+        CubeFactory cubeFactory = getContext().getBean(CubeFactory.class);
+
+        if (material.getState().equals(AsyncState.GPU_READY)) {
+            material.compile();
+        }
+
         cube = cubeFactory.getObject();
+
+        setState(AsyncState.SUCCESS);
     }
 
     @Override
@@ -76,7 +87,9 @@ public class Skybox extends Resource implements GPUResource {
 
     @Override
     public void reset() {
-        material.release();
+        if (nonNull(material)) {
+            material.release();
+        }
     }
 
     public Material getMaterial() {

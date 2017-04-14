@@ -1,7 +1,6 @@
 package org.homonoia.eris.graphics.drawables.primitives;
 
 import lombok.EqualsAndHashCode;
-import org.homonoia.eris.graphics.drawables.model.GenerationState;
 
 import java.nio.FloatBuffer;
 
@@ -29,17 +28,11 @@ import static org.lwjgl.system.MemoryUtil.memFree;
 @EqualsAndHashCode
 public class Cube implements Primitive {
 
-    private GenerationState generationState = GenerationState.LOADER;
     private int vao;
     private int vbo;
 
     @Override
     public void use() {
-        if (!generationState.equals(GenerationState.RENDERER)) {
-            compile();
-            generationState = GenerationState.RENDERER;
-        }
-
         glBindVertexArray(vao);
         glDrawArrays(GL_TRIANGLES, 0, 36);
         glBindVertexArray(0);

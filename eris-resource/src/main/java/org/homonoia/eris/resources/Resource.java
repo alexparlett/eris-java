@@ -24,6 +24,7 @@ public abstract class Resource extends Contextual implements Closeable {
         NEW,
         QUEUED,
         LOADING,
+        GPU_READY,
         SUCCESS,
         FAILED
     }

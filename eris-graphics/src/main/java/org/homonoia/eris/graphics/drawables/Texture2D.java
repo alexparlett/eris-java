@@ -3,13 +3,10 @@ package org.homonoia.eris.graphics.drawables;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.homonoia.eris.core.Context;
-import org.homonoia.eris.graphics.Graphics;
 import org.homonoia.eris.resources.cache.ResourceCache;
 import org.homonoia.eris.resources.types.Image;
 import org.homonoia.eris.resources.types.Json;
-import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.system.MemoryUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,13 +34,15 @@ import static org.lwjgl.opengl.GL30.glGenerateMipmap;
  * @since 21/02/2016
  */
 public class Texture2D extends Texture {
+
+    private Image image;
+
     public Texture2D(final Context context) {
         super(context);
     }
 
     @Override
     public void load(final InputStream inputStream) throws IOException {
-
         Json json = new Json(getContext());
         json.load(inputStream);
 
@@ -55,10 +54,10 @@ public class Texture2D extends Texture {
         Path file = Paths.get(root.get("file").getAsString());
 
         ResourceCache resourceCache = getContext().getBean(ResourceCache.class);
-        Image image = resourceCache.getTemporary(Image.class, file)
+        image = resourceCache.getTemporary(Image.class, file)
                 .orElseThrow(() -> new IOException("Failed to load Texture2D. Metadata Json doesn't contain valid file: " + file));
 
-        compile(image);
+        setState(AsyncState.GPU_READY);
     }
 
     @Override
@@ -67,12 +66,9 @@ public class Texture2D extends Texture {
         glBindTexture(GL_TEXTURE_2D, handle);
     }
 
-    protected void compile(Image image) throws IOException {
+    @Override
+    public void compile() throws IOException {
         int format = getFormat(image);
-
-        long win = GLFW.glfwGetCurrentContext();
-        Graphics graphics = getContext().getBean(Graphics.class);
-        GLFW.glfwMakeContextCurrent(win != MemoryUtil.NULL ? win : graphics.getBackgroundWindow());
 
         handle = glGenTextures();
         glBindTexture(GL_TEXTURE_2D, handle);
@@ -88,7 +84,6 @@ public class Texture2D extends Texture {
 
         int glErrorCode = glGetError();
         if (glErrorCode != GL_NO_ERROR) {
-            GLFW.glfwMakeContextCurrent(win);
             glBindTexture(GL_TEXTURE_2D, 0);
             glDeleteTextures(handle);
             throw new IOException(MessageFormat.format("Failed to load TextureCube {0}. OpenGL Error {1}", image.getPath(), glErrorCode));
@@ -99,6 +94,7 @@ public class Texture2D extends Texture {
         }
 
         glBindTexture(GL_TEXTURE_2D, 0);
-        GLFW.glfwMakeContextCurrent(win);
+
+        setState(AsyncState.SUCCESS);
     }
 }

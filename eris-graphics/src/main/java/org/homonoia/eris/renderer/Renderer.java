@@ -23,14 +23,12 @@ import org.joml.Vector4f;
 import org.joml.Vector4i;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryStack;
-import org.lwjgl.system.MemoryUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.nio.FloatBuffer;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
 import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
 import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
@@ -230,13 +228,6 @@ public class Renderer extends Contextual {
     }
 
     private void initializeOpenGl() throws InitializationException {
-        long window = graphics.getRenderWindow();
-        if (window != MemoryUtil.NULL) {
-            glfwMakeContextCurrent(window);
-        } else {
-            throw new InitializationException("Failed to initialize Renderer.\nAttempting to initialize OpenGL without a Window.", ExitCode.GL_CREATE_ERROR);
-        }
-
         try {
             GL.createCapabilities();
         } catch (IllegalStateException ex) {

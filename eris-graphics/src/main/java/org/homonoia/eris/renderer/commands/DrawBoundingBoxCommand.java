@@ -42,7 +42,7 @@ public class DrawBoundingBoxCommand extends RenderCommand<DrawBoundingBoxCommand
         findAndBindUniform("model", renderer, model.getMaterial().getShaderProgram(), transform.scale(scale));
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        model.draw(renderer);
+        model.draw();
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     }
 

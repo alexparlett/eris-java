@@ -1,24 +1,19 @@
 package org.homonoia.eris.graphics.drawables.model;
 
 import org.homonoia.eris.core.Constants;
-import org.homonoia.eris.graphics.Graphics;
 import org.homonoia.eris.graphics.drawables.Material;
-import org.homonoia.eris.renderer.Renderer;
 import org.homonoia.eris.resources.types.Mesh;
 import org.homonoia.eris.resources.types.mesh.Vertex;
 import org.joml.Vector3f;
-import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
-import org.lwjgl.system.MemoryUtil;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.Objects;
 
-import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
 import static org.lwjgl.opengl.GL15.glDeleteBuffers;
 import static org.lwjgl.opengl.GL30.glDeleteVertexArrays;
 import static org.lwjgl.system.MemoryUtil.memAllocFloat;
@@ -30,7 +25,6 @@ import static org.lwjgl.system.MemoryUtil.memFree;
  */
 public class SubModel {
 
-    private GenerationState generationState = GenerationState.LOADER;
     private Material material;
     private IntBuffer indices;
     private FloatBuffer vertices;
@@ -60,10 +54,6 @@ public class SubModel {
         return vertices;
     }
 
-    public GenerationState getGenerationState() {
-        return generationState;
-    }
-
     public Mesh getMesh() {
         return mesh;
     }
@@ -88,16 +78,7 @@ public class SubModel {
         return ebo;
     }
 
-    public void compile(Graphics graphics) {
-        long win = GLFW.glfwGetCurrentContext();
-        glfwMakeContextCurrent(win != MemoryUtil.NULL ? win : graphics.getBackgroundWindow());
-
-        if (win != MemoryUtil.NULL && win == graphics.getRenderWindow()) {
-            generationState = GenerationState.RENDERER;
-        } else {
-            generationState = GenerationState.LOADER;
-        }
-
+    public void load() {
         vertices = memAllocFloat(mesh.getVertices().size() * Vertex.COUNT);
         mesh.getVertices().forEach(vertex -> {
             vertices.put((vertex.getPosition().x + origin.x) * scale);
@@ -116,18 +97,9 @@ public class SubModel {
         indices = memAllocInt(mesh.getIndicies().size());
         mesh.getIndicies().forEach(index -> indices.put(index));
         indices.flip();
-
-        compileInternal();
-
-        glfwMakeContextCurrent(win);
     }
 
-    public void draw(Renderer renderer) {
-        if (!generationState.equals(GenerationState.RENDERER)) {
-            compileInternal();
-            generationState = GenerationState.RENDERER;
-        }
-
+    public void draw() {
         // Bind to the VAO that has all the information about the vertices
         GL30.glBindVertexArray(vao);
         GL11.glDrawElements(GL11.GL_TRIANGLES, indices.capacity(), GL11.GL_UNSIGNED_INT, 0);
@@ -144,7 +116,7 @@ public class SubModel {
         if (ebo != 0) glDeleteBuffers(ebo);
     }
 
-    private void compileInternal() {
+    public void compile() {
         vao = GL30.glGenVertexArrays();
         GL30.glBindVertexArray(vao);
 
@@ -178,7 +150,6 @@ public class SubModel {
         if (vao != subModel.vao) return false;
         if (vbo != subModel.vbo) return false;
         if (ebo != subModel.ebo) return false;
-        if (generationState != subModel.generationState) return false;
         if (material != null ? !material.equals(subModel.material) : subModel.material != null) return false;
         if (indices != null ? !indices.equals(subModel.indices) : subModel.indices != null) return false;
         if (vertices != null ? !vertices.equals(subModel.vertices) : subModel.vertices != null) return false;
@@ -189,8 +160,7 @@ public class SubModel {
 
     @Override
     public int hashCode() {
-        int result = generationState != null ? generationState.hashCode() : 0;
-        result = 31 * result + (material != null ? material.hashCode() : 0);
+        int result = material != null ? material.hashCode() : 0;
         result = 31 * result + (indices != null ? indices.hashCode() : 0);
         result = 31 * result + (vertices != null ? vertices.hashCode() : 0);
         result = 31 * result + (mesh != null ? mesh.hashCode() : 0);

@@ -90,7 +90,6 @@ public class Graphics extends Contextual {
     private float gamma;
     private String title = "Eris";
     private long renderWindow = MemoryUtil.NULL;
-    private long backgroundWindow = MemoryUtil.NULL;
     private String icon = "icon.ico";
     private RenderTarget defaultRenderTarget = new RenderTarget();
     private int width;
@@ -114,7 +113,6 @@ public class Graphics extends Contextual {
         }
 
         initializeRenderWindow();
-        initalizeBackgroundWindow();
 
         try {
             setIconForGLFWWindow();
@@ -134,13 +132,6 @@ public class Graphics extends Contextual {
 
             glfwDestroyWindow(renderWindow);
             renderWindow = MemoryUtil.NULL;
-        }
-
-        if (backgroundWindow != MemoryUtil.NULL) {
-            glfwSetWindowCloseCallback(backgroundWindow, null);
-
-            glfwDestroyWindow(backgroundWindow);
-            backgroundWindow = MemoryUtil.NULL;
         }
     }
 
@@ -308,10 +299,6 @@ public class Graphics extends Contextual {
         return renderWindow;
     }
 
-    public long getBackgroundWindow() {
-        return backgroundWindow;
-    }
-
     public String getIcon() {
         return icon;
     }
@@ -392,35 +379,6 @@ public class Graphics extends Contextual {
         LOG.info("Open GL: {}", glGetString(GL11.GL_VERSION));
         LOG.info("GLSL: {}", glGetString(GL20.GL_SHADING_LANGUAGE_VERSION));
         LOG.info("GLFW: {}", glfwGetVersionString());
-
-        glfwMakeContextCurrent(MemoryUtil.NULL);
-    }
-
-    private void initalizeBackgroundWindow() throws InitializationException {
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
-
-        glfwWindowHint(GLFW_VISIBLE, GLFW_FALSE);
-
-        backgroundWindow = glfwCreateWindow(1, 1, title, MemoryUtil.NULL, renderWindow);
-
-        if (backgroundWindow == MemoryUtil.NULL) {
-            throw new InitializationException("Failed to open background loading context.", ExitCode.WINDOW_CREATE_ERROR);
-        }
-
-        glfwMakeContextCurrent(backgroundWindow);
-
-        try {
-            GL.createCapabilities();
-        } catch (IllegalStateException ex) {
-            throw new InitializationException("Failed to create OpenGL capabilities.", ExitCode.GL_CREATE_ERROR);
-        }
-
-        glfwSetWindowCloseCallback(backgroundWindow, GLFWWindowCloseCallback.create(this::handleWindowCloseCallback));
-
-        glfwMakeContextCurrent(MemoryUtil.NULL);
     }
 
     private void setIconForGLFWWindow() throws IOException {
@@ -434,10 +392,6 @@ public class Graphics extends Contextual {
 
             if (renderWindow != MemoryUtil.NULL) {
                 glfwSetWindowIcon(renderWindow, buffer);
-            }
-
-            if (backgroundWindow != MemoryUtil.NULL) {
-                glfwSetWindowIcon(backgroundWindow, buffer);
             }
         });
     }

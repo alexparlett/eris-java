@@ -1,6 +1,6 @@
 package org.homonoia.eris.graphics.drawables;
 
-import org.homonoia.eris.graphics.GPUResource;
+import org.homonoia.eris.resources.GPUResource;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

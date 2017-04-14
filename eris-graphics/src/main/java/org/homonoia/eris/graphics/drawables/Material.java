@@ -18,7 +18,7 @@ import org.homonoia.eris.core.parsers.Vector3iParser;
 import org.homonoia.eris.core.parsers.Vector4dParser;
 import org.homonoia.eris.core.parsers.Vector4fParser;
 import org.homonoia.eris.core.parsers.Vector4iParser;
-import org.homonoia.eris.graphics.GPUResource;
+import org.homonoia.eris.resources.GPUResource;
 import org.homonoia.eris.graphics.drawables.material.CullMode;
 import org.homonoia.eris.graphics.drawables.material.TextureUnit;
 import org.homonoia.eris.graphics.drawables.sp.Uniform;
@@ -190,6 +190,23 @@ public class Material extends Resource implements GPUResource {
                 .map(JsonPrimitive::getAsString)
                 .map(CullMode::parse)
                 .orElse(CullMode.Back);
+
+        setState(AsyncState.GPU_READY);
+    }
+
+    @Override
+    public void compile() throws IOException {
+        if (shaderProgram.getState().equals(AsyncState.GPU_READY)) {
+            shaderProgram.compile();
+        }
+
+        for(TextureUnit textureUnit : textureUnits) {
+            if (textureUnit.getTexture().getState().equals(AsyncState.GPU_READY)) {
+                textureUnit.getTexture().compile();
+            }
+        }
+
+        setState(AsyncState.SUCCESS);
     }
 
     @Override

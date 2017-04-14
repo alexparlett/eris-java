@@ -1,6 +1,6 @@
 package org.homonoia.eris.graphics.drawables.primitives;
 
-import org.homonoia.eris.graphics.GPUResource;
+import org.homonoia.eris.resources.GPUResource;
 
 /**
  * Copyright (c) 2015-2016 Homonoia Studios.

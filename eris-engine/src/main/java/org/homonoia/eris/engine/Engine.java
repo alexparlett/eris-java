@@ -71,6 +71,8 @@ public class Engine extends Contextual {
     public Engine(final Context context) {
         super(context);
 
+        statistics = context.registerBean(context.isDebugEnabled() ? new Statistics() : new EmptyStatistics());
+
         context.registerBean(this);
         context.registerBean(Executors.newWorkStealingPool());
         context.registerBean(new ComponentFactory(context));
@@ -93,7 +95,6 @@ public class Engine extends Contextual {
         ui = new UI(context);
         renderer = new Renderer(context, graphics, resourceCache);
         scriptEngine = new ScriptEngine(context);
-        statistics = context.registerBean(context.isDebugEnabled() ? new Statistics() : new EmptyStatistics());
 
         subscribe(this::handleExitRequest, ExitRequested.class);
     }

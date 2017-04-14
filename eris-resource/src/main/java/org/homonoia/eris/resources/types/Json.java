@@ -75,6 +75,8 @@ public class Json extends Resource {
         } catch (JsonParseException | NoSuchElementException ex) {
             throw new IOException("Failed to load Json.", ex);
         }
+
+        setState(AsyncState.SUCCESS);
     }
 
     @Override

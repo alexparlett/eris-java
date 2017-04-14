@@ -8,11 +8,9 @@ import org.homonoia.eris.core.Constants;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.exceptions.ParseException;
 import org.homonoia.eris.core.parsers.Vector3fParser;
-import org.homonoia.eris.graphics.GPUResource;
-import org.homonoia.eris.graphics.Graphics;
 import org.homonoia.eris.graphics.drawables.model.AxisAlignedBoundingBox;
 import org.homonoia.eris.graphics.drawables.model.SubModel;
-import org.homonoia.eris.renderer.Renderer;
+import org.homonoia.eris.resources.GPUResource;
 import org.homonoia.eris.resources.Resource;
 import org.homonoia.eris.resources.cache.ResourceCache;
 import org.homonoia.eris.resources.types.Json;
@@ -34,12 +32,11 @@ public class Model extends Resource implements GPUResource {
 
     private int handle = UUID.randomUUID().hashCode();
     private List<SubModel> subModels = new ArrayList<>();
-    private Renderer renderer;
     private AxisAlignedBoundingBox axisAlignedBoundingBox;
+    private Material material;
 
     public Model(final Context context) {
         super(context);
-        renderer = context.getBean(Renderer.class);
     }
 
     @Override
@@ -56,7 +53,7 @@ public class Model extends Resource implements GPUResource {
             root.forEach(jsonElement -> {
                 JsonObject subModelJson = jsonElement.getAsJsonObject();
 
-                Material material = Optional.ofNullable(subModelJson.getAsJsonPrimitive("material"))
+                material = Optional.ofNullable(subModelJson.getAsJsonPrimitive("material"))
                         .map(JsonPrimitive::getAsString)
                         .map(Paths::get)
                         .map(file -> resourceCache.get(Material.class, file))
@@ -97,10 +94,20 @@ public class Model extends Resource implements GPUResource {
             throw new IOException(ex);
         }
 
-        Graphics graphics = getContext().getBean(Graphics.class);
-        subModels.forEach(subModel -> subModel.compile(graphics));
-
+        subModels.forEach(subModel -> subModel.load());
         axisAlignedBoundingBox = AxisAlignedBoundingBox.generate(this);
+
+        setState(AsyncState.GPU_READY);
+    }
+
+    @Override
+    public void compile() throws IOException {
+        if (material.getState().equals(AsyncState.GPU_READY)) {
+            material.compile();
+        }
+
+        subModels.forEach(subModel -> subModel.compile());
+        setState(AsyncState.SUCCESS);
     }
 
     @Override
@@ -111,7 +118,7 @@ public class Model extends Resource implements GPUResource {
 
     @Override
     public void use() {
-        subModels.forEach(subModel -> subModel.draw(renderer));
+        subModels.forEach(subModel -> subModel.draw());
     }
 
     @Override

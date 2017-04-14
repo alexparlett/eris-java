@@ -3,6 +3,7 @@ package org.homonoia.eris.resources.cache;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.components.FileSystem;
+import org.homonoia.eris.core.utils.ThreadUtils;
 import org.homonoia.eris.events.resource.DirectoryAdded;
 import org.homonoia.eris.resources.Resource;
 import org.slf4j.Logger;
@@ -20,6 +21,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+
+import static java.util.Objects.nonNull;
 
 /**
  * Copyright (c) 2015-2016 the Eris project.
@@ -109,23 +112,37 @@ public class ResourceCache extends Contextual {
 
         if (resource != null && resource.getState().equals(Resource.AsyncState.SUCCESS)) {
             return Optional.of(resource.hold());
+        } else if (nonNull(resource) && resource.getState().equals(Resource.AsyncState.GPU_READY) && !ThreadUtils.isMainThread()) {
+            return Optional.of(resource.hold());
         } else if (resource != null && resource.getState().equals(Resource.AsyncState.LOADING)) {
             while (resource.getState().equals(Resource.AsyncState.LOADING)) ;
-            if (resource.getState().equals(Resource.AsyncState.SUCCESS))
+            if (resource.getState().equals(Resource.AsyncState.SUCCESS)) {
                 return Optional.of(resource.hold());
-        } else if (resource != null && !resource.getState().equals(Resource.AsyncState.FAILED)) {
-            try {
-                loader.load(resource, true);
-                if (resource.getState().equals(Resource.AsyncState.SUCCESS)) {
+            } else if (resource.getState().equals(Resource.AsyncState.GPU_READY) && ThreadUtils.isMainThread()) {
+                if (loadResource(resource)) {
                     return Optional.of(resource.hold());
                 }
-            } catch (IOException ex) {
-                LOG.error("Failed to load Resource", ex);
+            }
+        } else if (resource != null && !resource.getState().equals(Resource.AsyncState.FAILED)) {
+            if (loadResource(resource)) {
+                return Optional.of(resource.hold());
             }
         }
 
         // Resource == Null || Resource State == FAILED
         return Optional.empty();
+    }
+
+    private <T extends Resource> boolean loadResource(T resource) {
+        try {
+            loader.load(resource, true);
+            if (resource.getState().equals(Resource.AsyncState.SUCCESS)) {
+                return true;
+            }
+        } catch (IOException ex) {
+            LOG.error("Failed to load Resource", ex);
+        }
+        return false;
     }
 
     public <T extends Resource> Optional<T> get(final Class<T> clazz, final String path) {
@@ -163,16 +180,16 @@ public class ResourceCache extends Contextual {
             return Optional.of(resource);
         } else if (resource != null && resource.getState().equals(Resource.AsyncState.LOADING)) {
             while (resource.getState().equals(Resource.AsyncState.LOADING)) ;
-            if (resource.getState().equals(Resource.AsyncState.SUCCESS))
+            if (resource.getState().equals(Resource.AsyncState.SUCCESS)) {
                 return Optional.of(resource);
-        } else if (resource != null && !resource.getState().equals(Resource.AsyncState.FAILED)) {
-            try {
-                loader.load(resource, true);
-                if (resource.getState().equals(Resource.AsyncState.SUCCESS)) {
+            } else if (resource.getState().equals(Resource.AsyncState.GPU_READY) && ThreadUtils.isMainThread()) {
+                if (loadResource(resource)) {
                     return Optional.of(resource);
                 }
-            } catch (IOException ex) {
-                LOG.error("Failed to load Resource", ex);
+            }
+        } else if (resource != null && !resource.getState().equals(Resource.AsyncState.FAILED)) {
+            if (loadResource(resource)) {
+                return Optional.of(resource);
             }
         }
 
@@ -191,7 +208,7 @@ public class ResourceCache extends Contextual {
         Map<Path, ? extends Resource> group = groups.get(clazz);
         if (group != null) {
             Resource remove = group.get(path);
-            if (Objects.nonNull(remove) && (remove.getRefCount() <= 1 || force)) {
+            if (nonNull(remove) && (remove.getRefCount() <= 1 || force)) {
                 remove.release();
                 group.remove(path);
             }
@@ -205,10 +222,10 @@ public class ResourceCache extends Contextual {
     public synchronized void remove(final Class<? extends Resource> clazz, boolean force) {
         Objects.requireNonNull(clazz);
         Map<Path, Resource> group = groups.get(clazz);
-        if (Objects.nonNull(group)) {
+        if (nonNull(group)) {
             Iterator<Map.Entry<Path, Resource>> iterator = group.entrySet().iterator();
             iterator.forEachRemaining(entry -> {
-                if (Objects.nonNull(entry.getValue()) && (entry.getValue().getRefCount() <= 1 || force)) {
+                if (nonNull(entry.getValue()) && (entry.getValue().getRefCount() <= 1 || force)) {
                     entry.getValue().release();
                     iterator.remove();
                 }
@@ -224,7 +241,7 @@ public class ResourceCache extends Contextual {
         groupsIterator.forEachRemaining(classMapEntry -> {
             Iterator<Map.Entry<Path, Resource>> groupIterator = classMapEntry.getValue().entrySet().iterator();
             groupIterator.forEachRemaining(entry -> {
-                if (Objects.nonNull(entry.getValue()) && (entry.getValue().getRefCount() <= 1 || force)) {
+                if (nonNull(entry.getValue()) && (entry.getValue().getRefCount() <= 1 || force)) {
                     entry.getValue().release();
                     groupIterator.remove();
                 }

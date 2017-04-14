@@ -4,11 +4,9 @@ package org.homonoia.eris.graphics.drawables;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import org.homonoia.eris.core.Context;
-import org.homonoia.eris.graphics.Graphics;
 import org.homonoia.eris.resources.cache.ResourceCache;
 import org.homonoia.eris.resources.types.Image;
 import org.homonoia.eris.resources.types.Json;
-import org.lwjgl.system.MemoryUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,8 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-import static org.lwjgl.glfw.GLFW.glfwGetCurrentContext;
-import static org.lwjgl.glfw.GLFW.glfwMakeContextCurrent;
 import static org.lwjgl.opengl.GL11.GL_LINEAR;
 import static org.lwjgl.opengl.GL11.GL_LINEAR_MIPMAP_LINEAR;
 import static org.lwjgl.opengl.GL11.GL_NO_ERROR;
@@ -46,6 +42,8 @@ import static org.lwjgl.opengl.GL30.glGenerateMipmap;
  */
 public class TextureCube extends Texture {
 
+    private List<Image> faces;
+
     public TextureCube(final Context context) {
         super(context);
     }
@@ -61,7 +59,7 @@ public class TextureCube extends Texture {
                 .map(JsonElement::getAsJsonObject)
                 .orElseThrow(() -> new IOException("Failed to load TextureCube. Metadata Json invalid."));
 
-        List<Image> faces = new ArrayList();
+        faces = new ArrayList();
 
         String right = root.getAsJsonPrimitive("right").getAsString();
         String left = root.getAsJsonPrimitive("left").getAsString();
@@ -89,7 +87,8 @@ public class TextureCube extends Texture {
                 .orElseThrow(() -> new IOException(MessageFormat.format("Failed to load TextureCube. front face at {0} does not exist.", front))));
 
         parseParameters(root);
-        compile(faces);
+
+        setState(AsyncState.GPU_READY);
     }
 
     @Override
@@ -98,10 +97,8 @@ public class TextureCube extends Texture {
         glBindTexture(GL_TEXTURE_CUBE_MAP, handle);
     }
 
-    private void compile(final List<Image> faces) throws IOException {
-        long win = glfwGetCurrentContext();
-        glfwMakeContextCurrent(win != MemoryUtil.NULL ? win : getContext().getBean(Graphics.class).getBackgroundWindow());
-
+    @Override
+    public void compile() throws IOException {
         handle = glGenTextures();
         glBindTexture(GL_TEXTURE_CUBE_MAP, handle);
 
@@ -123,7 +120,6 @@ public class TextureCube extends Texture {
             if (glErrorCode != GL_NO_ERROR) {
                 glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
                 glDeleteTextures(handle);
-                glfwMakeContextCurrent(win);
                 throw new IOException(MessageFormat.format("Failed to load TextureCube {0}. OpenGL Error {1}", face.getPath(), glErrorCode));
             }
         }
@@ -133,6 +129,7 @@ public class TextureCube extends Texture {
         }
 
         glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-        glfwMakeContextCurrent(win);
+
+        setState(AsyncState.SUCCESS);
     }
 }

@@ -1,13 +1,14 @@
 package org.homonoia.core;
 
+import org.homonoia.eris.core.CommandLineArgs;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
-import org.homonoia.eris.events.frame.BeginFrame;
-import org.homonoia.eris.events.frame.EndFrame;
+import org.homonoia.eris.events.frame.Begin;
+import org.homonoia.eris.events.frame.End;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 import rx.functions.Action1;
 
 import static org.mockito.Matchers.any;
@@ -26,12 +27,12 @@ import static org.mockito.Mockito.verify;
 public class ContextualTest {
 
     @Mock
-    Action1<EndFrame> endFrameHandlerMock;
+    Action1<End> EndHandlerMock;
 
     @Mock
-    Action1<BeginFrame> beginFrameFrameHandlerMock;
+    Action1<Begin> BeginFrameHandlerMock;
 
-    private final Context context = new Context();
+    private final Context context = new Context(new CommandLineArgs());
 
     /**
      * Method: subscribe(final Action1<T> eventAction)
@@ -44,10 +45,10 @@ public class ContextualTest {
         Contextual subscriber = new Contextual(context) {
         };
 
-        subscriber.subscribe(endFrameHandlerMock);
-        publisher.publish(EndFrame.builder());
+        subscriber.subscribe(EndHandlerMock);
+        publisher.publish(End.builder());
 
-        verify(endFrameHandlerMock, times(1)).call(any());
+        verify(EndHandlerMock, times(1)).call(any());
     }
 
     /**
@@ -61,11 +62,11 @@ public class ContextualTest {
         Contextual subscriber = new Contextual(context) {
         };
 
-        subscriber.subscribe(endFrameHandlerMock, EndFrame.class);
-        publisher.publish(EndFrame.builder());
-        publisher.publish(BeginFrame.builder());
+        subscriber.subscribe(EndHandlerMock, End.class);
+        publisher.publish(End.builder());
+        publisher.publish(Begin.builder());
 
-        verify(endFrameHandlerMock, times(1)).call(any());
+        verify(EndHandlerMock, times(1)).call(any());
     }
 
     /**
@@ -82,13 +83,13 @@ public class ContextualTest {
         Contextual subscriber = new Contextual(context) {
         };
 
-        subscriber.subscribe(endFrameHandlerMock, EndFrame.class, publisher1);
-        publisher1.publish(EndFrame.builder());
-        publisher2.publish(EndFrame.builder());
-        publisher1.publish(BeginFrame.builder());
-        publisher2.publish(BeginFrame.builder());
+        subscriber.subscribe(EndHandlerMock, End.class, publisher1);
+        publisher1.publish(End.builder());
+        publisher2.publish(End.builder());
+        publisher1.publish(Begin.builder());
+        publisher2.publish(Begin.builder());
 
-        verify(endFrameHandlerMock, times(1)).call(any());
+        verify(EndHandlerMock, times(1)).call(any());
     }
 
     /**
@@ -102,16 +103,16 @@ public class ContextualTest {
         Contextual subscriber = new Contextual(context) {
         };
 
-        subscriber.subscribe(endFrameHandlerMock, EndFrame.class);
-        subscriber.subscribe(beginFrameFrameHandlerMock, BeginFrame.class);
+        subscriber.subscribe(EndHandlerMock, End.class);
+        subscriber.subscribe(BeginFrameHandlerMock, Begin.class);
 
         subscriber.unsubscribe();
 
-        publisher.publish(EndFrame.builder());
-        publisher.publish(BeginFrame.builder());
+        publisher.publish(End.builder());
+        publisher.publish(Begin.builder());
 
-        verify(endFrameHandlerMock, never()).call(any());
-        verify(beginFrameFrameHandlerMock, never()).call(any());
+        verify(EndHandlerMock, never()).call(any());
+        verify(BeginFrameHandlerMock, never()).call(any());
 
     }
 
@@ -126,16 +127,16 @@ public class ContextualTest {
         Contextual subscriber = new Contextual(context) {
         };
 
-        subscriber.subscribe(endFrameHandlerMock, EndFrame.class);
-        subscriber.subscribe(beginFrameFrameHandlerMock, BeginFrame.class);
+        subscriber.subscribe(EndHandlerMock, End.class);
+        subscriber.subscribe(BeginFrameHandlerMock, Begin.class);
 
-        subscriber.unsubscribe(EndFrame.class);
+        subscriber.unsubscribe(End.class);
 
-        publisher.publish(EndFrame.builder());
-        publisher.publish(BeginFrame.builder());
+        publisher.publish(End.builder());
+        publisher.publish(Begin.builder());
 
-        verify(endFrameHandlerMock, never()).call(any());
-        verify(beginFrameFrameHandlerMock, times(1)).call(any());
+        verify(EndHandlerMock, never()).call(any());
+        verify(BeginFrameHandlerMock, times(1)).call(any());
     }
 
     /**
@@ -152,18 +153,18 @@ public class ContextualTest {
         Contextual subscriber = new Contextual(context) {
         };
 
-        subscriber.subscribe(endFrameHandlerMock, EndFrame.class, publisher1);
-        subscriber.subscribe(endFrameHandlerMock, EndFrame.class, publisher2);
-        subscriber.subscribe(beginFrameFrameHandlerMock, BeginFrame.class, publisher1);
+        subscriber.subscribe(EndHandlerMock, End.class, publisher1);
+        subscriber.subscribe(EndHandlerMock, End.class, publisher2);
+        subscriber.subscribe(BeginFrameHandlerMock, Begin.class, publisher1);
 
         subscriber.unsubscribe(publisher1);
 
-        publisher1.publish(EndFrame.builder());
-        publisher2.publish(EndFrame.builder());
-        publisher1.publish(BeginFrame.builder());
+        publisher1.publish(End.builder());
+        publisher2.publish(End.builder());
+        publisher1.publish(Begin.builder());
 
-        verify(endFrameHandlerMock, times(1)).call(any());
-        verify(beginFrameFrameHandlerMock, never()).call(any());
+        verify(EndHandlerMock, times(1)).call(any());
+        verify(BeginFrameHandlerMock, never()).call(any());
     }
 
     /**
@@ -180,17 +181,17 @@ public class ContextualTest {
         Contextual subscriber = new Contextual(context) {
         };
 
-        subscriber.subscribe(endFrameHandlerMock, EndFrame.class, publisher1);
-        subscriber.subscribe(endFrameHandlerMock, EndFrame.class, publisher2);
-        subscriber.subscribe(beginFrameFrameHandlerMock, BeginFrame.class, publisher1);
+        subscriber.subscribe(EndHandlerMock, End.class, publisher1);
+        subscriber.subscribe(EndHandlerMock, End.class, publisher2);
+        subscriber.subscribe(BeginFrameHandlerMock, Begin.class, publisher1);
 
-        subscriber.unsubscribe(EndFrame.class, publisher1);
+        subscriber.unsubscribe(End.class, publisher1);
 
-        publisher1.publish(EndFrame.builder());
-        publisher2.publish(EndFrame.builder());
-        publisher1.publish(BeginFrame.builder());
+        publisher1.publish(End.builder());
+        publisher2.publish(End.builder());
+        publisher1.publish(Begin.builder());
 
-        verify(endFrameHandlerMock, times(1)).call(any());
-        verify(beginFrameFrameHandlerMock, times(1)).call(any());
+        verify(EndHandlerMock, times(1)).call(any());
+        verify(BeginFrameHandlerMock, times(1)).call(any());
     }
 } 
