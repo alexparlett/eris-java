@@ -10,6 +10,7 @@ import org.homonoia.eris.core.components.Clock;
 import org.homonoia.eris.core.components.FileSystem;
 import org.homonoia.eris.core.exceptions.InitializationException;
 import org.homonoia.eris.core.utils.Timer;
+import org.homonoia.eris.ecs.ComponentFactory;
 import org.homonoia.eris.engine.properties.EngineProperties;
 import org.homonoia.eris.events.core.ExitRequested;
 import org.homonoia.eris.events.frame.Update;
@@ -18,7 +19,6 @@ import org.homonoia.eris.input.Input;
 import org.homonoia.eris.renderer.Renderer;
 import org.homonoia.eris.resources.cache.ResourceCache;
 import org.homonoia.eris.resources.types.json.JsonException;
-import org.homonoia.eris.scripting.ScriptBinding;
 import org.homonoia.eris.scripting.ScriptEngine;
 import org.homonoia.eris.ui.UI;
 import org.lwjgl.glfw.GLFW;
@@ -38,15 +38,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * @author alexp
  * @since 25/02/2016
  */
-public class Engine extends Contextual implements ScriptBinding {
+public class Engine extends Contextual {
 
     private static final Logger LOG = LoggerFactory.getLogger(Engine.class);
-
     private AtomicBoolean shouldExit = new AtomicBoolean(false);
+
     private GLFWErrorCallback glfwErrorCallback;
     private EngineProperties engineProperties;
-
     private ResourceCache resourceCache;
+
     private Graphics graphics;
     private Clock clock;
     private Renderer renderer;
@@ -55,9 +55,10 @@ public class Engine extends Contextual implements ScriptBinding {
     private FileSystem fileSystem;
     private Log log;
     private Input input;
-    private ScriptEngine scriptEngine;
     private UI ui;
     private Gson gson;
+    private ScriptEngine scriptEngine;
+    private ComponentFactory componentFactory;
 
     /**
      * Instantiates a new Engine.
@@ -86,17 +87,12 @@ public class Engine extends Contextual implements ScriptBinding {
         settings = new Settings(context, resourceCache, fileSystem);
         input = new Input(context, graphics);
         locale = new Locale(context, resourceCache);
-        scriptEngine = new ScriptEngine(context);
         ui = new UI(context);
         renderer = new Renderer(context, graphics, resourceCache);
+        scriptEngine = new ScriptEngine(context);
+        componentFactory = new ComponentFactory(context);
 
         subscribe(this::handleExitRequest, ExitRequested.class);
-    }
-
-    @Override
-    public void bind(ScriptEngine scriptEngine) {
-        scriptEngine.bindClass(Timer.class);
-        scriptEngine.bindGlobal("clock", clock);
     }
 
     public void initialize() throws InitializationException {
@@ -108,6 +104,8 @@ public class Engine extends Contextual implements ScriptBinding {
 
         // Initialize Base Components
         initializationLog();
+
+        scriptEngine.initialize();
 
         fileSystem.addPath(FileSystem.getApplicationDataDirectory());
         fileSystem.addPath(FileSystem.getApplicationDirectory());
@@ -156,7 +154,6 @@ public class Engine extends Contextual implements ScriptBinding {
         }
 
         input.initialize();
-        scriptEngine.initialize();
         ui.initialize();
     }
 
@@ -188,7 +185,6 @@ public class Engine extends Contextual implements ScriptBinding {
     public void shutdown() {
         graphics.hide();
 
-        scriptEngine.shutdown();
         input.shutdown();
         renderer.shutdown();
         resourceCache.shutdown();

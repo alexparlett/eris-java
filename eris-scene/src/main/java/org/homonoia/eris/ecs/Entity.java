@@ -46,14 +46,7 @@ public final class Entity extends Contextual {
 
         boolean multiple = component.getClass().isAnnotationPresent(Multiple.class);
 
-        if (component instanceof ScriptComponent) {
-            ScriptComponent scriptComponent = (ScriptComponent) component;
-            Class<? extends Component>[] classes = scriptComponent.requires();
-            boolean autoAdd = scriptComponent.autoAdd();
-            parseRequiredClass(classes, autoAdd, component);
-
-            multiple = scriptComponent.multiple();
-        } else if (component.getClass().isAnnotationPresent(Requires.class)) {
+        if (component.getClass().isAnnotationPresent(Requires.class)) {
             Requires requires = component.getClass().getAnnotation(Requires.class);
             Class<? extends Component>[] classes = requires.classes();
             boolean autoAdd = requires.autoAdd();
@@ -117,7 +110,7 @@ public final class Entity extends Contextual {
 
     public boolean has(final Class<? extends Component> clazz) {
         return components.stream()
-                .filter(component -> component.getClass().equals(clazz))
+                .filter(component -> clazz.isAssignableFrom(component.getClass()))
                 .findFirst()
                 .isPresent();
     }

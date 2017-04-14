@@ -1,6 +1,5 @@
 dependencies {
     compile project(':eris-event')
-    compile project(':eris-scripting')
     compile project(':eris-core')
     compile project(':eris-graphics')
 }

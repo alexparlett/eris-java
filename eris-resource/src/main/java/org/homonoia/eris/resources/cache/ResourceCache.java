@@ -3,21 +3,8 @@ package org.homonoia.eris.resources.cache;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.components.FileSystem;
+import org.homonoia.eris.events.resource.DirectoryAdded;
 import org.homonoia.eris.resources.Resource;
-import org.homonoia.eris.resources.types.Image;
-import org.homonoia.eris.resources.types.Ini;
-import org.homonoia.eris.resources.types.Json;
-import org.homonoia.eris.resources.types.Mesh;
-import org.homonoia.eris.resources.types.Python;
-import org.homonoia.eris.resources.types.Stream;
-import org.homonoia.eris.resources.types.ini.IniSection;
-import org.homonoia.eris.resources.types.json.JsonPatch;
-import org.homonoia.eris.resources.types.json.JsonPath;
-import org.homonoia.eris.resources.types.json.JsonType;
-import org.homonoia.eris.resources.types.mesh.Face;
-import org.homonoia.eris.resources.types.mesh.Vertex;
-import org.homonoia.eris.scripting.ScriptBinding;
-import org.homonoia.eris.scripting.ScriptEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +27,7 @@ import java.util.Optional;
  * @author alexparlett
  * @since 19/02/2016
  */
-public class ResourceCache extends Contextual implements ScriptBinding {
+public class ResourceCache extends Contextual {
 
     private static final Logger LOG = LoggerFactory.getLogger(ResourceCache.class);
 
@@ -79,8 +66,15 @@ public class ResourceCache extends Contextual implements ScriptBinding {
         if (fileSystem.isAccessible(path)) {
             if (priority < directories.size()) {
                 directories.add(priority, path);
+                publish(DirectoryAdded.builder()
+                        .path(path)
+                        .priority(priority));
             } else {
                 directories.add(path);
+                publish(DirectoryAdded.builder()
+                        .path(path)
+                        .priority(directories.size() - 1));
+
             }
             return true;
         }
@@ -98,6 +92,10 @@ public class ResourceCache extends Contextual implements ScriptBinding {
 
     public boolean removeDirectory(final String path) {
         return removeDirectory(Paths.get(path));
+    }
+
+    public List<Path> getDirectories() {
+        return directories;
     }
 
     public <T extends Resource> Optional<T> get(final Class<T> clazz, final Path path) {
@@ -223,7 +221,7 @@ public class ResourceCache extends Contextual implements ScriptBinding {
 
     public synchronized void clear(boolean force) {
         Iterator<Map.Entry<Class<? extends Resource>, Map<Path, Resource>>> groupsIterator = groups.entrySet().iterator();
-        groupsIterator.forEachRemaining(classMapEntry ->  {
+        groupsIterator.forEachRemaining(classMapEntry -> {
             Iterator<Map.Entry<Path, Resource>> groupIterator = classMapEntry.getValue().entrySet().iterator();
             groupIterator.forEachRemaining(entry -> {
                 if (Objects.nonNull(entry.getValue()) && (entry.getValue().getRefCount() <= 1 || force)) {
@@ -300,22 +298,5 @@ public class ResourceCache extends Contextual implements ScriptBinding {
             }
         }
         return Optional.empty();
-    }
-
-    @Override
-    public void bind(ScriptEngine scriptEngine) {
-        scriptEngine.bindClass(JsonPatch.class);
-        scriptEngine.bindClass(JsonPath.class);
-        scriptEngine.bindClass(JsonType.class);
-        scriptEngine.bindClass(IniSection.class);
-        scriptEngine.bindClass(Face.class);
-        scriptEngine.bindClass(Vertex.class);
-        scriptEngine.bindClass(Image.class);
-        scriptEngine.bindClass(Ini.class);
-        scriptEngine.bindClass(Json.class);
-        scriptEngine.bindClass(Mesh.class);
-        scriptEngine.bindClass(Stream.class);
-        scriptEngine.bindClass(Python.class);
-        scriptEngine.bindGlobal("resourceCache", this);
     }
 }

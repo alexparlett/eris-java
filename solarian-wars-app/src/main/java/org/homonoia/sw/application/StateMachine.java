@@ -4,7 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.events.frame.BeginFrame;
-import org.homonoia.eris.scripting.ScriptBinding;
 import org.homonoia.sw.state.State;
 import org.homonoia.sw.state.events.StateChange;
 import org.homonoia.sw.state.events.StateCreate;
@@ -23,7 +22,7 @@ import static java.util.Objects.nonNull;
  * @since 13/04/2017
  */
 @Slf4j
-public class StateMachine extends Contextual implements ScriptBinding {
+public class StateMachine extends Contextual {
 
     private Map<Long, State> states = new HashMap<>();
     private Map<Long, State> awaitingCreate = new HashMap<>();

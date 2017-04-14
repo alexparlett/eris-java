@@ -1,7 +1,9 @@
 package org.homonoia.sw.state.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
+import org.homonoia.eris.ecs.ComponentFactory;
 import org.homonoia.eris.ecs.Entity;
 import org.homonoia.eris.ecs.EntityManager;
 import org.homonoia.eris.ecs.EntitySystemManager;
@@ -12,6 +14,7 @@ import org.homonoia.eris.ecs.components.Transform;
 import org.homonoia.eris.ecs.exceptions.MissingRequiredComponentException;
 import org.homonoia.eris.ecs.systems.InputSystem;
 import org.homonoia.eris.ecs.systems.RenderSystem;
+import org.homonoia.eris.ecs.systems.UpdateSystem;
 import org.homonoia.eris.graphics.Graphics;
 import org.homonoia.eris.graphics.drawables.Model;
 import org.homonoia.eris.graphics.drawables.Skybox;
@@ -25,6 +28,7 @@ import org.joml.Vector4f;
  * @author alexparlett
  * @since 13/04/2017
  */
+@Slf4j
 public class TestState extends Contextual implements State {
 
     private EntityManager entityManager;
@@ -47,10 +51,15 @@ public class TestState extends Contextual implements State {
 
         entitySystemManager = new EntitySystemManager(getContext());
         entitySystemManager.add(new InputSystem(getContext(), familyManager));
+        entitySystemManager.add(new UpdateSystem(getContext(), familyManager));
         entitySystemManager.add(new RenderSystem(getContext(), familyManager));
+    }
 
+    @Override
+    public void start() {
         ResourceCache resourceCache = getContext().getBean(ResourceCache.class);
         Graphics graphics = getContext().getBean(Graphics.class);
+        ComponentFactory componentFactory = getContext().getBean(ComponentFactory.class);
 
         Model model = resourceCache.get(Model.class, "Models/fighter.mdl").get();
         Skybox skybox = resourceCache.get(Skybox.class, "Skyboxes/spacescape.skybox").get();
@@ -69,17 +78,13 @@ public class TestState extends Contextual implements State {
             entityManager.add(entity0);
 
             Entity entity1 = new Entity(getContext());
-            entity1.add(new Transform().translate(0, 0, -15));
-            entity1.add(new Mesh().model(model));
+            entity1.add(componentFactory.newInstance(Transform.class).translate(0, 0, -15));
+            entity1.add(componentFactory.newInstance(Mesh.class).model(model));
+            entity1.add(componentFactory.newInstance("core.ships.Fighter"));
             entityManager.add(entity1);
         } catch (MissingRequiredComponentException e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    public void start() {
-
     }
 
     @Override

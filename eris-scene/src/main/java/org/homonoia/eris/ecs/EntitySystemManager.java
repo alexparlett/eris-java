@@ -4,8 +4,6 @@ import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.exceptions.ErisException;
 import org.homonoia.eris.events.frame.Update;
-import org.homonoia.eris.scripting.ScriptBinding;
-import org.homonoia.eris.scripting.ScriptEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,7 +14,7 @@ import java.util.TreeSet;
 /**
  * Created by alexparlett on 30/05/2016.
  */
-public class EntitySystemManager extends Contextual implements ScriptBinding {
+public class EntitySystemManager extends Contextual {
 
     private static final Logger LOG = LoggerFactory.getLogger(EntitySystemManager.class);
 
@@ -48,12 +46,6 @@ public class EntitySystemManager extends Contextual implements ScriptBinding {
 
     public void removeAll() {
         entitySystems.clear();
-    }
-
-    @Override
-    public void bind(ScriptEngine scriptEngine) {
-        scriptEngine.bindClass(EntitySystem.class);
-        scriptEngine.bindGlobal("entitySystemManager", this);
     }
 
     private void handleUpdate(final Update update) {

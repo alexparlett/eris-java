@@ -2,10 +2,13 @@ package org.homonoia.eris.ecs;
 
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
-import org.homonoia.eris.scripting.ScriptBinding;
-import org.homonoia.eris.scripting.ScriptEngine;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
 import java.util.function.Supplier;
 
 /**
@@ -14,7 +17,7 @@ import java.util.function.Supplier;
  * @author alexparlett
  * @since 15/07/2016
  */
-public class FamilyManager extends Contextual implements ScriptBinding {
+public class FamilyManager extends Contextual {
 
     private Map<Set<Class<? extends Component>>, Family> families = new HashMap<>();
 
@@ -31,15 +34,6 @@ public class FamilyManager extends Contextual implements ScriptBinding {
         Set<Class<? extends Component>> key = new HashSet<>(Arrays.asList(components));
         return Optional.ofNullable(families.get(key))
                 .orElseGet(createFamily(key));
-    }
-
-    @Override
-    public void bind(ScriptEngine scriptEngine) {
-        scriptEngine.bindClass(Entity.class);
-        scriptEngine.bindClass(Component.class);
-        scriptEngine.bindClass(ScriptComponent.class);
-        scriptEngine.bindClass(Family.class);
-        scriptEngine.bindGlobal("familyManager", this);
     }
 
     private Supplier<Family> createFamily(final Set<Class<? extends Component>> key) {

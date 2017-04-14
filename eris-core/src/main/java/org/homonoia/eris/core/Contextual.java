@@ -163,7 +163,7 @@ public abstract class Contextual {
         context.publish(eventBuilder.build());
     }
 
-    protected Context getContext() {
+    public Context getContext() {
         return context;
     }
 }

@@ -12,8 +12,6 @@ import org.homonoia.eris.input.events.MouseButtonUp;
 import org.homonoia.eris.input.events.MouseMove;
 import org.homonoia.eris.input.events.MouseScroll;
 import org.homonoia.eris.input.events.Text;
-import org.homonoia.eris.scripting.ScriptBinding;
-import org.homonoia.eris.scripting.ScriptEngine;
 import org.joml.Vector2d;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWCharCallback;
@@ -40,7 +38,7 @@ import static org.lwjgl.system.MemoryStack.stackPush;
  * @author alexp
  * @since 01/03/2016
  */
-public class Input extends Contextual implements ScriptBinding {
+public class Input extends Contextual {
 
     private final Graphics graphics;
 
@@ -104,7 +102,7 @@ public class Input extends Contextual implements ScriptBinding {
             glfwKeyCallback.free();
             glfwMouseButtonCallback.free();
             glfwCursorPosCallback.free();
-            glfwScrollCallback.free();;
+            glfwScrollCallback.free();
             glfwCharCallback.free();
 
             unsubscribe();
@@ -239,20 +237,5 @@ public class Input extends Contextual implements ScriptBinding {
         }
 
         return modifiers;
-    }
-
-    @Override
-    public void bind(ScriptEngine scriptEngine) {
-        scriptEngine.bindClass(Button.class);
-        scriptEngine.bindClass(Key.class);
-        scriptEngine.bindClass(Modifier.class);
-        scriptEngine.bindClass(KeyDown.class);
-        scriptEngine.bindClass(KeyUp.class);
-        scriptEngine.bindClass(MouseButtonDown.class);
-        scriptEngine.bindClass(MouseButtonUp.class);
-        scriptEngine.bindClass(MouseMove.class);
-        scriptEngine.bindClass(MouseScroll.class);
-        scriptEngine.bindClass(Text.class);
-        scriptEngine.bindGlobal("input", this);
     }
 }

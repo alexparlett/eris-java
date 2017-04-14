@@ -1,36 +1,34 @@
 package org.homonoia.eris.scripting;
 
+import lombok.extern.slf4j.Slf4j;
+import org.codehaus.janino.CachingJavaSourceClassLoader;
+import org.codehaus.janino.util.resource.DirectoryResourceFinder;
+import org.codehaus.janino.util.resource.MapResourceCreator;
+import org.codehaus.janino.util.resource.MapResourceFinder;
+import org.codehaus.janino.util.resource.ResourceCreator;
+import org.codehaus.janino.util.resource.ResourceFinder;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
-import org.homonoia.eris.core.components.FileSystem;
-import org.homonoia.eris.scripting.io.ErrWriter;
-import org.homonoia.eris.scripting.io.OutWriter;
-import org.homonoia.eris.scripting.utils.ClassMapper;
-import org.python.core.Py;
-import org.python.core.PyStringMap;
-import org.python.core.PySystemState;
-import org.python.util.PythonInterpreter;
+import org.homonoia.eris.events.resource.DirectoryAdded;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.File;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static java.util.Objects.nonNull;
 
 /**
- * Copyright (c) 2015-2016 Homonoia Studios.
+ * Copyright (c) 2015-2017 Homonoia Studios.
  *
  * @author alexparlett
- * @since 31/07/2016
+ * @since 14/04/2017
  */
+@Slf4j
 public class ScriptEngine extends Contextual {
 
-    ClassMapper classMapper = new ClassMapper();
-    ScriptClassLoader scriptClassLoader = new ScriptClassLoader();
-    Map<String, Object> pythonGlobalsTable = new HashMap<>();
-    PythonInterpreter pythonInterpreter;
-
-    private List<ScriptBinding> bindings;
+    private ConcurrentHashMap<String, byte[]> classCache;
+    private ResourceFinder cacheResourceFinder;
+    private ResourceCreator cacheResourceCreator;
+    private ClassLoader classLoader;
 
     /**
      * Instantiates a new Contextual.
@@ -40,58 +38,26 @@ public class ScriptEngine extends Contextual {
     public ScriptEngine(Context context) {
         super(context);
         context.registerBean(this);
-    }
-
-    public void bindGlobal(String name, Object global) {
-        bindClass(global.getClass());
-        pythonGlobalsTable.put(name, global);
-    }
-
-    /**
-     *
-     * @param clazz
-     */
-    public void bindClass(Class clazz) {
-        this.scriptClassLoader.bind(clazz);
+        subscribe(this::handleDirectoryAdded, DirectoryAdded.class);
     }
 
     public void initialize() {
-        classMapper.bind(this);
-
-        bindings = getContext().getBeans(ScriptBinding.class);
-        bindings.forEach(scriptBinding -> scriptBinding.bind(this));
-
-        PySystemState pySystemState = Py.getSystemState();
-        pySystemState.setClassLoader(scriptClassLoader);
-        pySystemState.setCurrentWorkingDir(FileSystem.getApplicationDataDirectory().toString());
-
-        pySystemState.path.append(Py.java2py(FileSystem.getApplicationDataDirectory().toString()));
-        pySystemState.path.append(Py.java2py(FileSystem.getApplicationDirectory().toString()));
-        pySystemState.path.append(Py.java2py(FileSystem.getApplicationDirectory().resolve("Data").toString()));
-
-        PyStringMap builtins = (PyStringMap) pySystemState.getBuiltins();
-        pythonGlobalsTable.forEach((key,value) -> builtins.getMap().put(key, Py.java2py(value)));
-
-        pythonInterpreter = PythonInterpreter.threadLocalStateInterpreter(null);
-        pythonInterpreter.setErr(new ErrWriter());
-        pythonInterpreter.setOut(new OutWriter());
+        classCache = new ConcurrentHashMap<>();
+        cacheResourceFinder = new MapResourceFinder(classCache);
+        cacheResourceCreator = new MapResourceCreator(classCache);
     }
 
-    public void shutdown() {
-        if (nonNull(pythonInterpreter)) {
-            pythonInterpreter.close();
+    private void handleDirectoryAdded(DirectoryAdded evt) {
+        File scriptDirectory = evt.getPath().resolve("Scripts").toFile();
+        if (scriptDirectory.exists()) {
+            ResourceFinder resourceFinder = new DirectoryResourceFinder(scriptDirectory);
+            if (nonNull(classLoader)) {
+                classLoader = new CachingJavaSourceClassLoader(classLoader, resourceFinder, null, cacheResourceFinder, cacheResourceCreator);
+
+            } else {
+                classLoader = new CachingJavaSourceClassLoader(ClassLoader.getSystemClassLoader(), resourceFinder, null, cacheResourceFinder, cacheResourceCreator);
+            }
+            Thread.currentThread().setContextClassLoader(classLoader);
         }
-    }
-
-    public PythonInterpreter getPythonInterpreter() {
-        return pythonInterpreter;
-    }
-
-    public Map<String, Object> getPythonGlobalsTable() {
-        return pythonGlobalsTable;
-    }
-
-    public ScriptClassLoader getScriptClassLoader() {
-        return scriptClassLoader;
     }
 }
