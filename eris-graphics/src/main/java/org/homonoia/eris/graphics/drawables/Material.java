@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonPrimitive;
 import org.homonoia.eris.core.Context;
+import org.homonoia.eris.core.exceptions.ErisRuntimeExcecption;
 import org.homonoia.eris.core.parsers.Matrix3fParser;
 import org.homonoia.eris.core.parsers.Matrix4fParser;
 import org.homonoia.eris.core.parsers.Vector2dParser;
@@ -18,17 +19,14 @@ import org.homonoia.eris.core.parsers.Vector3iParser;
 import org.homonoia.eris.core.parsers.Vector4dParser;
 import org.homonoia.eris.core.parsers.Vector4fParser;
 import org.homonoia.eris.core.parsers.Vector4iParser;
-import org.homonoia.eris.resources.GPUResource;
 import org.homonoia.eris.graphics.drawables.material.CullMode;
 import org.homonoia.eris.graphics.drawables.material.TextureUnit;
 import org.homonoia.eris.graphics.drawables.sp.Uniform;
-import org.homonoia.eris.renderer.Renderer;
+import org.homonoia.eris.resources.GPUResource;
 import org.homonoia.eris.resources.Resource;
 import org.homonoia.eris.resources.cache.ResourceCache;
 import org.homonoia.eris.resources.types.Json;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL20;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -57,11 +55,9 @@ public class Material extends Resource implements GPUResource {
     private Map<String, Uniform> uniforms = new HashMap<>();
     private List<TextureUnit> textureUnits = new ArrayList<>();
     private CullMode cullMode;
-    private Renderer renderer;
 
     public Material(final Context context) {
         super(context);
-        renderer = context.getBean(Renderer.class);
     }
 
     @Override
@@ -220,12 +216,13 @@ public class Material extends Resource implements GPUResource {
                 .forEach(textureUnit -> {
                     GL13.glActiveTexture(GL13.GL_TEXTURE0 + textureUnit.getUnit());
                     textureUnit.getTexture().use();
-                    renderer.bindUniform(GL20.glGetUniformLocation(shaderProgram.getHandle(), textureUnit.getUniform()), GL11.GL_INT, textureUnit.getUnit());
+                    Uniform uniform = shaderProgram.getUniform(textureUnit.getUniform()).orElseThrow(() -> new ErisRuntimeExcecption("Could not bind {} on material {}", textureUnit.getUniform(), getPath()));
+                    uniform.bindUniform(textureUnit.getUnit());
                 });
 
         uniforms.values().stream()
                 .filter(uniform -> Objects.nonNull(uniform.getData()))
-                .forEach(uniform -> renderer.bindUniform(uniform.getLocation(), uniform.getType(), uniform.getData()));
+                .forEach(Uniform::bindUniform);
     }
 
     @Override

@@ -4,4 +4,6 @@ dependencies {
     compile project(':eris-resource')
     compile project(':eris-graphics')
     compile project(':eris-input')
+    compile project(':eris-ui')
+    compile project(':eris-renderer')
 }

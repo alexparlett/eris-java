@@ -1,12 +1,12 @@
-package org.homonoia.eris.renderer.impl;
+package org.homonoia.eris.render.impl;
 
 import org.homonoia.eris.core.collections.Pool;
 import org.homonoia.eris.core.collections.pools.ExpandingPool;
-import org.homonoia.eris.renderer.RenderKey;
-import org.homonoia.eris.renderer.RenderState;
-import org.homonoia.eris.renderer.Renderer;
-import org.homonoia.eris.renderer.commands.ClearColorCommand;
-import org.homonoia.eris.renderer.commands.ClearCommand;
+import org.homonoia.eris.render.RenderKey;
+import org.homonoia.eris.render.RenderState;
+import org.homonoia.eris.render.Renderer;
+import org.homonoia.eris.render.commands.ClearColorCommand;
+import org.homonoia.eris.render.commands.ClearCommand;
 import org.joml.Vector4f;
 
 import java.util.Objects;

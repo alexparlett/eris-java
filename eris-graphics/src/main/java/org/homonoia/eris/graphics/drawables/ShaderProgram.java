@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.graphics.drawables.sp.Uniform;
-import org.homonoia.eris.renderer.Renderer;
 import org.homonoia.eris.resources.GPUResource;
 import org.homonoia.eris.resources.Resource;
 import org.homonoia.eris.resources.cache.ResourceCache;
@@ -43,13 +42,11 @@ public class ShaderProgram extends Resource implements GPUResource {
     private static final Logger LOG = LoggerFactory.getLogger(ShaderProgram.class);
     private int handle;
     private Map<String, Uniform> uniforms = new HashMap<>();
-    private Renderer renderer;
     private StringBuffer vertBuffer;
     private StringBuffer fragBuffer;
 
     public ShaderProgram(final Context context) {
         super(context);
-        renderer = context.getBean(Renderer.class);
     }
 
     @Override
@@ -99,7 +96,7 @@ public class ShaderProgram extends Resource implements GPUResource {
         uniforms.values()
                 .stream()
                 .filter(uniform -> Objects.nonNull(uniform.getData()))
-                .forEach(uniform -> renderer.bindUniform(uniform.getLocation(), uniform.getType(), uniform.getData()));
+                .forEach(Uniform::bindUniform);
     }
 
     public Optional<Uniform> getUniform(String uniform) {

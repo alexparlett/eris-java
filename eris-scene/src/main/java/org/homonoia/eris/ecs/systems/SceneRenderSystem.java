@@ -26,7 +26,7 @@ import static java.util.Objects.nonNull;
  * @author alexparlett
  * @since 15/07/2016
  */
-public class RenderSystem extends EntitySystem {
+public class SceneRenderSystem extends EntitySystem {
 
     private final CompletionService<Boolean> completionService;
     private final Renderer renderer;
@@ -34,7 +34,7 @@ public class RenderSystem extends EntitySystem {
     private final Family renderableFamily;
     private final Statistics statistics;
 
-    public RenderSystem(final Context context, final FamilyManager familyManager) {
+    public SceneRenderSystem(final Context context, final FamilyManager familyManager) {
         super(context, familyManager, MIN_PRIORITY);
         this.completionService = new ExecutorCompletionService<>(context.getBean(ExecutorService.class));
         this.cameraFamily = familyManager.get(Camera.class);

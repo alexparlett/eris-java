@@ -5,7 +5,6 @@ import org.homonoia.eris.events.EventSubscription;
 import rx.Subscription;
 import rx.functions.Action1;
 
-import javax.annotation.PreDestroy;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
@@ -36,7 +35,6 @@ public abstract class Contextual {
     /**
      * Destroy method, ensures that all subscriptions are unsubscribed before deletion.
      */
-    @PreDestroy
     public void destory() {
         unsubscribe();
     }

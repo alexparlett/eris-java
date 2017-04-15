@@ -1,10 +1,10 @@
-package org.homonoia.eris.renderer.commands;
+package org.homonoia.eris.render.commands;
 
 import org.homonoia.eris.core.collections.Pool;
 import org.homonoia.eris.core.collections.pools.ExpandingPool;
-import org.homonoia.eris.renderer.RenderCommand;
-import org.homonoia.eris.renderer.RenderKey;
-import org.homonoia.eris.renderer.Renderer;
+import org.homonoia.eris.render.RenderCommand;
+import org.homonoia.eris.render.RenderKey;
+import org.homonoia.eris.render.Renderer;
 import org.joml.Vector4f;
 
 import static org.lwjgl.opengl.GL11.glClearColor;

@@ -12,6 +12,7 @@ import org.homonoia.eris.input.events.MouseButtonUp;
 import org.homonoia.eris.input.events.MouseMove;
 import org.homonoia.eris.input.events.MouseScroll;
 import org.homonoia.eris.input.events.Text;
+import org.homonoia.eris.ui.UI;
 import org.joml.Vector2d;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWCharCallback;
@@ -19,6 +20,8 @@ import org.lwjgl.glfw.GLFWCursorPosCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
 import org.lwjgl.glfw.GLFWScrollCallback;
+import org.lwjgl.nuklear.NkContext;
+import org.lwjgl.nuklear.NkMouse;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
@@ -27,9 +30,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import static org.lwjgl.glfw.GLFW.GLFW_CURSOR;
+import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_HIDDEN;
+import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_NORMAL;
 import static org.lwjgl.glfw.GLFW.glfwGetKeyName;
 import static org.lwjgl.glfw.GLFW.glfwGetWindowPos;
+import static org.lwjgl.glfw.GLFW.glfwPollEvents;
 import static org.lwjgl.glfw.GLFW.glfwSetCursorPos;
+import static org.lwjgl.glfw.GLFW.glfwSetInputMode;
+import static org.lwjgl.nuklear.Nuklear.nk_input_begin;
+import static org.lwjgl.nuklear.Nuklear.nk_input_end;
 import static org.lwjgl.system.MemoryStack.stackPush;
 
 /**
@@ -41,6 +51,7 @@ import static org.lwjgl.system.MemoryStack.stackPush;
 public class Input extends Contextual {
 
     private final Graphics graphics;
+    private final UI ui;
 
     private boolean initialized = false;
     private long renderWindow = MemoryUtil.NULL;
@@ -52,9 +63,10 @@ public class Input extends Contextual {
     private GLFWScrollCallback glfwScrollCallback;
     private GLFWCharCallback glfwCharCallback;
 
-    public Input(final Context context, final Graphics graphics) {
+    public Input(final Context context, final Graphics graphics, final UI ui) {
         super(context);
         context.registerBean(this);
+        this.ui = ui;
         this.graphics = graphics;
     }
 
@@ -65,9 +77,9 @@ public class Input extends Contextual {
                 throw new InitializationException("Cannot initialize input before graphics, window is not defined yet.");
             }
 
-            GLFW.glfwSetInputMode(renderWindow, GLFW.GLFW_CURSOR, GLFW.GLFW_CURSOR_HIDDEN);
-            GLFW.glfwSetInputMode(renderWindow, GLFW.GLFW_STICKY_KEYS, GLFW.GLFW_FALSE);
-            GLFW.glfwSetInputMode(renderWindow, GLFW.GLFW_STICKY_MOUSE_BUTTONS, GLFW.GLFW_FALSE);
+            glfwSetInputMode(renderWindow, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+            glfwSetInputMode(renderWindow, GLFW.GLFW_STICKY_KEYS, GLFW.GLFW_FALSE);
+            glfwSetInputMode(renderWindow, GLFW.GLFW_STICKY_MOUSE_BUTTONS, GLFW.GLFW_FALSE);
 
             glfwKeyCallback = GLFWKeyCallback.create(this::handleGLFWKeyCallback);
             glfwMouseButtonCallback = GLFWMouseButtonCallback.create(this::handleGLFWMouseButtonCallback);
@@ -86,7 +98,27 @@ public class Input extends Contextual {
     }
 
     public void update() {
-        GLFW.glfwPollEvents();
+        NkContext ctx = ui.getCtx();
+        long win = graphics.getRenderWindow();
+
+        nk_input_begin(ctx);
+
+        glfwPollEvents();
+
+        NkMouse mouse = ctx.input().mouse();
+        if (mouse.grab()) {
+            glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+        } else if (mouse.grabbed()) {
+            float prevX = mouse.prev().x();
+            float prevY = mouse.prev().y();
+            glfwSetCursorPos(win, prevX, prevY);
+            mouse.pos().x(prevX);
+            mouse.pos().y(prevY);
+        } else if (mouse.ungrab()) {
+            glfwSetInputMode(win, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+        }
+
+        nk_input_end(ctx);
     }
 
     public void shutdown() {

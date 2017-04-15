@@ -1,12 +1,12 @@
-package org.homonoia.eris.renderer.commands;
+package org.homonoia.eris.render.commands;
 
 import org.homonoia.eris.core.collections.Pool;
 import org.homonoia.eris.core.collections.pools.ExpandingPool;
 import org.homonoia.eris.graphics.drawables.model.AxisAlignedBoundingBox;
 import org.homonoia.eris.graphics.drawables.model.SubModel;
-import org.homonoia.eris.renderer.RenderCommand;
-import org.homonoia.eris.renderer.RenderKey;
-import org.homonoia.eris.renderer.Renderer;
+import org.homonoia.eris.render.RenderCommand;
+import org.homonoia.eris.render.RenderKey;
+import org.homonoia.eris.render.Renderer;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 

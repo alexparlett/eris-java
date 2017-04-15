@@ -1,7 +1,7 @@
-package org.homonoia.eris.renderer.impl;
+package org.homonoia.eris.render.impl;
 
 import org.homonoia.eris.core.collections.pools.PoolFactory;
-import org.homonoia.eris.renderer.Renderer;
+import org.homonoia.eris.render.Renderer;
 
 /**
  * Copyright (c) 2015-2016 Homonoia Studios.

@@ -11,4 +11,5 @@ include 'eris-ui'
 include 'solarian-wars-app'
 include 'eris-scripting'
 include 'assets'
+include 'eris-renderer'
 

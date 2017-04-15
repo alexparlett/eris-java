@@ -11,7 +11,7 @@ public interface RenderFrame<T extends RenderFrame> {
     /**
      * Add.
      *
-     * @param renderCommand the render command
+     * @param renderCommand the renderer command
      */
     T add(final RenderCommand renderCommand);
 

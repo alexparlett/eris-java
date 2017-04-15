@@ -36,6 +36,8 @@ import java.text.DateFormat;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static org.lwjgl.glfw.GLFW.glfwTerminate;
+
 /**
  * Copyright (c) 2015-2016 the Eris project.
  *
@@ -87,14 +89,14 @@ public class Engine extends Contextual {
 
         log = new Log(context);
         fileSystem = new FileSystem(context);
-        resourceCache = new ResourceCache(context, fileSystem);
-        graphics = new Graphics(context, resourceCache);
-        settings = new Settings(context, resourceCache, fileSystem);
-        input = new Input(context, graphics);
-        locale = new Locale(context, resourceCache);
-        ui = new UI(context);
-        renderer = new Renderer(context, graphics, resourceCache);
         scriptEngine = new ScriptEngine(context);
+        resourceCache = new ResourceCache(context, fileSystem);
+        settings = new Settings(context, resourceCache, fileSystem);
+        graphics = new Graphics(context, resourceCache);
+        ui = new UI(context, resourceCache, graphics);
+        input = new Input(context, graphics, ui);
+        locale = new Locale(context, resourceCache);
+        renderer = new Renderer(context, graphics, resourceCache);
 
         subscribe(this::handleExitRequest, ExitRequested.class);
     }
@@ -216,11 +218,14 @@ public class Engine extends Contextual {
         input.shutdown();
         renderer.shutdown();
         resourceCache.shutdown();
+        ui.shutdown();
         graphics.shutdown();
 
         glfwErrorCallback.free();
 
-        GLFW.glfwTerminate();
+        glfwTerminate();
+
+        getContext().getBeans(Contextual.class).forEach(Contextual::destory);
 
         shutdownLog();
     }

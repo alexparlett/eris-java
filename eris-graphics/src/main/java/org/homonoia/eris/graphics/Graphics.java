@@ -29,6 +29,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.lwjgl.glfw.Callbacks.glfwFreeCallbacks;
 import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MAJOR;
 import static org.lwjgl.glfw.GLFW.GLFW_CONTEXT_VERSION_MINOR;
 import static org.lwjgl.glfw.GLFW.GLFW_DECORATED;
@@ -127,9 +128,7 @@ public class Graphics extends Contextual {
         initialized = false;
 
         if (renderWindow != MemoryUtil.NULL) {
-            glfwSetFramebufferSizeCallback(renderWindow, null);
-            glfwSetWindowCloseCallback(renderWindow, null);
-
+            glfwFreeCallbacks(renderWindow);
             glfwDestroyWindow(renderWindow);
             renderWindow = MemoryUtil.NULL;
         }
