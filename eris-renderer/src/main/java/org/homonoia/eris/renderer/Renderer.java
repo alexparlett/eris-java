@@ -103,7 +103,7 @@ public class Renderer extends Contextual {
     }
 
     private void configureDebugMode() throws Exception {
-        Model cube = resourceCache.get(Model.class, "Models/bounding-box.mdl").orElseThrow(() -> new InitializationException("Debug Model not available"));
+        Model cube = resourceCache.get(Model.class, "Models/bounding.mdl").orElseThrow(() -> new InitializationException("Debug Model not available"));
         debugMode.setBoundingBoxCube(cube);
 
         debugMode.setAxis(getContext().isDebugEnabled());

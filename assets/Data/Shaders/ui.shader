@@ -1,4 +1,4 @@
 {
-  "frag": "Shaders/outline.frag",
-  "vert": "Shaders/outline.vert"
+  "frag": "Shaders/ui.frag",
+  "vert": "Shaders/ui.vert"
 }

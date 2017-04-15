@@ -1,5 +1,6 @@
 package org.homonoia.eris.input.events;
 
+import lombok.Getter;
 import org.homonoia.eris.events.Event;
 import org.joml.Vector2d;
 
@@ -9,23 +10,19 @@ import org.joml.Vector2d;
  * @author alexp
  * @since 05/03/2016
  */
+@Getter
 public class MouseScroll extends Event {
 
-    private final double delta;
+    private final Vector2d delta;
     private final Vector2d position;
+    private final double timeStep;
+
 
     protected MouseScroll(final Builder builder) {
         super(builder);
         this.delta = builder.delta;
         this.position = builder.position;
-    }
-
-    public double getDelta() {
-        return delta;
-    }
-
-    public Vector2d getPosition() {
-        return position;
+        this.timeStep = builder.timeStep;
     }
 
     public static Builder builder() {
@@ -34,10 +31,11 @@ public class MouseScroll extends Event {
 
     public static final class Builder extends EventBuilder<Builder> {
 
-        public double delta;
+        public Vector2d delta;
         public Vector2d position;
+        private double timeStep;
 
-        public Builder delta(double delta) {
+        public Builder delta(Vector2d delta) {
             this.delta = delta;
             return this;
         }
@@ -46,6 +44,12 @@ public class MouseScroll extends Event {
             this.position = position;
             return this;
         }
+
+        public Builder timeStep(double timeStep) {
+            this.timeStep = timeStep;
+            return this;
+        }
+
 
         @Override
         public MouseScroll build() {

@@ -5,25 +5,32 @@ import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.Statistics;
 import org.homonoia.eris.core.components.FileSystem;
-import org.homonoia.eris.core.utils.ThreadUtils;
 import org.homonoia.eris.resources.GPUResource;
 import org.homonoia.eris.resources.Resource;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.text.MessageFormat;
-import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 
+import static java.text.MessageFormat.format;
+import static java.util.Objects.requireNonNull;
+import static org.homonoia.eris.core.utils.ThreadUtils.isMainThread;
+import static org.homonoia.eris.resources.Resource.AsyncState;
+import static org.homonoia.eris.resources.Resource.AsyncState.FAILED;
+import static org.homonoia.eris.resources.Resource.AsyncState.GPU_READY;
+import static org.homonoia.eris.resources.Resource.AsyncState.LOADING;
+import static org.homonoia.eris.resources.Resource.AsyncState.QUEUED;
+import static org.homonoia.eris.resources.Resource.AsyncState.SUCCESS;
+
 /**
- * Copyright (c) 2015-2016 the Eris project.
+ * Copyright (c) 2015-2017 Homonoia Studios.
  *
  * @author alexparlett
- * @since 19/02/2016
+ * @since 15/04/2017
  */
-@Slf4j
+@Slf4j()
 class ResourceLoader extends Contextual {
 
 
@@ -48,16 +55,16 @@ class ResourceLoader extends Contextual {
     }
 
     public void load(final Resource resource, final boolean immediate) throws IOException {
-        Objects.requireNonNull(resource, MessageFormat.format("Failed to load {0} resource cannot be null", resource.getPath()));
-        Objects.requireNonNull(resource.getLocation(), MessageFormat.format("Failed to load {0} path cannot be null", resource.getPath()));
+        requireNonNull(resource, format("Failed to load {0} resource cannot be null", resource.getPath()));
+        requireNonNull(resource.getLocation(), format("Failed to load {0} path cannot be null", resource.getPath()));
 
         if (!fileSystem.isAccessible(resource.getLocation())) {
             throw new IOException(resource.getLocation().toString() + " is not accessible.");
         }
 
-        if (resource.getState().equals(Resource.AsyncState.FAILED) ||
-                resource.getState().equals(Resource.AsyncState.SUCCESS) ||
-                resource.getState().equals(Resource.AsyncState.LOADING)) {
+        if (resource.getState().equals(FAILED) ||
+                resource.getState().equals(SUCCESS) ||
+                resource.getState().equals(LOADING)) {
             return;
         }
 
@@ -65,11 +72,11 @@ class ResourceLoader extends Contextual {
         task.resource = resource;
         task.path = resource.getLocation();
 
-        if (ThreadUtils.isMainThread() && resource.getState().equals(Resource.AsyncState.GPU_READY)) {
+        if (isMainThread() && resource.getState().equals(GPU_READY)) {
             ((GPUResource) resource).compile();
         } else if (!immediate) {
-            if (!resource.getState().equals(Resource.AsyncState.QUEUED)) {
-                resource.setState(Resource.AsyncState.QUEUED);
+            if (!resource.getState().equals(QUEUED)) {
+                resource.setState(QUEUED);
                 executorService.submit(task);
             }
         } else {
@@ -80,28 +87,28 @@ class ResourceLoader extends Contextual {
     private void process(LoadingTask loadingTask) {
         if (loadingTask.resource != null && loadingTask.path != null) {
             statistics.getCurrent().startSegment();
-            loadingTask.resource.setState(Resource.AsyncState.LOADING);
+            loadingTask.resource.setState(LOADING);
             try (InputStream inputStream = fileSystem.newInputStream(loadingTask.path)) {
                 loadingTask.resource.load(inputStream);
-                if (ThreadUtils.isMainThread() && loadingTask.resource.getState().equals(Resource.AsyncState.GPU_READY)) {
+                if (isMainThread() && loadingTask.resource.getState().equals(GPU_READY)) {
                     ((GPUResource) loadingTask.resource).compile();
                 }
                 log.info("Loaded {} {}", loadingTask.resource.getClass().getSimpleName(), loadingTask.path);
             } catch (IOException e) {
-                loadingTask.resource.setState(Resource.AsyncState.FAILED);
+                loadingTask.resource.setState(FAILED);
                 log.error("Failed to load {} {}", loadingTask.resource.getClass().getSimpleName(), loadingTask.path, e);
             }
             statistics.getCurrent().endSegment("Resource Loaded " + loadingTask.resource.getClass().getSimpleName());
         }
     }
 
-    private class LoadingTask implements Callable<Resource.AsyncState> {
+    private class LoadingTask implements Callable<AsyncState> {
         private Resource resource;
         private Path path;
 
         @Override
-        public Resource.AsyncState call() {
-            if (resource.getState().equals(Resource.AsyncState.QUEUED)) {
+        public AsyncState call() {
+            if (resource.getState().equals(QUEUED)) {
                 process(this);
             }
             return resource.getState();

@@ -1,5 +1,6 @@
 package org.homonoia.eris.input.events;
 
+import lombok.Getter;
 import org.homonoia.eris.events.Event;
 import org.homonoia.eris.input.Button;
 import org.homonoia.eris.input.Modifier;
@@ -13,29 +14,20 @@ import java.util.List;
  * @author alexp
  * @since 05/03/2016
  */
+@Getter
 public class MouseButtonDown extends Event {
 
     private final List<Modifier> mods;
     private final Button button;
     private final Vector2d position;
+    private final double timeStep;
 
     protected MouseButtonDown(final Builder builder) {
         super(builder);
         this.button = builder.button;
         this.mods = builder.mods;
         this.position = builder.position;
-    }
-
-    public List<Modifier> getMods() {
-        return mods;
-    }
-
-    public Button getButton() {
-        return button;
-    }
-
-    public Vector2d getPosition() {
-        return position;
+        this.timeStep = builder.timeStep;
     }
 
     public static Builder builder() {
@@ -47,6 +39,7 @@ public class MouseButtonDown extends Event {
         public List<Modifier> mods;
         public Button button;
         public Vector2d position;
+        private double timeStep;
 
         public Builder mods(List<Modifier> mods) {
             this.mods = mods;
@@ -62,6 +55,12 @@ public class MouseButtonDown extends Event {
             this.position = position;
             return this;
         }
+
+        public Builder timeStep(double timeStep) {
+            this.timeStep = timeStep;
+            return this;
+        }
+
 
         @Override
         public MouseButtonDown build() {

@@ -28,7 +28,7 @@ public class InputSystem extends EntitySystem {
     @Override
     public void update(Update update) throws ErisException {
         statistics.getCurrent().startSegment();
-        input.update();
+        input.update(update.getTimeStep());
         statistics.getCurrent().endSegment("Input");
     }
 }

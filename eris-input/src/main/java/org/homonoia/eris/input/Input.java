@@ -25,6 +25,7 @@ import org.lwjgl.nuklear.NkMouse;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
+import java.nio.DoubleBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +34,7 @@ import java.util.Objects;
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR;
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_HIDDEN;
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_NORMAL;
+import static org.lwjgl.glfw.GLFW.glfwGetCursorPos;
 import static org.lwjgl.glfw.GLFW.glfwGetKeyName;
 import static org.lwjgl.glfw.GLFW.glfwGetWindowPos;
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
@@ -55,7 +57,8 @@ public class Input extends Contextual {
 
     private boolean initialized = false;
     private long renderWindow = MemoryUtil.NULL;
-    private Vector2d mouseLastPosition = new Vector2d();
+    private Vector2d mouseLastPosition;
+    private double timeStep = 0;
 
     private GLFWKeyCallback glfwKeyCallback;
     private GLFWMouseButtonCallback glfwMouseButtonCallback;
@@ -93,11 +96,20 @@ public class Input extends Contextual {
             GLFW.glfwSetScrollCallback(renderWindow, glfwScrollCallback);
             GLFW.glfwSetCharCallback(renderWindow, glfwCharCallback);
 
+            try (MemoryStack stack = MemoryStack.stackPush()) {
+                DoubleBuffer xpos = stack.callocDouble(1);
+                DoubleBuffer ypos = stack.callocDouble(1);
+                glfwGetCursorPos(renderWindow, xpos, ypos);
+                mouseLastPosition = new Vector2d(xpos.get(), ypos.get());
+            }
+
             initialized = true;
         }
     }
 
-    public void update() {
+    public void update(double timeStep) {
+        this.timeStep = timeStep;
+
         NkContext ctx = ui.getCtx();
         long win = graphics.getRenderWindow();
 
@@ -185,20 +197,23 @@ public class Input extends Contextual {
                         .scancode(scancode)
                         .character(!StringUtils.isEmpty(keyName) ? keyName.charAt(0) : Character.MIN_VALUE)
                         .mods(extractModifiers(mods))
-                        .repeat(false));
+                        .repeat(false)
+                        .timeStep(timeStep));
             } else if (action == GLFW.GLFW_REPEAT) {
                 publish(KeyDown.builder()
                         .key(Key.valueOf(key))
                         .scancode(scancode)
                         .character(!StringUtils.isEmpty(keyName) ? keyName.charAt(0) : Character.MIN_VALUE)
                         .mods(extractModifiers(mods))
-                        .repeat(true));
+                        .repeat(true)
+                        .timeStep(timeStep));
             } else {
                 publish(KeyUp.builder()
                         .key(Key.valueOf(key))
                         .scancode(scancode)
                         .character(!StringUtils.isEmpty(keyName) ? keyName.charAt(0) : Character.MIN_VALUE)
-                        .mods(extractModifiers(mods)));
+                        .mods(extractModifiers(mods))
+                        .timeStep(timeStep));
             }
         }
     }
@@ -209,12 +224,14 @@ public class Input extends Contextual {
                 publish(MouseButtonDown.builder()
                         .button(Button.valueOf(button))
                         .mods(extractModifiers(mods))
-                        .position(mouseLastPosition));
+                        .position(mouseLastPosition)
+                        .timeStep(timeStep));
             } else {
                 publish(MouseButtonUp.builder()
                         .button(Button.valueOf(button))
                         .mods(extractModifiers(mods))
-                        .position(mouseLastPosition));
+                        .position(mouseLastPosition)
+                        .timeStep(timeStep));
             }
         }
     }
@@ -228,24 +245,25 @@ public class Input extends Contextual {
 
             publish(MouseMove.builder()
                     .position(position)
-                    .delta(delta));
+                    .delta(delta)
+                    .timeStep(timeStep));
         }
     }
 
     private void handleGLFWScrollCallback(long window, double xoffset, double yoffset) {
         if (window == graphics.getRenderWindow()) {
-            double delta = xoffset > yoffset ? xoffset : -yoffset;
-
             publish(MouseScroll.builder()
-                    .delta(delta)
-                    .position(mouseLastPosition));
+                    .delta(new Vector2d(xoffset, yoffset))
+                    .position(mouseLastPosition)
+                    .timeStep(timeStep));
         }
     }
 
     private void handleGLFWCharCallback(long window, int codepoint) {
         if (window == renderWindow) {
             publish(Text.builder()
-                    .string(String.valueOf(Character.toChars(codepoint))));
+                    .string(String.valueOf(Character.toChars(codepoint)))
+                    .timeStep(timeStep));
         }
     }
 

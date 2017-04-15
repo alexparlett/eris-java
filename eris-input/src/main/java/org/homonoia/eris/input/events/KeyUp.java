@@ -1,5 +1,6 @@
 package org.homonoia.eris.input.events;
 
+import lombok.Getter;
 import org.homonoia.eris.events.Event;
 import org.homonoia.eris.input.Key;
 import org.homonoia.eris.input.Modifier;
@@ -12,12 +13,14 @@ import java.util.List;
  * @author alexp
  * @since 05/03/2016
  */
+@Getter
 public class KeyUp extends Event {
 
     private final Key key;
     private final int scancode;
     private final List<Modifier> mods;
     private final char character;
+    private final double timeStep;
 
     protected KeyUp(final Builder builder) {
         super(builder);
@@ -25,22 +28,7 @@ public class KeyUp extends Event {
         this.scancode = builder.scancode;
         this.mods = builder.mods;
         this.character = builder.character;
-    }
-
-    public Key getKey() {
-        return key;
-    }
-
-    public int getScancode() {
-        return scancode;
-    }
-
-    public List<Modifier> getMods() {
-        return mods;
-    }
-
-    public char getCharacter() {
-        return character;
+        this.timeStep = builder.timeStep;
     }
 
     public static Builder builder() {
@@ -53,6 +41,7 @@ public class KeyUp extends Event {
         private Key key;
         private int scancode;
         private char character;
+        private double timeStep;
 
         public Builder key(final Key key) {
             this.key = key;
@@ -73,6 +62,12 @@ public class KeyUp extends Event {
             this.mods = mods;
             return this;
         }
+
+        public Builder timeStep(double timeStep) {
+            this.timeStep = timeStep;
+            return this;
+        }
+
 
         @Override
         public KeyUp build() {

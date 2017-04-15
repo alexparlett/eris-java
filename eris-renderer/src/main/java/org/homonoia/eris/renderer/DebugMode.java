@@ -4,10 +4,10 @@ import lombok.Data;
 import org.homonoia.eris.graphics.drawables.Model;
 
 /**
- * Copyright (c) 2015-2016 Homonoia Studios.
+ * Copyright (c) 2015-2017 Homonoia Studios.
  *
  * @author alexparlett
- * @since 13/03/2017
+ * @since 15/04/2017
  */
 @Data
 public class DebugMode {

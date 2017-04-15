@@ -15,13 +15,12 @@ import org.homonoia.eris.renderer.RenderKey;
 import org.homonoia.eris.renderer.commands.CameraCommand;
 import org.homonoia.eris.renderer.commands.ClearColorCommand;
 import org.homonoia.eris.renderer.commands.ClearCommand;
-import org.homonoia.eris.renderer.commands.DrawBoundingBoxCommand;
+import org.homonoia.eris.renderer.commands.DrawBoundingSphereCommand;
 import org.homonoia.eris.renderer.commands.DrawModelCommand;
 import org.homonoia.eris.renderer.commands.DrawSkyboxCommand;
 import org.homonoia.eris.renderer.commands.EnableCommand;
 import org.joml.FrustumIntersection;
 import org.joml.Matrix4f;
-import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.util.concurrent.Callable;
@@ -108,15 +107,13 @@ public final class CameraSceneParser implements Callable<Boolean> {
                         .material(0)
                         .build()));
 
-        Matrix4f frustum = new Matrix4f(perspective)
-                .translate(cameraTransform.getTranslation())
-                .rotate(cameraTransform.getRotation());
+        Matrix4f frustum = perspective.mul(view);
 
         FrustumIntersection intersection = new FrustumIntersection(frustum);
 
         renderableFamily.getEntities()
                 .stream()
-                .filter(filterEntities(camera, intersection))
+                .filter(filterEntities(camera, intersection, cameraTransform))
                 .forEach(processEntity(cameraTransform, camera));
 
         if (nonNull(camera.getSkybox())) {
@@ -141,7 +138,7 @@ public final class CameraSceneParser implements Callable<Boolean> {
             Mesh mesh = entity.get(Mesh.class).get();
 
             if (debugMode.isBoundingBoxes()) {
-                renderFrame.add(DrawBoundingBoxCommand.newInstance()
+                renderFrame.add(DrawBoundingSphereCommand.newInstance()
                         .boundingBox(mesh.getModel().getAxisAlignedBoundingBox())
                         .transform(rndrTransform.get())
                         .model(debugMode.getBoundingBoxCube().getSubModels().get(0))
@@ -178,26 +175,29 @@ public final class CameraSceneParser implements Callable<Boolean> {
                 .build();
     }
 
-    protected Predicate<Entity> filterEntities(Camera camera, FrustumIntersection intersection) {
+    protected Predicate<Entity> filterEntities(Camera camera, FrustumIntersection intersection, Transform cameraTransform) {
         return entity -> {
             Transform rndrTransform = entity.get(Transform.class).get();
             Mesh rndrMesh = entity.get(Mesh.class).get();
 
             boolean inLayer = camera.getLayerMask().isEmpty() || camera.getLayerMask().contains(rndrTransform.getLayer());
-            boolean visible = inLayer && testFrustumOBB(rndrTransform, rndrMesh.getModel().getAxisAlignedBoundingBox(), intersection);
+            AxisAlignedBoundingBox aabb = rndrMesh.getModel().getAxisAlignedBoundingBox();
+            boolean visible = inLayer
+                    && testFrustumSphere(rndrTransform, aabb, intersection)
+                    && testNearPlane(rndrTransform, aabb, cameraTransform, camera);
             return visible;
         };
     }
 
-    protected boolean testFrustumOBB(Transform rndrTransform, AxisAlignedBoundingBox aabb, FrustumIntersection intersection) {
-        Quaternionf rndrTransformRotation = rndrTransform.getRotation();
+    protected boolean testFrustumSphere(Transform rndrTransform, AxisAlignedBoundingBox aabb, FrustumIntersection intersection) {
+        float modelExtent = aabb.getMin().distance(aabb.getMax());
+        Vector3f translation = rndrTransform.getTranslation();
+        return intersection.testSphere(translation, modelExtent);
+    }
 
-        Vector3f min = aabb.getMin().mulPosition(rndrTransform.get(), aabbMin.get())
-                .rotate(rndrTransformRotation);
-
-        Vector3f max = aabb.getMax().mulPosition(rndrTransform.get(), aabbMax.get())
-                .rotate(rndrTransformRotation);
-
-        return max.distance(min) >= 0 ? intersection.testAab(min, max) : intersection.testAab(max, min);
+    protected boolean testNearPlane(Transform rndrTransform, AxisAlignedBoundingBox aabb, Transform cameraTransform, Camera camera) {
+        float modelExtent = aabb.getMin().distance(aabb.getMax()) / 2;
+        float distanceFromCamera = modelExtent + rndrTransform.getTranslation().distance(cameraTransform.getTranslation());
+        return distanceFromCamera >= camera.getNear();
     }
 }

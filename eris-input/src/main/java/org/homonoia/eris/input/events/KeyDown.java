@@ -1,5 +1,6 @@
 package org.homonoia.eris.input.events;
 
+import lombok.Getter;
 import org.homonoia.eris.events.Event;
 import org.homonoia.eris.input.Key;
 import org.homonoia.eris.input.Modifier;
@@ -12,6 +13,7 @@ import java.util.List;
  * @author alexp
  * @since 05/03/2016
  */
+@Getter
 public class KeyDown extends Event {
 
     private final boolean repeat;
@@ -19,6 +21,7 @@ public class KeyDown extends Event {
     private final int scancode;
     private final char character;
     private final List<Modifier> mods;
+    private final double timeStep;
 
     protected KeyDown(final Builder builder) {
         super(builder);
@@ -27,26 +30,7 @@ public class KeyDown extends Event {
         this.scancode = builder.scancode;
         this.mods = builder.mods;
         this.character = builder.character;
-    }
-
-    public boolean isRepeat() {
-        return repeat;
-    }
-
-    public Key getKey() {
-        return key;
-    }
-
-    public int getScancode() {
-        return scancode;
-    }
-
-    public List<Modifier> getMods() {
-        return mods;
-    }
-
-    public char getCharacter() {
-        return character;
+        this.timeStep = builder.timeStep;
     }
 
     public static Builder builder() {
@@ -60,6 +44,7 @@ public class KeyDown extends Event {
         private Key key;
         private int scancode;
         private char character;
+        private double timeStep;
 
         public Builder key(final Key key) {
             this.key = key;
@@ -85,6 +70,12 @@ public class KeyDown extends Event {
             this.repeat = repeat;
             return this;
         }
+
+        public Builder timeStep(double timeStep) {
+            this.timeStep = timeStep;
+            return this;
+        }
+
 
         @Override
         public KeyDown build() {

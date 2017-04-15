@@ -78,27 +78,29 @@ allprojects { project ->
         runtime "org.lwjgl:lwjgl-stb:${lwjglVersion}:${lwjglNatives}"
         runtime "org.lwjgl:lwjgl-tinyfd:${lwjglVersion}:${lwjglNatives}"
         runtime "org.lwjgl:lwjgl-yoga:${lwjglVersion}:${lwjglNatives}"
+
         compile "com.code-disaster.steamworks4j:steamworks4j:${steamworks4jVersion}"
         compile "org.joml:joml:${jomlVersion}"
-
-        testCompile 'org.mockito:mockito-core:2.+'
-        testCompile 'org.hamcrest:hamcrest-all:+'
-        testCompile 'junit:junit:4.12'
-
         compile 'org.codehaus.janino:janino:3.0.7'
         compile 'org.slf4j:jcl-over-slf4j:1.7.+'
         compile 'ch.qos.logback:logback-classic:+'
         compile 'io.reactivex:rxjava:+'
         compile 'org.apache.commons:commons-lang3:3.5'
         compile 'org.reflections:reflections:+'
+        compile 'org.ode4j:core:0.3.0'
 
         compileOnly "org.projectlombok:lombok:1.16.10"
+
+        testCompile 'org.mockito:mockito-core:2.+'
+        testCompile 'org.hamcrest:hamcrest-all:+'
+        testCompile 'junit:junit:4.12'
     }
 
     configurations.all {
         exclude group: 'commons-logging', module: 'commons-logging'
     }
 
+    processResources.dependsOn()
     compileJava.dependsOn(processResources)
 
     idea {
@@ -125,4 +127,8 @@ project(":assets") {
 
 task wrapper(type: Wrapper) {
   gradleVersion = '3.3'
+}
+
+task cleanResources() {
+
 }

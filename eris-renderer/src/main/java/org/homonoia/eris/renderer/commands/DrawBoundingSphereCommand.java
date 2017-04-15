@@ -8,7 +8,6 @@ import org.homonoia.eris.renderer.RenderCommand;
 import org.homonoia.eris.renderer.RenderKey;
 import org.homonoia.eris.renderer.Renderer;
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
 
 import static java.util.Objects.isNull;
 import static org.lwjgl.opengl.GL11.GL_FILL;
@@ -22,9 +21,9 @@ import static org.lwjgl.opengl.GL11.glPolygonMode;
  * @author alexparlett
  * @since 13/02/2016
  */
-public class DrawBoundingBoxCommand extends RenderCommand<DrawBoundingBoxCommand> {
+public class DrawBoundingSphereCommand extends RenderCommand<DrawBoundingSphereCommand> {
 
-    private static final Pool<DrawBoundingBoxCommand> POOL = new ExpandingPool<>(4, Integer.MAX_VALUE, () -> new DrawBoundingBoxCommand());
+    private static final Pool<DrawBoundingSphereCommand> POOL = new ExpandingPool<>(4, Integer.MAX_VALUE, () -> new DrawBoundingSphereCommand());
     private AxisAlignedBoundingBox aabb;
     private Matrix4f transform = new Matrix4f().identity();
     private SubModel model;
@@ -38,8 +37,8 @@ public class DrawBoundingBoxCommand extends RenderCommand<DrawBoundingBoxCommand
             findAndBindUniform("projection", renderer, model.getMaterial().getShaderProgram(), renderer.getCurrentProjection());
         }
 
-        Vector3f scale = aabb.getMax().sub(aabb.getMin(), new Vector3f());
-        findAndBindUniform("model", renderer, model.getMaterial().getShaderProgram(), transform.scale(scale));
+        float distance = aabb.getMax().distance(aabb.getMin());
+        findAndBindUniform("model", renderer, model.getMaterial().getShaderProgram(), transform.scale(Math.abs(distance)));
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         model.draw();
@@ -51,22 +50,22 @@ public class DrawBoundingBoxCommand extends RenderCommand<DrawBoundingBoxCommand
         POOL.free(this);
     }
 
-    public DrawBoundingBoxCommand boundingBox(AxisAlignedBoundingBox aabb) {
+    public DrawBoundingSphereCommand boundingBox(AxisAlignedBoundingBox aabb) {
         this.aabb = aabb;
         return this;
     }
 
-    public DrawBoundingBoxCommand transform(Matrix4f transform) {
+    public DrawBoundingSphereCommand transform(Matrix4f transform) {
         this.transform.set(transform);
         return this;
     }
 
-    public DrawBoundingBoxCommand model(SubModel model) {
+    public DrawBoundingSphereCommand model(SubModel model) {
         this.model = model;
         return this;
     }
 
-    public static DrawBoundingBoxCommand newInstance() {
+    public static DrawBoundingSphereCommand newInstance() {
         return POOL.obtain();
     }
 }
