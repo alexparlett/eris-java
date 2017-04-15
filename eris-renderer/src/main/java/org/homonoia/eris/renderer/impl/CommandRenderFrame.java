@@ -1,8 +1,8 @@
-package org.homonoia.eris.render.impl;
+package org.homonoia.eris.renderer.impl;
 
-import org.homonoia.eris.render.RenderCommand;
-import org.homonoia.eris.render.RenderFrame;
-import org.homonoia.eris.render.Renderer;
+import org.homonoia.eris.renderer.RenderCommand;
+import org.homonoia.eris.renderer.RenderFrame;
+import org.homonoia.eris.renderer.Renderer;
 
 import java.util.ArrayList;
 import java.util.List;

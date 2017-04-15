@@ -179,11 +179,6 @@ public class ShaderProgram extends Resource implements GPUResource {
                 size.clear();
 
                 String name = glGetActiveUniform(handle, i, size, type);
-
-                if (type.get(0) == GL20.GL_SAMPLER_2D || type.get(0) == GL20.GL_SAMPLER_CUBE) {
-                    continue;
-                }
-
                 int location = glGetUniformLocation(handle, name);
 
                 Uniform uniform = Uniform.builder()
