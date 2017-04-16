@@ -138,15 +138,15 @@ public class Transform extends Component {
     }
 
     public Vector3f up() {
-        return getRotation().getEulerAnglesXYZ(new Vector3f()).mul(Up);
+        return getRotation().invert().transform(Up);
     }
 
     public Vector3f right() {
-        return getRotation().getEulerAnglesXYZ(new Vector3f()).mul(Right);
+        return getRotation().invert().transform(Right);
     }
 
     public Vector3f forward() {
-        return getRotation().getEulerAnglesXYZ(new Vector3f()).mul(Forward);
+        return getRotation().invert().transform(Forward);
     }
 
     public int getLayer() {

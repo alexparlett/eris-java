@@ -76,7 +76,7 @@ public class Image extends Resource {
             IntBuffer h = stack.mallocInt(1);
             IntBuffer comp = stack.mallocInt(1);
 
-            stbi_set_flip_vertically_on_load(false);
+            stbi_set_flip_vertically_on_load(true);
             data = stbi_load_from_memory(byteBuffer, w, h, comp, 0);
             if (isNull(data)) {
                 LOG.error("Failed to load Image {}. {}", getLocation(), stbi_failure_reason());

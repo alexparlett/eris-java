@@ -197,7 +197,6 @@ public final class CameraSceneParser implements Callable<Boolean> {
 
     protected boolean testNearPlane(Transform rndrTransform, AxisAlignedBoundingBox aabb, Transform cameraTransform, Camera camera) {
         float modelExtent = aabb.getMin().distance(aabb.getMax()) / 2;
-        float distanceFromCamera = modelExtent + rndrTransform.getTranslation().distance(cameraTransform.getTranslation());
-        return distanceFromCamera >= camera.getNear();
+        return (rndrTransform.getTranslation().length() - modelExtent) - cameraTransform.getTranslation().length() > camera.getNear();
     }
 }

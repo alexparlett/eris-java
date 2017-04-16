@@ -13,7 +13,6 @@ out VertexData
 void main()
 {
 	vec4 pos = projection * view * vec4(position, 1.f);
-	pos.x = -pos.x;
 	gl_Position = pos.xyww;
 	oData.texcoords = position;
 }

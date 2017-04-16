@@ -1,7 +1,7 @@
 [
   {
     "material": "Materials/fighter.mat",
-    "mesh": "Meshes/MS Fighter.obj",
+    "mesh": "Meshes/MS Fighter.fbx",
     "origin": "0 0 0",
     "scale": 0.01,
     "animations": []

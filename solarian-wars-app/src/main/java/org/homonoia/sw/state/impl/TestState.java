@@ -15,6 +15,7 @@ import org.homonoia.eris.ecs.exceptions.MissingRequiredComponentException;
 import org.homonoia.eris.ecs.systems.InputSystem;
 import org.homonoia.eris.ecs.systems.SceneRenderSystem;
 import org.homonoia.eris.ecs.systems.UpdateSystem;
+import org.homonoia.eris.events.core.ExitRequested;
 import org.homonoia.eris.graphics.Graphics;
 import org.homonoia.eris.graphics.drawables.Model;
 import org.homonoia.eris.graphics.drawables.Skybox;
@@ -80,11 +81,11 @@ public class TestState extends Contextual implements State {
 
         try {
             camera = new Entity(getContext());
-            camera.add(new Transform().translate(0, 0, 0).rotate(0,0,0));
+            camera.add(new Transform().translate(0, 0, 0).rotate(0, 0, 0));
             camera.add(new Camera()
                     .far(100)
                     .near(5)
-                    .fov(55)
+                    .fov(60)
                     .backgroundColor(new Vector4f(255, 255, 255, 1))
                     .renderTarget(graphics.getDefaultRenderTarget())
                     .skybox(skybox)
@@ -92,7 +93,7 @@ public class TestState extends Contextual implements State {
             entityManager.add(camera);
 
             this.model = new Entity(getContext());
-            this.model.add(componentFactory.newInstance(Transform.class).translate(0,0,-15));
+            this.model.add(componentFactory.newInstance(Transform.class).translate(0, 0, -15));
             this.model.add(componentFactory.newInstance(Mesh.class).model(model));
             this.model.add(componentFactory.newInstance("core.ships.Fighter"));
             entityManager.add(this.model);
@@ -106,49 +107,65 @@ public class TestState extends Contextual implements State {
         Transform modelTransform = model.get(Transform.class).get();
         if (evt.getKey().equals(Key.R)) {
             Transform transform = evt.getMods().contains(Modifier.SHIFT) ? modelTransform : cameraTransform;
-            transform.get().setRotationXYZ(0, 0, 0).setTranslation(0,0,0);
+            transform.get().setRotationXYZ(0, 0, 0).setTranslation(0, 0, 0);
         }
         if (evt.getKey().equals(Key.W)) {
             Transform transform = evt.getMods().contains(Modifier.SHIFT) ? modelTransform : cameraTransform;
-            Vector3f mul = transform.forward().mul((float) (10 * (evt.getTimeStep() / 1000)));
+            Vector3f forward = transform.forward();
+            float scalar = (float) (50 * (evt.getTimeStep() / 5000));
+            Vector3f mul = forward.mul(scalar);
             transform.get().translate(mul);
         }
         if (evt.getKey().equals(Key.S)) {
             Transform transform = evt.getMods().contains(Modifier.SHIFT) ? modelTransform : cameraTransform;
-            Vector3f mul = transform.forward().negate().mul((float) (10 * (evt.getTimeStep() / 1000)));
+            Vector3f forward = transform.forward().negate();
+            float scalar = (float) (50 * (evt.getTimeStep() / 5000));
+            Vector3f mul = forward.mul(scalar);
             transform.get().translate(mul);
         }
         if (evt.getKey().equals(Key.A)) {
             Transform transform = evt.getMods().contains(Modifier.SHIFT) ? modelTransform : cameraTransform;
-            Vector3f mul = transform.right().negate().mul((float) (10 * (evt.getTimeStep() / 1000)));
+            Vector3f forward = transform.right().negate();
+            float scalar = (float) (50 * (evt.getTimeStep() / 5000));
+            Vector3f mul = forward.mul(scalar);
             transform.get().translate(mul);
         }
         if (evt.getKey().equals(Key.D)) {
             Transform transform = evt.getMods().contains(Modifier.SHIFT) ? modelTransform : cameraTransform;
-            Vector3f mul = transform.right().mul((float) (10 * (evt.getTimeStep() / 1000)));
+            Vector3f forward = transform.right();
+            float scalar = (float) (50 * (evt.getTimeStep() / 5000));
+            Vector3f mul = forward.mul(scalar);
             transform.get().translate(mul);
         }
 
         if (evt.getKey().equals(Key.Q)) {
             Transform transform = evt.getMods().contains(Modifier.SHIFT) ? modelTransform : cameraTransform;
-            Vector3f mul = transform.up().mul((float) (10 * (evt.getTimeStep() / 1000)));
+            Vector3f forward = transform.up();
+            float scalar = (float) (50 * (evt.getTimeStep() / 5000));
+            Vector3f mul = forward.mul(scalar);
             transform.get().translate(mul);
         }
 
         if (evt.getKey().equals(Key.E)) {
             Transform transform = evt.getMods().contains(Modifier.SHIFT) ? modelTransform : cameraTransform;
-            Vector3f mul = transform.up().negate().mul((float) (10 * (evt.getTimeStep() / 1000)));
+            Vector3f forward = transform.up().negate();
+            float scalar = (float) (50 * (evt.getTimeStep() / 5000));
+            Vector3f mul = forward.mul(scalar);
             transform.get().translate(mul);
         }
 
         if (evt.getKey().equals(Key.Z)) {
             Transform transform = evt.getMods().contains(Modifier.SHIFT) ? modelTransform : cameraTransform;
-            transform.get().rotateY((float) Math.toRadians((-50 * (evt.getTimeStep() / 1000))));
+            transform.get().rotateY((float) Math.toRadians((-50 * (evt.getTimeStep() / 5000))));
         }
 
         if (evt.getKey().equals(Key.X)) {
             Transform transform = evt.getMods().contains(Modifier.SHIFT) ? modelTransform : cameraTransform;
-            transform.get().rotateY((float) Math.toRadians((50 * (evt.getTimeStep() / 1000))));
+            transform.get().rotateY((float) Math.toRadians((50 * (evt.getTimeStep() / 5000))));
+        }
+
+        if (evt.getKey().equals(Key.ESCAPE)) {
+            publish(ExitRequested.builder());
         }
     }
 
