@@ -12,6 +12,7 @@ import org.homonoia.eris.graphics.drawables.Model;
 @Data
 public class DebugMode {
 
+    private boolean grid = false;
     private boolean boundingBoxes = false;
     private boolean axis = false;
 

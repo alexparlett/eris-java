@@ -27,6 +27,7 @@ public final class Entity extends Contextual {
 
     private final long id = ID_GENERATOR.incrementAndGet();
     private final Set<Component> components = new HashSet<>();
+    private final ComponentFactory componentFactory;
 
     /**
      * Instantiates a new Entity.
@@ -35,6 +36,7 @@ public final class Entity extends Contextual {
      */
     public Entity(final Context context) {
         super(context);
+        componentFactory = context.getBean(ComponentFactory.class);
     }
 
     public long getId() {
@@ -84,7 +86,7 @@ public final class Entity extends Contextual {
 
     public <T extends Component> Optional<T> remove(final Class<T> clazz) {
         Iterator<? extends Component> iterator = components.iterator();
-        while(iterator.hasNext()) {
+        while (iterator.hasNext()) {
             Component component = iterator.next();
 
             if (component.getClass().equals(clazz)) {
@@ -100,7 +102,7 @@ public final class Entity extends Contextual {
 
     public void removeAll() {
         Iterator<? extends Component> iterator = components.iterator();
-        while(iterator.hasNext()) {
+        while (iterator.hasNext()) {
             Component component = iterator.next();
             component.setEntity(null);
             publishComponentRemoved(component);
@@ -137,16 +139,12 @@ public final class Entity extends Contextual {
     }
 
     private void parseRequiredClass(Class<? extends Component>[] requires, boolean autoAdd, Component component) throws MissingRequiredComponentException {
-        for(Class<? extends Component> require : requires) {
+        for (Class<? extends Component> require : requires) {
             boolean has = has(require);
             if (!has && !autoAdd) {
                 throw new MissingRequiredComponentException(require, this, component);
             } else if (!has) {
-                try {
-                    add(require.newInstance());
-                } catch (InstantiationException | IllegalAccessException e) {
-                    throw new RuntimeException("Cannot add " + require.getName() + " automatically to entity when required as it does not have a valid no args constructor");
-                }
+                add(componentFactory.newInstance(require));
             }
         }
     }

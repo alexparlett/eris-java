@@ -109,8 +109,8 @@ public class UI extends Contextual {
         ctx = NkContext.create();
         nk_init(ctx, allocator, null);
 
-//        setupClipboard();
-//        setupContext();
+        setupClipboard();
+        setupContext();
     }
 
     public void shutdown() {

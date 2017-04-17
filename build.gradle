@@ -103,7 +103,6 @@ processResources {
     }
 }
 
-processResources.outputs.upToDateWhen { false; }
 compileJava.dependsOn(processResources)
 
 idea {

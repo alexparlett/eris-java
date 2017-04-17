@@ -108,6 +108,7 @@ public class Renderer extends Contextual {
 
         debugMode.setAxis(getContext().isDebugEnabled());
         debugMode.setBoundingBoxes(getContext().isDebugEnabled());
+        debugMode.setGrid(getContext().isDebugEnabled());
     }
 
     private void initializeOpenGl() throws InitializationException {

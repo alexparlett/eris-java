@@ -32,7 +32,7 @@ public abstract class Contextual {
     /**
      * Destroy method, ensures that all subscriptions are unsubscribed before deletion.
      */
-    public void destory() {
+    public void destroy() {
         unsubscribe();
     }
 
@@ -160,5 +160,11 @@ public abstract class Contextual {
 
     public Context getContext() {
         return context;
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        destroy();
+        super.finalize();
     }
 }

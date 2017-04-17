@@ -5,11 +5,6 @@ import org.joml.Matrix4f;
 import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
-import java.util.HashSet;
-import java.util.Set;
-
-import static java.util.Objects.nonNull;
-
 /**
  * Copyright (c) 2015-2016 Homonoia Studios.
  *
@@ -22,10 +17,6 @@ public class Transform extends Component {
     public static final Vector3f Forward = new Vector3f(0.f, 0.f, -1.f);
     public static final Vector3f Right = new Vector3f(1.f, 0.f, 0.f);
 
-    private static final ThreadLocal<Matrix4f> tempTransform = ThreadLocal.withInitial(() -> new Matrix4f());
-
-    private Transform parent;
-    private Set<Transform> children = new HashSet<>();
     private int layer = 1;
 
     private Matrix4f transform = new Matrix4f()
@@ -38,26 +29,6 @@ public class Transform extends Component {
         return transform;
     }
 
-    protected Transform set(final Matrix4f transform) {
-        getChildren().forEach((child) -> child.set(transform.mul(child.getLocal(), child.get())));
-        this.transform.set(transform);
-        return this;
-    }
-
-    public Transform getParent() {
-        return parent;
-    }
-
-    public Transform setParent(final Transform parent) {
-        this.set(parent.get().mul(getLocal(), tempTransform.get()));
-        this.parent = parent;
-        this.parent.getChildren().add(this);
-        return this;
-    }
-
-    public Set<Transform> getChildren() {
-        return children;
-    }
 
     public Vector3f getTranslation() {
         return get().getTranslation(new Vector3f());
@@ -71,30 +42,14 @@ public class Transform extends Component {
         return get().getUnnormalizedRotation(new Quaternionf());
     }
 
-    public Matrix4f getLocal() {
-        return nonNull(parent) ? parent.get()
-                .invert(new Matrix4f())
-                .mul(transform) : transform;
-    }
-
-    public Vector3f getLocalTranslation() {
-        return getLocal().getTranslation(new Vector3f());
-    }
-
-    public Vector3f getLocalScale() {
-        return getLocal().getScale(new Vector3f());
-    }
-
-    public Quaternionf getLocalRotation() {
-        return getLocal().getUnnormalizedRotation(new Quaternionf());
-    }
 
     public Transform translate(Vector3f translationXYZ) {
         return translate(translationXYZ.x, translationXYZ.y, translationXYZ.z);
     }
 
     public Transform translate(float x, float y, float z) {
-        return set(get().translate(x,y,z, tempTransform.get()));
+        get().translation(x,y,z);
+        return this;
     }
 
     public Transform rotate(Vector3f translationXYZ) {
@@ -102,15 +57,18 @@ public class Transform extends Component {
     }
 
     public Transform rotate(Quaternionf quat) {
-        return set(get().rotate(quat));
+        get().rotate(quat);
+        return this;
     }
 
     public Transform rotate(float x, float y, float z) {
-        return set(get().rotateXYZ((float) Math.toRadians(x), (float) Math.toRadians(y), (float) Math.toRadians(z), tempTransform.get()));
+        get().rotateXYZ((float) Math.toRadians(x), (float) Math.toRadians(y), (float) Math.toRadians(z));
+        return this;
     }
 
     public Transform scale(float xyz) {
-        return set(get().scale(xyz, tempTransform.get()).setTranslation(getTranslation().mul(xyz)));
+        get().scale(xyz).setTranslation(getTranslation().mul(xyz));
+        return this;
     }
 
     public Transform translation(Vector3f translationXYZ) {
@@ -118,7 +76,8 @@ public class Transform extends Component {
     }
 
     public Transform translation(float x, float y, float z) {
-        return set(tempTransform.get().set(transform).setTranslation(x,y,z));
+        get().setTranslation(x,y,z);
+        return this;
     }
 
     public Transform rotation(Vector3f translationXYZ) {
@@ -126,7 +85,8 @@ public class Transform extends Component {
     }
 
     public Transform rotation(float x, float y, float z) {
-        return set(tempTransform.get().set(transform).setRotationXYZ(x,y,z));
+        get().setRotationXYZ(x,y,z);
+        return this;
     }
 
     public Transform layer(int layer) {
@@ -138,15 +98,15 @@ public class Transform extends Component {
     }
 
     public Vector3f up() {
-        return getRotation().invert().transform(Up);
+        return get().positiveY(new Vector3f());
     }
 
     public Vector3f right() {
-        return getRotation().invert().transform(Right);
+        return get().positiveX(new Vector3f());
     }
 
     public Vector3f forward() {
-        return getRotation().invert().transform(Forward);
+        return get().positiveZ(new Vector3f()).negate();
     }
 
     public int getLayer() {

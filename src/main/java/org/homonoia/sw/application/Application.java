@@ -43,5 +43,6 @@ public class Application extends Contextual {
 
     public void shutdown() {
         engine.shutdown();
+        getContext().destroy();
     }
 }

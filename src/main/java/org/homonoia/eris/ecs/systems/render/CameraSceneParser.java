@@ -92,7 +92,7 @@ public final class CameraSceneParser implements Callable<Boolean> {
                         .material(0)
                         .build()));
 
-        Matrix4f view = cameraTransform.get();
+        Matrix4f view = new Matrix4f().lookAt(cameraTransform.getTranslation(), cameraTransform.getTranslation().add(cameraTransform.forward()), cameraTransform.up());
         float aspectRatio = (float) camera.getRenderTarget().getWidth() / camera.getRenderTarget().getHeight();
         Matrix4f perspective = new Matrix4f().perspective(camera.getFov(), aspectRatio, camera.getNear(), camera.getFar());
         renderFrame.add(CameraCommand.newInstance()
@@ -107,9 +107,8 @@ public final class CameraSceneParser implements Callable<Boolean> {
                         .material(0)
                         .build()));
 
-        Matrix4f frustum = perspective.mul(view);
-
-        FrustumIntersection intersection = new FrustumIntersection(frustum);
+        Matrix4f frustumMatrix = perspective.mul(view);
+        FrustumIntersection intersection = new FrustumIntersection(frustumMatrix);
 
         renderableFamily.getEntities()
                 .stream()
@@ -122,11 +121,14 @@ public final class CameraSceneParser implements Callable<Boolean> {
                     .renderKey(RenderKey.builder()
                             .target(camera.getRenderTarget().getHandle())
                             .targetLayer(0)
-                            .command(1)
+                            .command(3)
                             .extra(0)
                             .depth(Integer.MAX_VALUE)
                             .material(camera.getSkybox().getMaterial().getHandle())
                             .build()));
+        }
+
+        if (debugMode.isGrid()) {
         }
 
         return true;
@@ -183,8 +185,8 @@ public final class CameraSceneParser implements Callable<Boolean> {
             boolean inLayer = camera.getLayerMask().isEmpty() || camera.getLayerMask().contains(rndrTransform.getLayer());
             AxisAlignedBoundingBox aabb = rndrMesh.getModel().getAxisAlignedBoundingBox();
             boolean visible = inLayer
-                    && testFrustumSphere(rndrTransform, aabb, intersection)
-                    && testNearPlane(rndrTransform, aabb, cameraTransform, camera);
+                    && testFrustumSphere(rndrTransform, aabb, intersection);
+//                    && testNearPlane(rndrTransform, aabb, cameraTransform, camera);
             return visible;
         };
     }

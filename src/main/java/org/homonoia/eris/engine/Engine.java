@@ -7,10 +7,10 @@ import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.EmptyStatistics;
 import org.homonoia.eris.core.ExitCode;
-import org.homonoia.eris.core.Statistics;
 import org.homonoia.eris.core.FileSystem;
-import org.homonoia.eris.core.exceptions.InitializationException;
+import org.homonoia.eris.core.Statistics;
 import org.homonoia.eris.core.Timer;
+import org.homonoia.eris.core.exceptions.InitializationException;
 import org.homonoia.eris.ecs.ComponentFactory;
 import org.homonoia.eris.engine.properties.EngineProperties;
 import org.homonoia.eris.events.core.ExitRequested;
@@ -111,6 +111,13 @@ public class Engine extends Contextual {
         // Initialize Base Components
         initializationLog();
 
+        // Initialize Window
+        glfwErrorCallback = GLFWErrorCallback.create(this::handleGLFWError);
+        GLFW.glfwSetErrorCallback(glfwErrorCallback);
+        if (!GLFW.glfwInit() || !getContext().getExitCode().equals(ExitCode.SUCCESS)) {
+            throw new InitializationException("Failed to initialize GLFW.", ExitCode.GLFW_CREATE_ERROR);
+        }
+
         scriptEngine.initialize();
 
         fileSystem.addPath(FileSystem.getApplicationDataDirectory());
@@ -132,13 +139,6 @@ public class Engine extends Contextual {
             locale.load(settings.getString("Game", "Language").orElse("enGB"));
         } catch (IOException | JsonException e) {
             throw new InitializationException("Failed to load Locale.", ExitCode.FATAL_ERROR, e);
-        }
-
-        // Initialize Window
-        glfwErrorCallback = GLFWErrorCallback.create(this::handleGLFWError);
-        GLFW.glfwSetErrorCallback(glfwErrorCallback);
-        if (!GLFW.glfwInit() || !getContext().getExitCode().equals(ExitCode.SUCCESS)) {
-            throw new InitializationException("Failed to initialize GLFW.", ExitCode.GLFW_CREATE_ERROR);
         }
 
         graphics.setTitle(settings.getString("Game", "Title").orElse("Eris"));
@@ -225,13 +225,15 @@ public class Engine extends Contextual {
 
         glfwTerminate();
 
-        getContext().getBeans(Contextual.class).forEach(Contextual::destory);
+        getContext().getBeans(Contextual.class).forEach(Contextual::destroy);
 
         shutdownLog();
     }
 
     private void initializationLog() {
         LOG.info("Initializing...");
+        LOG.info("Arguments:");
+        getContext().getCommandLineArgs().getOptionNames().forEach(option ->         LOG.info("--{}", option));
         LOG.info("Version: {}", engineProperties.getVersion());
         LOG.info("OS: {}", System.getProperty("os.name"));
         LOG.info("Arch: {}", System.getProperty("os.arch"));
