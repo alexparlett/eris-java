@@ -1,15 +1,1 @@
 rootProject.name = 'solarian-wars'
-
-include 'eris-core'
-include 'eris-event'
-include 'eris-resource'
-include 'eris-graphics'
-include 'eris-engine'
-include 'eris-input'
-include 'eris-scene'
-include 'eris-ui'
-include 'solarian-wars-app'
-include 'eris-scripting'
-include 'assets'
-include 'eris-renderer'
-
