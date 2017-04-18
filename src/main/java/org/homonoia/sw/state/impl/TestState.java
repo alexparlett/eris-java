@@ -15,6 +15,7 @@ import org.homonoia.eris.ecs.exceptions.MissingRequiredComponentException;
 import org.homonoia.eris.ecs.systems.InputSystem;
 import org.homonoia.eris.ecs.systems.SceneRenderSystem;
 import org.homonoia.eris.ecs.systems.UpdateSystem;
+import org.homonoia.eris.events.core.ExitRequested;
 import org.homonoia.eris.events.input.KeyDown;
 import org.homonoia.eris.events.input.MouseScroll;
 import org.homonoia.eris.graphics.Graphics;
@@ -79,8 +80,8 @@ public class TestState extends Contextual implements State {
 
         try {
             camera = new Entity(getContext());
-            camera.add(new Transform().translate(0, 0, 0).rotate(0, 0, 0));
-            camera.add(new Camera()
+            camera.add(componentFactory.newInstance(Transform.class).translate(0, 0, 0).rotate(0, 0, 0));
+            camera.add(componentFactory.newInstance(Camera.class)
                     .far(100)
                     .near(5)
                     .fov(60)
@@ -106,6 +107,8 @@ public class TestState extends Contextual implements State {
         if (evt.getKey().equals(Key.R)) {
             Transform transform = evt.getMods().contains(Modifier.SHIFT) ? modelTransform : cameraTransform;
             transform.get().setRotationXYZ(0, 0, 0).setTranslation(0, 0, 0);
+        } else if (evt.getKey().equals(Key.ESCAPE)) {
+            publish(ExitRequested.builder());
         }
     }
 
@@ -127,6 +130,5 @@ public class TestState extends Contextual implements State {
 
     @Override
     public void delete() {
-
     }
 }

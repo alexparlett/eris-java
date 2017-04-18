@@ -26,7 +26,7 @@ public class Timer {
             startTime = currentTime;
         }
 
-        return elapsedTime;
+        return elapsedTime / 1000;
     }
 
     public void reset() {

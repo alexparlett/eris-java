@@ -59,7 +59,7 @@ public class TextureCube extends Texture {
                 .map(JsonElement::getAsJsonObject)
                 .orElseThrow(() -> new IOException("Failed to load TextureCube. Metadata Json invalid."));
 
-        faces = new ArrayList();
+        faces = new ArrayList<>();
 
         String right = root.getAsJsonPrimitive("right").getAsString();
         String left = root.getAsJsonPrimitive("left").getAsString();

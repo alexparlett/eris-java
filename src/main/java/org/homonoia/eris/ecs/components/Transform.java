@@ -1,5 +1,6 @@
 package org.homonoia.eris.ecs.components;
 
+import org.homonoia.eris.core.Context;
 import org.homonoia.eris.ecs.Component;
 import org.joml.Matrix4f;
 import org.joml.Quaternionf;
@@ -24,6 +25,15 @@ public class Transform extends Component {
             .scale(1)
             .translation(0,0,0)
             .rotationXYZ(0,0,0);
+
+    /**
+     * Instantiates a new Contextual.
+     *
+     * @param context the context
+     */
+    public Transform(Context context) {
+        super(context);
+    }
 
     public Matrix4f get() {
         return transform;

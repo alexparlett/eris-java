@@ -1,5 +1,6 @@
 package org.homonoia.eris.ecs.components;
 
+import org.homonoia.eris.core.Context;
 import org.homonoia.eris.ecs.Component;
 import org.homonoia.eris.ecs.annotations.Requires;
 import org.homonoia.eris.graphics.drawables.RenderTarget;
@@ -25,6 +26,15 @@ public class Camera extends Component {
     private RenderTarget renderTarget;
     private Vector4f backgroundColor;
     private Skybox skybox;
+
+    /**
+     * Instantiates a new Contextual.
+     *
+     * @param context the context
+     */
+    public Camera(Context context) {
+        super(context);
+    }
 
     public Set<Integer> getLayerMask() {
         return layerMask;
