@@ -23,10 +23,7 @@ import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.text.MessageFormat;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
-import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static org.lwjgl.nuklear.Nuklear.NK_UTF_INVALID;
 import static org.lwjgl.nuklear.Nuklear.nnk_utf_decode;
