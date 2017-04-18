@@ -25,6 +25,7 @@ import org.homonoia.eris.resources.cache.ResourceCache;
 import org.homonoia.eris.resources.types.json.JsonException;
 import org.homonoia.eris.scripting.ScriptEngine;
 import org.homonoia.eris.ui.UI;
+import org.homonoia.eris.ui.elements.Text;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.slf4j.Logger;
@@ -33,10 +34,13 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.lwjgl.glfw.GLFW.glfwTerminate;
+import static org.lwjgl.nuklear.Nuklear.NK_TEXT_ALIGN_LEFT;
+import static org.lwjgl.nuklear.Nuklear.NK_TEXT_ALIGN_TOP;
 
 /**
  * Copyright (c) 2015-2016 the Eris project.
@@ -64,6 +68,9 @@ public class Engine extends Contextual {
     private Gson gson;
     private ScriptEngine scriptEngine;
     private Statistics statistics;
+
+    private Text fps;
+    private DecimalFormat decimalFormat = new DecimalFormat();
 
     /**
      * Instantiates a new Engine.
@@ -161,6 +168,19 @@ public class Engine extends Contextual {
 
         input.initialize();
         ui.initialize();
+
+        decimalFormat.setGroupingUsed(false);
+        decimalFormat.setDecimalSeparatorAlwaysShown(true);
+
+        decimalFormat.setMinimumFractionDigits(2);
+        decimalFormat.setMaximumFractionDigits(2);
+
+        fps = new Text(getContext());
+        fps.setX(0);
+        fps.setY(0);
+        fps.setAlign(NK_TEXT_ALIGN_TOP| NK_TEXT_ALIGN_LEFT);
+        fps.setFont(ui.getDefaultFont());
+        ui.getRoot().getChildren().add(fps);
     }
 
     public void run() {
@@ -178,6 +198,7 @@ public class Engine extends Contextual {
         try {
             while (!shouldExit.get()) {
                 if (delta >= rate) {
+                    fps.setText(decimalFormat.format(1 / delta));
                     statistics.beginFrame();
                     {
                         statistics.getCurrent().startSegment();

@@ -40,7 +40,7 @@ import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
  * @author alexparlett
  * @since 13/11/2016
  */
-public final class CameraSceneParser implements Callable<Boolean> {
+public final class CameraRenderer implements Callable<Boolean> {
 
     private ThreadLocal<Vector3f> aabbMin = ThreadLocal.withInitial(() -> new Vector3f());
     private ThreadLocal<Vector3f> aabbMax = ThreadLocal.withInitial(() -> new Vector3f());
@@ -50,7 +50,7 @@ public final class CameraSceneParser implements Callable<Boolean> {
     private final DebugMode debugMode;
     private Model debugModeBoundingBoxCube;
 
-    public CameraSceneParser(RenderFrame renderFrame, Family renderableFamily, Entity cameraEntity, DebugMode debugMode) {
+    public CameraRenderer(RenderFrame renderFrame, Family renderableFamily, Entity cameraEntity, DebugMode debugMode) {
         this.renderFrame = renderFrame;
         this.renderableFamily = renderableFamily;
         this.cameraEntity = cameraEntity;
@@ -188,8 +188,8 @@ public final class CameraSceneParser implements Callable<Boolean> {
 
             boolean inLayer = camera.getLayerMask().isEmpty() || camera.getLayerMask().contains(rndrTransform.getLayer());
             AxisAlignedBoundingBox aabb = rndrMesh.getModel().getAxisAlignedBoundingBox();
-            boolean visible = inLayer;
-//                    && testFrustumSphere(rndrTransform, aabb, intersection);
+            boolean visible = inLayer
+                    && testFrustumSphere(rndrTransform, aabb, intersection);
 //                    && testNearPlane(rndrTransform, aabb, cameraTransform, camera);
             return visible;
         };
