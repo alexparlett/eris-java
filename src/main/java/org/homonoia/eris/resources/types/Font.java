@@ -114,6 +114,7 @@ public class Font extends Resource implements GPUResource {
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 
         nkFont = NkUserFont.create();
+
         nkFont.width((handle, h, text, len) -> {
             float textWidth = 0;
             try (MemoryStack stack = stackPush()) {
@@ -127,21 +128,24 @@ public class Font extends Resource implements GPUResource {
 
                 IntBuffer advance = stack.mallocInt(1);
                 while (textLen <= len && glyphLen != 0) {
-                    if (unicode.get(0) == NK_UTF_INVALID)
+                    if (unicode.get(0) == NK_UTF_INVALID) {
                         break;
+                    }
 
-                        /* query currently drawn glyph information */
+                    /* query currently drawn glyph information */
                     stbtt_GetCodepointHMetrics(fontInfo, unicode.get(0), advance, null);
                     textWidth += advance.get(0) * scale;
 
-						/* offset next glyph */
+                    /* offset next glyph */
                     glyphLen = nnk_utf_decode(text + textLen, memAddress(unicode), len - textLen);
                     textLen += glyphLen;
                 }
             }
             return textWidth;
         });
+
         nkFont.height(size);
+
         nkFont.query((handle, font_height, glyph, codepoint, nextCodepoint) -> {
             try (MemoryStack stack = stackPush()) {
                 FloatBuffer x = stack.floats(0.0f);

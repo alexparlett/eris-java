@@ -22,7 +22,7 @@ public class UpdateSystem extends EntitySystem {
     private final Statistics statistics;
 
     public UpdateSystem(Context context, final FamilyManager familyManager) {
-        super(context, familyManager, MAX_PRIORITY + 10);
+        super(context, familyManager, MAX_PRIORITY + 100);
         this.family = familyManager.get(Component.class);
         statistics = context.getBean(Statistics.class);
     }

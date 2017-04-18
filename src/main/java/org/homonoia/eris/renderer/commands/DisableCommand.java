@@ -6,7 +6,8 @@ import org.homonoia.eris.renderer.RenderCommand;
 import org.homonoia.eris.renderer.RenderKey;
 import org.homonoia.eris.renderer.Renderer;
 import org.homonoia.eris.ui.UI;
-import org.joml.Matrix4f;
+
+import static org.lwjgl.opengl.GL11.glDisable;
 
 /**
  * Copyright (c) 2015-2016 the Eris project.
@@ -14,16 +15,14 @@ import org.joml.Matrix4f;
  * @author alexparlett
  * @since 13/02/2016
  */
-public class CameraCommand extends RenderCommand<CameraCommand> {
+public class DisableCommand extends RenderCommand<DisableCommand> {
 
-    private static final Pool<CameraCommand> POOL = new ExpandingPool<>(4, Integer.MAX_VALUE, () -> new CameraCommand());
-    private Matrix4f view;
-    private Matrix4f projection;
+    private static final Pool<DisableCommand> POOL = new ExpandingPool<>(16, Integer.MAX_VALUE, () -> new DisableCommand());
+    private int capability;
 
     @Override
     public void process(final Renderer renderer, UI ui, final RenderKey renderKey) {
-        renderer.setCurrentProjection(projection);
-        renderer.setCurrentView(view);
+        glDisable(capability);
     }
 
     @Override
@@ -31,17 +30,12 @@ public class CameraCommand extends RenderCommand<CameraCommand> {
         POOL.free(this);
     }
 
-    public CameraCommand view(Matrix4f view) {
-        this.view = view;
+    public DisableCommand capability(int capability) {
+        this.capability = capability;
         return this;
     }
 
-    public CameraCommand projection(Matrix4f projection) {
-        this.projection = projection;
-        return this;
-    }
-
-    public static CameraCommand newInstance() {
+    public static DisableCommand newInstance() {
         return POOL.obtain();
     }
 }

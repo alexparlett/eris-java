@@ -2,6 +2,7 @@ package org.homonoia.eris.renderer;
 
 import org.homonoia.eris.graphics.drawables.ShaderProgram;
 import org.homonoia.eris.graphics.drawables.sp.Uniform;
+import org.homonoia.eris.ui.UI;
 
 import java.util.Optional;
 
@@ -24,7 +25,7 @@ public abstract class RenderCommand<T extends RenderCommand> implements Comparab
         return (T) this;
     }
 
-    public abstract void process(final Renderer renderer, final RenderKey renderKey);
+    public abstract void process(final Renderer renderer, UI ui, final RenderKey renderKey);
 
     public abstract void free();
 

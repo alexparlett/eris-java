@@ -7,6 +7,8 @@ import org.homonoia.eris.ecs.components.Mesh;
 import org.homonoia.eris.ecs.components.Transform;
 import org.homonoia.eris.ecs.exceptions.MissingRequiredComponentException;
 import org.homonoia.eris.ecs.exceptions.RenderingException;
+import org.homonoia.eris.graphics.drawables.Material;
+import org.homonoia.eris.graphics.drawables.Model;
 import org.homonoia.eris.graphics.drawables.model.AxisAlignedBoundingBox;
 import org.homonoia.eris.graphics.drawables.model.SubModel;
 import org.homonoia.eris.renderer.DebugMode;
@@ -46,12 +48,14 @@ public final class CameraSceneParser implements Callable<Boolean> {
     private final Family renderableFamily;
     private final Entity cameraEntity;
     private final DebugMode debugMode;
+    private Model debugModeBoundingBoxCube;
 
     public CameraSceneParser(RenderFrame renderFrame, Family renderableFamily, Entity cameraEntity, DebugMode debugMode) {
         this.renderFrame = renderFrame;
         this.renderableFamily = renderableFamily;
         this.cameraEntity = cameraEntity;
         this.debugMode = debugMode;
+        this.debugModeBoundingBoxCube = debugMode.getBoundingBoxCube();
     }
 
     @Override
@@ -94,6 +98,7 @@ public final class CameraSceneParser implements Callable<Boolean> {
 
         Matrix4f view = camera.getViewMatrix();
         Matrix4f perspective = camera.getProjectionMatrix();
+
         renderFrame.add(CameraCommand.newInstance()
                 .view(view)
                 .projection(perspective)
@@ -127,9 +132,6 @@ public final class CameraSceneParser implements Callable<Boolean> {
                             .build()));
         }
 
-        if (debugMode.isGrid()) {
-        }
-
         return true;
     }
 
@@ -142,36 +144,39 @@ public final class CameraSceneParser implements Callable<Boolean> {
                 renderFrame.add(DrawBoundingSphereCommand.newInstance()
                         .boundingBox(mesh.getModel().getAxisAlignedBoundingBox())
                         .transform(rndrTransform)
-                        .model(debugMode.getBoundingBoxCube().getSubModels().get(0))
+                        .model(debugModeBoundingBoxCube.getSubModels().get(0))
+                        .material(debugModeBoundingBoxCube.getMaterial())
                         .renderKey(RenderKey.builder()
                                 .target(camera.getRenderTarget().getHandle())
                                 .targetLayer(rndrTransform.getLayer())
                                 .command(2)
-                                .transparency(1)
+                                .transparency(debugModeBoundingBoxCube.getMaterial().getTransparency().getValue())
                                 .depth((long) rndrTransform.getTranslation().distance(cameraTransform.getTranslation()))
-                                .material(debugMode.getBoundingBoxCube().getSubModels().get(0).getMaterial().getHandle())
+                                .material(debugModeBoundingBoxCube.getMaterial().getHandle())
                                 .build()));
             }
 
-            mesh.getModel().getSubModels().spliterator()
-                    .forEachRemaining(processSubModel(cameraTransform, camera, rndrTransform));
+            mesh.getModel().getSubModels()
+                    .spliterator()
+                    .forEachRemaining(processSubModel(cameraTransform, camera, rndrTransform, mesh.getModel().getMaterial()));
         };
     }
 
-    protected Consumer<SubModel> processSubModel(Transform cameraTransform, Camera camera, Transform rndrTransform) {
+    protected Consumer<SubModel> processSubModel(Transform cameraTransform, Camera camera, Transform rndrTransform, Material material) {
         return subModel -> renderFrame.add(DrawModelCommand.newInstance()
                 .model(subModel)
                 .transform(rndrTransform)
-                .renderKey(buildRenderKey(cameraTransform, camera, rndrTransform, subModel)));
+                .material(material)
+                .renderKey(buildRenderKey(cameraTransform, camera, rndrTransform, subModel, material)));
     }
 
-    protected RenderKey buildRenderKey(Transform cameraTransform, Camera camera, Transform rndrTransform, SubModel subModel) {
+    protected RenderKey buildRenderKey(Transform cameraTransform, Camera camera, Transform rndrTransform, SubModel subModel, Material material) {
         return RenderKey.builder()
                 .command(2)
-                .material(subModel.getMaterial().getHandle())
+                .material(material.getHandle())
                 .targetLayer(rndrTransform.getLayer())
                 .target(camera.getRenderTarget().getHandle())
-                .transparency(0)
+                .transparency(material.getTransparency().getValue())
                 .depth((long) rndrTransform.getTranslation().distance(cameraTransform.getTranslation()))
                 .build();
     }
@@ -183,8 +188,8 @@ public final class CameraSceneParser implements Callable<Boolean> {
 
             boolean inLayer = camera.getLayerMask().isEmpty() || camera.getLayerMask().contains(rndrTransform.getLayer());
             AxisAlignedBoundingBox aabb = rndrMesh.getModel().getAxisAlignedBoundingBox();
-            boolean visible = inLayer
-                    && testFrustumSphere(rndrTransform, aabb, intersection);
+            boolean visible = inLayer;
+//                    && testFrustumSphere(rndrTransform, aabb, intersection);
 //                    && testNearPlane(rndrTransform, aabb, cameraTransform, camera);
             return visible;
         };

@@ -6,12 +6,14 @@ import org.homonoia.eris.ecs.EntitySystem;
 import org.homonoia.eris.ecs.Family;
 import org.homonoia.eris.ecs.FamilyManager;
 import org.homonoia.eris.ecs.components.Camera;
-import org.homonoia.eris.ecs.components.Mesh;
+import org.homonoia.eris.ecs.components.Renderable;
+import org.homonoia.eris.ecs.components.UIElement;
 import org.homonoia.eris.ecs.exceptions.RenderingException;
 import org.homonoia.eris.ecs.systems.render.CameraSceneParser;
 import org.homonoia.eris.events.frame.Update;
 import org.homonoia.eris.renderer.RenderFrame;
 import org.homonoia.eris.renderer.Renderer;
+import org.homonoia.eris.ui.UI;
 
 import java.util.concurrent.CompletionService;
 import java.util.concurrent.ExecutorCompletionService;
@@ -26,20 +28,24 @@ import static java.util.Objects.nonNull;
  * @author alexparlett
  * @since 15/07/2016
  */
-public class SceneRenderSystem extends EntitySystem {
+public class RenderSystem extends EntitySystem {
 
     private final CompletionService<Boolean> completionService;
     private final Renderer renderer;
     private final Family cameraFamily;
     private final Family renderableFamily;
+    private final Family uiFamily;
     private final Statistics statistics;
+    private final UI ui;
 
-    public SceneRenderSystem(final Context context, final FamilyManager familyManager) {
-        super(context, familyManager, MIN_PRIORITY);
+    public RenderSystem(final Context context, final FamilyManager familyManager) {
+        super(context, familyManager, MIN_PRIORITY - 100);
         this.completionService = new ExecutorCompletionService<>(context.getBean(ExecutorService.class));
         this.cameraFamily = familyManager.get(Camera.class);
-        this.renderableFamily = familyManager.get(Mesh.class);
+        this.renderableFamily = familyManager.get(Renderable.class);
+        this.uiFamily = familyManager.get(UIElement.class);
         this.renderer = this.getContext().getBean(Renderer.class);
+        this.ui = this.getContext().getBean(UI.class);
         this.statistics = context.getBean(Statistics.class);
     }
 

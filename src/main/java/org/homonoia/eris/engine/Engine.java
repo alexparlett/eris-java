@@ -96,7 +96,7 @@ public class Engine extends Contextual {
         ui = new UI(context, resourceCache, graphics);
         input = new Input(context, graphics, ui);
         locale = new Locale(context, resourceCache);
-        renderer = new Renderer(context, graphics, resourceCache);
+        renderer = new Renderer(context, graphics, resourceCache, ui);
 
         subscribe(this::handleExitRequest, ExitRequested.class);
     }

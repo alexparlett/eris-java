@@ -7,6 +7,7 @@ import org.homonoia.eris.renderer.RenderState;
 import org.homonoia.eris.renderer.Renderer;
 import org.homonoia.eris.renderer.commands.ClearColorCommand;
 import org.homonoia.eris.renderer.commands.ClearCommand;
+import org.homonoia.eris.ui.UI;
 import org.joml.Vector4f;
 
 import java.util.Objects;
@@ -29,8 +30,8 @@ public class SwappingRenderState implements RenderState<CommandRenderFrame> {
     private final Queue<CommandRenderFrame> frames = new ArrayBlockingQueue<>(8);
     private CommandRenderFrame lastFrame;
 
-    public SwappingRenderState(Renderer renderer) {
-        renderFramePool = new ExpandingPool<>(4, 8, new CommandRenderFrameFactory(renderer));
+    public SwappingRenderState(Renderer renderer, UI ui) {
+        renderFramePool = new ExpandingPool<>(4, 8, new CommandRenderFrameFactory(renderer, ui));
         addDefaultFrame();
     }
 

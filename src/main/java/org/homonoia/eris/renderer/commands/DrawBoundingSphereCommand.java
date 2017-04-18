@@ -3,11 +3,13 @@ package org.homonoia.eris.renderer.commands;
 import org.homonoia.eris.core.collections.Pool;
 import org.homonoia.eris.core.collections.pools.ExpandingPool;
 import org.homonoia.eris.ecs.components.Transform;
+import org.homonoia.eris.graphics.drawables.Material;
 import org.homonoia.eris.graphics.drawables.model.AxisAlignedBoundingBox;
 import org.homonoia.eris.graphics.drawables.model.SubModel;
 import org.homonoia.eris.renderer.RenderCommand;
 import org.homonoia.eris.renderer.RenderKey;
 import org.homonoia.eris.renderer.Renderer;
+import org.homonoia.eris.ui.UI;
 import org.joml.Matrix4f;
 
 import static java.util.Objects.isNull;
@@ -28,18 +30,20 @@ public class DrawBoundingSphereCommand extends RenderCommand<DrawBoundingSphereC
     private AxisAlignedBoundingBox aabb;
     private Matrix4f transform = new Matrix4f().identity();
     private SubModel model;
+    private Material material;
+
 
     @Override
-    public void process(final Renderer renderer, final RenderKey previousRenderKey) {
+    public void process(final Renderer renderer, UI ui, final RenderKey previousRenderKey) {
         if (isNull(previousRenderKey) || previousRenderKey.getMaterial() != getRenderKey().getMaterial()) {
-            model.getMaterial().use();
+            material.use();
 
-            findAndBindUniform("view", renderer, model.getMaterial().getShaderProgram(), renderer.getCurrentView());
-            findAndBindUniform("projection", renderer, model.getMaterial().getShaderProgram(), renderer.getCurrentProjection());
+            findAndBindUniform("view", renderer, material.getShaderProgram(), renderer.getCurrentView());
+            findAndBindUniform("projection", renderer, material.getShaderProgram(), renderer.getCurrentProjection());
         }
 
         float distance = aabb.getMax().distance(aabb.getMin()) / 2;
-        findAndBindUniform("model", renderer, model.getMaterial().getShaderProgram(), transform.scale(Math.abs(distance)));
+        findAndBindUniform("model", renderer, material.getShaderProgram(), transform.scale(Math.abs(distance)));
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         model.draw();
@@ -63,6 +67,11 @@ public class DrawBoundingSphereCommand extends RenderCommand<DrawBoundingSphereC
 
     public DrawBoundingSphereCommand model(SubModel model) {
         this.model = model;
+        return this;
+    }
+
+    public DrawBoundingSphereCommand material(Material material) {
+        this.material = material;
         return this;
     }
 

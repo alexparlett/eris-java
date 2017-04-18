@@ -7,5 +7,6 @@
       "uniform": "diffuse",
       "file": "Textures/spacescape.tex"
     }
-  ]
+  ],
+  "transparency": "opaque"
 }

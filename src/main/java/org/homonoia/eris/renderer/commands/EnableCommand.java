@@ -5,6 +5,7 @@ import org.homonoia.eris.core.collections.pools.ExpandingPool;
 import org.homonoia.eris.renderer.RenderCommand;
 import org.homonoia.eris.renderer.RenderKey;
 import org.homonoia.eris.renderer.Renderer;
+import org.homonoia.eris.ui.UI;
 
 import static org.lwjgl.opengl.GL11.glEnable;
 
@@ -20,7 +21,7 @@ public class EnableCommand extends RenderCommand<EnableCommand> {
     private int capability;
 
     @Override
-    public void process(final Renderer renderer, final RenderKey renderKey) {
+    public void process(final Renderer renderer, UI ui, final RenderKey renderKey) {
         glEnable(capability);
     }
 

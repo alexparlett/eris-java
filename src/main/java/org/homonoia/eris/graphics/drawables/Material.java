@@ -21,12 +21,12 @@ import org.homonoia.eris.core.parsers.Vector4fParser;
 import org.homonoia.eris.core.parsers.Vector4iParser;
 import org.homonoia.eris.graphics.drawables.material.CullMode;
 import org.homonoia.eris.graphics.drawables.material.TextureUnit;
+import org.homonoia.eris.graphics.drawables.material.Transparency;
 import org.homonoia.eris.graphics.drawables.sp.Uniform;
 import org.homonoia.eris.resources.GPUResource;
 import org.homonoia.eris.resources.Resource;
 import org.homonoia.eris.resources.cache.ResourceCache;
 import org.homonoia.eris.resources.types.Json;
-import org.lwjgl.opengl.GL13;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -42,6 +42,8 @@ import java.util.Optional;
 import java.util.function.Function;
 
 import static org.lwjgl.opengl.GL11.glCullFace;
+import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+import static org.lwjgl.opengl.GL13.glActiveTexture;
 
 /**
  * Created by alexparlett on 20/04/2016.
@@ -55,6 +57,7 @@ public class Material extends Resource implements GPUResource {
     private Map<String, Uniform> uniforms = new HashMap<>();
     private List<TextureUnit> textureUnits = new ArrayList<>();
     private CullMode cullMode;
+    private Transparency transparency;
 
     public Material(final Context context) {
         super(context);
@@ -187,6 +190,11 @@ public class Material extends Resource implements GPUResource {
                 .map(CullMode::parse)
                 .orElse(CullMode.Back);
 
+        transparency = Optional.ofNullable(root.getAsJsonPrimitive("transparency"))
+                .map(JsonPrimitive::getAsString)
+                .map(Transparency::parse)
+                .orElse(Transparency.Opaque);
+
         setState(AsyncState.GPU_READY);
     }
 
@@ -214,7 +222,7 @@ public class Material extends Resource implements GPUResource {
         textureUnits.stream()
                 .filter(textureUnit -> textureUnit.getTexture() != null)
                 .forEach(textureUnit -> {
-                    GL13.glActiveTexture(GL13.GL_TEXTURE0 + textureUnit.getUnit());
+                    glActiveTexture(GL_TEXTURE0 + textureUnit.getUnit());
                     textureUnit.getTexture().use();
                     Uniform uniform = shaderProgram.getUniform(textureUnit.getUniform()).orElseThrow(() -> new ErisRuntimeExcecption("Could not bind {} on material {}", textureUnit.getUniform(), getPath()));
                     uniform.bindUniform(textureUnit.getUnit());
@@ -239,6 +247,14 @@ public class Material extends Resource implements GPUResource {
 
         textureUnits.stream().map(TextureUnit::getTexture).forEach(Texture::release);
         textureUnits.clear();
+    }
+
+    public Transparency getTransparency() {
+        return transparency;
+    }
+
+    public void setTransparency(Transparency transparency) {
+        this.transparency = transparency;
     }
 
     public CullMode getCullMode() {

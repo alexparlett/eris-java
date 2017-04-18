@@ -10,6 +10,7 @@ import org.homonoia.eris.graphics.Graphics;
 import org.homonoia.eris.graphics.drawables.Model;
 import org.homonoia.eris.renderer.impl.SwappingRenderState;
 import org.homonoia.eris.resources.cache.ResourceCache;
+import org.homonoia.eris.ui.UI;
 import org.joml.Matrix4f;
 import org.lwjgl.opengl.GL;
 import org.slf4j.Logger;
@@ -45,14 +46,15 @@ public class Renderer extends Contextual {
     private final AtomicBoolean viewportDirty = new AtomicBoolean(false);
     private Matrix4f view = new Matrix4f();
     private Matrix4f projection = new Matrix4f();
-    private final RenderState state = new SwappingRenderState(this);
+    private final RenderState state;
     private DebugMode debugMode = new DebugMode();
 
-    public Renderer(final Context context, final Graphics graphics, final ResourceCache resourceCache) {
+    public Renderer(final Context context, final Graphics graphics, final ResourceCache resourceCache, final UI ui) {
         super(context);
         context.registerBean(this);
         this.graphics = graphics;
         this.resourceCache = resourceCache;
+        this.state = new SwappingRenderState(this, ui);
     }
 
     public void initialize() throws Exception {

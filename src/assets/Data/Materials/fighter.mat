@@ -10,5 +10,6 @@
   ],
   "uniforms": [
   ],
-  "cull": "back"
+  "cull": "back",
+  "transparency": "opaque"
 }

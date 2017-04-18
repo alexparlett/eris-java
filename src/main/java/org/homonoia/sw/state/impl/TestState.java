@@ -13,7 +13,7 @@ import org.homonoia.eris.ecs.components.Mesh;
 import org.homonoia.eris.ecs.components.Transform;
 import org.homonoia.eris.ecs.exceptions.MissingRequiredComponentException;
 import org.homonoia.eris.ecs.systems.InputSystem;
-import org.homonoia.eris.ecs.systems.SceneRenderSystem;
+import org.homonoia.eris.ecs.systems.RenderSystem;
 import org.homonoia.eris.ecs.systems.UpdateSystem;
 import org.homonoia.eris.events.core.ExitRequested;
 import org.homonoia.eris.events.input.KeyDown;
@@ -60,7 +60,7 @@ public class TestState extends Contextual implements State {
         entitySystemManager = new EntitySystemManager(getContext());
         entitySystemManager.add(new InputSystem(getContext(), familyManager));
         entitySystemManager.add(new UpdateSystem(getContext(), familyManager));
-        entitySystemManager.add(new SceneRenderSystem(getContext(), familyManager));
+        entitySystemManager.add(new RenderSystem(getContext(), familyManager));
 
         resourceCache = getContext().getBean(ResourceCache.class);
         resourceCache.add(Model.class, "Models/fighter.mdl", false);

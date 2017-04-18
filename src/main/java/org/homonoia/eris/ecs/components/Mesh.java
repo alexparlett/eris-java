@@ -1,7 +1,6 @@
 package org.homonoia.eris.ecs.components;
 
 import org.homonoia.eris.core.Context;
-import org.homonoia.eris.ecs.Component;
 import org.homonoia.eris.ecs.annotations.Requires;
 import org.homonoia.eris.graphics.drawables.Model;
 
@@ -12,7 +11,7 @@ import org.homonoia.eris.graphics.drawables.Model;
  * @since 19/07/2016
  */
 @Requires(classes = {Transform.class})
-public class Mesh extends Component {
+public class Mesh extends Renderable {
 
     private Model model;
 

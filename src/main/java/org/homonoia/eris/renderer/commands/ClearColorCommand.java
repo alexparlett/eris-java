@@ -5,6 +5,7 @@ import org.homonoia.eris.core.collections.pools.ExpandingPool;
 import org.homonoia.eris.renderer.RenderCommand;
 import org.homonoia.eris.renderer.RenderKey;
 import org.homonoia.eris.renderer.Renderer;
+import org.homonoia.eris.ui.UI;
 import org.joml.Vector4f;
 
 import static org.lwjgl.opengl.GL11.glClearColor;
@@ -21,7 +22,7 @@ public class ClearColorCommand extends RenderCommand<ClearColorCommand> {
     private Vector4f color;
 
     @Override
-    public void process(final Renderer renderer, final RenderKey renderKey) {
+    public void process(final Renderer renderer, UI ui, final RenderKey renderKey) {
         glClearColor(color.x, color.y, color.z, color.w);
     }
 

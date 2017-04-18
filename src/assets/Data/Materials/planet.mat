@@ -8,7 +8,6 @@
       "file": "Textures/planet-alien-ashygreen-diffuse.tex"
     }
   ],
-  "uniforms": [
-  ],
-  "cull": "back"
+  "cull": "back",
+  "transparency": "opaque"
 }

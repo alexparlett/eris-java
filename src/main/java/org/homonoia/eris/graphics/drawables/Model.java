@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
+import lombok.Getter;
 import org.homonoia.eris.core.Constants;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.exceptions.ParseException;
@@ -31,9 +32,9 @@ import java.util.UUID;
 public class Model extends Resource implements GPUResource {
 
     private int handle = UUID.randomUUID().hashCode();
-    private List<SubModel> subModels = new ArrayList<>();
-    private AxisAlignedBoundingBox axisAlignedBoundingBox;
-    private Material material;
+    @Getter private List<SubModel> subModels = new ArrayList<>();
+    @Getter private AxisAlignedBoundingBox axisAlignedBoundingBox;
+    @Getter private Material material;
 
     public Model(final Context context) {
         super(context);
@@ -83,7 +84,6 @@ public class Model extends Resource implements GPUResource {
                         .orElseThrow(() -> new ParseException("mesh is required for models, e.g. 'mesh': 'Meshes/sphere.obj'"));
 
                 subModels.add(SubModel.builder()
-                        .material(material)
                         .mesh(mesh)
                         .scale(scale)
                         .origin(origin)
@@ -124,14 +124,6 @@ public class Model extends Resource implements GPUResource {
     @Override
     public int getHandle() {
         return handle;
-    }
-
-    public List<SubModel> getSubModels() {
-        return subModels;
-    }
-
-    public AxisAlignedBoundingBox getAxisAlignedBoundingBox() {
-        return axisAlignedBoundingBox;
     }
 
     @Override

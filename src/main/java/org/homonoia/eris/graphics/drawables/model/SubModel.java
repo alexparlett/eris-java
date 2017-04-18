@@ -1,7 +1,6 @@
 package org.homonoia.eris.graphics.drawables.model;
 
 import org.homonoia.eris.core.Constants;
-import org.homonoia.eris.graphics.drawables.Material;
 import org.homonoia.eris.resources.types.Mesh;
 import org.homonoia.eris.resources.types.mesh.Vertex;
 import org.joml.Vector3f;
@@ -25,7 +24,6 @@ import static org.lwjgl.system.MemoryUtil.memFree;
  */
 public class SubModel {
 
-    private Material material;
     private IntBuffer indices;
     private FloatBuffer vertices;
     private Mesh mesh;
@@ -36,14 +34,9 @@ public class SubModel {
     private int ebo = 0;
 
     private SubModel(Builder builder) {
-        this.material = builder.material;
         this.mesh = builder.mesh;
         this.scale = builder.scale;
         this.origin = builder.origin;
-    }
-
-    public Material getMaterial() {
-        return material;
     }
 
     public IntBuffer getIndices() {
@@ -107,7 +100,6 @@ public class SubModel {
     }
 
     public void reset() {
-        if (Objects.nonNull(material)) material.release();
         if (Objects.nonNull(indices)) memFree(indices);
         if (Objects.nonNull(vertices)) memFree(vertices);
         if (Objects.nonNull(mesh)) mesh.release();
@@ -150,7 +142,6 @@ public class SubModel {
         if (vao != subModel.vao) return false;
         if (vbo != subModel.vbo) return false;
         if (ebo != subModel.ebo) return false;
-        if (material != null ? !material.equals(subModel.material) : subModel.material != null) return false;
         if (indices != null ? !indices.equals(subModel.indices) : subModel.indices != null) return false;
         if (vertices != null ? !vertices.equals(subModel.vertices) : subModel.vertices != null) return false;
         if (mesh != null ? !mesh.equals(subModel.mesh) : subModel.mesh != null) return false;
@@ -160,8 +151,7 @@ public class SubModel {
 
     @Override
     public int hashCode() {
-        int result = material != null ? material.hashCode() : 0;
-        result = 31 * result + (indices != null ? indices.hashCode() : 0);
+        int result =indices != null ? indices.hashCode() : 0;
         result = 31 * result + (vertices != null ? vertices.hashCode() : 0);
         result = 31 * result + (mesh != null ? mesh.hashCode() : 0);
         result = 31 * result + (scale != +0.0f ? Float.floatToIntBits(scale) : 0);
@@ -177,17 +167,11 @@ public class SubModel {
     }
 
     public static final class Builder {
-        private Material material;
         private Mesh mesh;
         private float scale = 1.f;
         private Vector3f origin = Constants.VectorConstants.ZERO;
 
         private Builder() {
-        }
-
-        public Builder material(Material material) {
-            this.material = material;
-            return this;
         }
 
         public Builder mesh(Mesh mesh) {
@@ -207,7 +191,6 @@ public class SubModel {
 
         public SubModel build() {
             Objects.requireNonNull(mesh);
-            Objects.requireNonNull(material);
             return new SubModel(this);
         }
     }
