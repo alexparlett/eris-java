@@ -1,5 +1,6 @@
 package org.homonoia.eris.ecs.components;
 
+import org.homonoia.eris.core.Context;
 import org.homonoia.eris.ecs.Component;
 import org.homonoia.eris.ecs.annotations.Requires;
 import org.homonoia.eris.graphics.drawables.Model;
@@ -14,6 +15,15 @@ import org.homonoia.eris.graphics.drawables.Model;
 public class Mesh extends Component {
 
     private Model model;
+
+    /**
+     * Instantiates a new Contextual.
+     *
+     * @param context the context
+     */
+    public Mesh(Context context) {
+        super(context);
+    }
 
     public Model getModel() {
         return model;

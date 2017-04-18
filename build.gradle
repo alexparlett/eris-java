@@ -10,8 +10,8 @@ plugins {
     id 'idea'
     id 'org.ajoberstar.grgit' version '1.7.1'
     id 'application'
-    id 'edu.sc.seis.macAppBundle' version '2.1.6'
-    id 'edu.sc.seis.launch4j' version '2.3.0'
+    id 'edu.sc.seis.macAppBundle' version '2.1.6' apply false
+    id 'edu.sc.seis.launch4j' version '2.3.0' apply false
 }
 
 project.ext.describe = grgit.describe()

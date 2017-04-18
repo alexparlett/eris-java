@@ -85,7 +85,7 @@ public class Ini extends Resource implements Iterable<Map.Entry<String, IniSecti
 
     @Override
     public void save() throws IOException {
-        try (FileOutputStream fileOutputStream = new FileOutputStream(getLocation().toFile())) {
+        try (FileOutputStream fileOutputStream = new FileOutputStream(getLocation().toFile(), true)) {
             OutputStreamWriter osw = new OutputStreamWriter(fileOutputStream, StandardCharsets.UTF_8);
             for (Map.Entry<String, IniSection> section : sections.entrySet()) {
                 osw.write(SECTION_START);

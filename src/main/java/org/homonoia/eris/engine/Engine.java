@@ -165,7 +165,7 @@ public class Engine extends Contextual {
 
     public void run() {
         double delta = 0.0;
-        double rate = 1000.0 / 60.0;
+        double rate = 1 / 60.0;
 
         Begin.Builder beginBuilder = Begin.builder();
         End.Builder endBuilder = End.builder();
@@ -233,7 +233,7 @@ public class Engine extends Contextual {
     private void initializationLog() {
         LOG.info("Initializing...");
         LOG.info("Arguments:");
-        getContext().getCommandLineArgs().getOptionNames().forEach(option ->         LOG.info("--{}", option));
+        getContext().getCommandLineArgs().getOptionNames().forEach(option -> LOG.info("--{}", option));
         LOG.info("Version: {}", engineProperties.getVersion());
         LOG.info("OS: {}", System.getProperty("os.name"));
         LOG.info("Arch: {}", System.getProperty("os.arch"));
@@ -244,8 +244,8 @@ public class Engine extends Contextual {
     private void shutdownLog() {
         LOG.info("Terminating...");
         LOG.info("Frames: {}", statistics.getTotalFrames());
-        LOG.info("Milliseconds: {}", statistics.getElapsedTime());
-        LOG.info("FPS: {}", statistics.getTotalFrames() / (statistics.getElapsedTime() / 1000));
+        LOG.info("Seconds: {}", statistics.getElapsedTime());
+        LOG.info("FPS: {}", statistics.getTotalFrames() / statistics.getElapsedTime());
         LOG.info("Exit Code: {}", getContext().getExitCode());
     }
 

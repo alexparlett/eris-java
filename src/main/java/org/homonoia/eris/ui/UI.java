@@ -7,6 +7,7 @@ import org.homonoia.eris.core.exceptions.InitializationException;
 import org.homonoia.eris.graphics.Graphics;
 import org.homonoia.eris.graphics.drawables.ShaderProgram;
 import org.homonoia.eris.resources.cache.ResourceCache;
+import org.homonoia.eris.resources.types.Font;
 import org.lwjgl.nuklear.NkAllocator;
 import org.lwjgl.nuklear.NkBuffer;
 import org.lwjgl.nuklear.NkContext;
@@ -18,12 +19,7 @@ import java.nio.ByteBuffer;
 import static java.util.Objects.nonNull;
 import static org.lwjgl.glfw.GLFW.glfwSetClipboardString;
 import static org.lwjgl.glfw.GLFW.nglfwGetClipboardString;
-import static org.lwjgl.nuklear.Nuklear.nk_buffer_free;
-import static org.lwjgl.nuklear.Nuklear.nk_buffer_init;
-import static org.lwjgl.nuklear.Nuklear.nk_free;
-import static org.lwjgl.nuklear.Nuklear.nk_init;
-import static org.lwjgl.nuklear.Nuklear.nnk_strlen;
-import static org.lwjgl.nuklear.Nuklear.nnk_textedit_paste;
+import static org.lwjgl.nuklear.Nuklear.*;
 import static org.lwjgl.opengl.GL11.GL_FLOAT;
 import static org.lwjgl.opengl.GL11.GL_NEAREST;
 import static org.lwjgl.opengl.GL11.GL_RGBA;
@@ -76,6 +72,7 @@ public class UI extends Contextual {
     private NkBuffer cmds;
     private NkDrawNullTexture nullTexture;
 
+    private Font defaultFont;
     private ShaderProgram shaderProgram;
     private int vbo;
     private int ebo;
@@ -116,6 +113,7 @@ public class UI extends Contextual {
     public void shutdown() {
         if (nonNull(nullTexture)) {
             glDeleteTextures(nullTexture.texture().id());
+            nullTexture = null;
         }
 
         glDeleteBuffers(vbo);
@@ -124,21 +122,30 @@ public class UI extends Contextual {
 
         if (nonNull(shaderProgram)) {
             shaderProgram.release();
+            shaderProgram = null;
+        }
+
+        if (nonNull(defaultFont)) {
+            defaultFont.release();
+            defaultFont = null;
         }
 
         if (nonNull(cmds)) {
             nk_buffer_free(cmds);
+            cmds = null;
         }
 
         if (nonNull(ctx)) {
             ctx.clip().copy().free();
             ctx.clip().paste().free();
             nk_free(ctx);
+            ctx = null;
         }
 
         if (nonNull(allocator)) {
             allocator.alloc().free();
             allocator.mfree().free();
+            allocator = null;
         }
     }
 
@@ -217,10 +224,15 @@ public class UI extends Contextual {
         shaderProgram = resourceCache.get(ShaderProgram.class, "Shaders/ui.shader")
                 .orElseThrow(() -> new InitializationException("Shaders/ui.shader missing for UI module."));
 
+        defaultFont = resourceCache.get(Font.class, "Fonts/CODE_12_b.font")
+                .orElseThrow(() -> new InitializationException("Fonts/CODE_12_b.font missing for UI module."));
+
         nk_buffer_init(cmds, allocator, BUFFER_INITIAL_SIZE);
 
         setupBuffers();
         setupNullTexture();
+
+        nk_style_set_font(ctx, defaultFont.getNkFont());
 
         glBindTexture(GL_TEXTURE_2D, 0);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
