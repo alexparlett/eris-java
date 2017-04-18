@@ -2,6 +2,7 @@ package org.homonoia.eris.renderer.commands;
 
 import org.homonoia.eris.core.collections.Pool;
 import org.homonoia.eris.core.collections.pools.ExpandingPool;
+import org.homonoia.eris.ecs.components.Transform;
 import org.homonoia.eris.graphics.drawables.model.SubModel;
 import org.homonoia.eris.renderer.RenderCommand;
 import org.homonoia.eris.renderer.RenderKey;
@@ -46,8 +47,8 @@ public class DrawModelCommand extends RenderCommand<DrawModelCommand> {
         return this;
     }
 
-    public DrawModelCommand transform(Matrix4f transform) {
-        this.transform.set(transform);
+    public DrawModelCommand transform(Transform transform) {
+        this.transform = transform.getModelMatrix(this.transform);
         return this;
     }
 

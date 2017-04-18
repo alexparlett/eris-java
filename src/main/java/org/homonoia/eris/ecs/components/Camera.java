@@ -1,9 +1,11 @@
 package org.homonoia.eris.ecs.components;
 
+import org.homonoia.eris.core.exceptions.ErisRuntimeExcecption;
 import org.homonoia.eris.ecs.Component;
 import org.homonoia.eris.ecs.annotations.Requires;
 import org.homonoia.eris.graphics.drawables.RenderTarget;
 import org.homonoia.eris.graphics.drawables.Skybox;
+import org.joml.Matrix4f;
 import org.joml.Vector4f;
 
 import java.util.HashSet;
@@ -25,6 +27,8 @@ public class Camera extends Component {
     private RenderTarget renderTarget;
     private Vector4f backgroundColor;
     private Skybox skybox;
+    private Matrix4f viewMatrix = new Matrix4f();
+    private Matrix4f projectionMatrix = new Matrix4f();
 
     public Set<Integer> getLayerMask() {
         return layerMask;
@@ -82,5 +86,17 @@ public class Camera extends Component {
     public Camera skybox(Skybox skybox) {
         this.skybox = skybox;
         return this;
+    }
+
+    public Matrix4f getViewMatrix() {
+        Transform transform = getEntity().get(Transform.class)
+                .orElseThrow(() -> new ErisRuntimeExcecption("Camera on Entity {} without Transform", getEntity().getId()));
+        return viewMatrix.setLookAt(transform.getTranslation(), transform.forward().add(transform.forward()), transform.up());
+    }
+
+    public Matrix4f getProjectionMatrix() {
+        float aspectRatio = (float) getRenderTarget().getWidth() / getRenderTarget().getHeight();
+        projectionMatrix.setPerspective(getFov(), aspectRatio, getNear(), getFar());
+        return projectionMatrix;
     }
 }

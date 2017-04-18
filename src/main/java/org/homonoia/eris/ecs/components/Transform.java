@@ -13,42 +13,29 @@ import org.joml.Vector3f;
  */
 public class Transform extends Component {
 
-    public static final Vector3f Up = new Vector3f(0.f, 1.f, 0.f);
-    public static final Vector3f Forward = new Vector3f(0.f, 0.f, -1.f);
-    public static final Vector3f Right = new Vector3f(1.f, 0.f, 0.f);
-
     private int layer = 1;
-
-    private Matrix4f transform = new Matrix4f()
-            .identity()
-            .scale(1)
-            .translation(0,0,0)
-            .rotationXYZ(0,0,0);
-
-    public Matrix4f get() {
-        return transform;
-    }
-
+    private Vector3f position = new Vector3f(0);
+    private Quaternionf rotation = new Quaternionf();
+    private Vector3f scale = new Vector3f(1);
 
     public Vector3f getTranslation() {
-        return get().getTranslation(new Vector3f());
+        return position;
     }
 
     public Vector3f getScale() {
-        return get().getScale(new Vector3f());
+        return scale;
     }
 
     public Quaternionf getRotation() {
-        return get().getUnnormalizedRotation(new Quaternionf());
+        return rotation;
     }
-
 
     public Transform translate(Vector3f translationXYZ) {
         return translate(translationXYZ.x, translationXYZ.y, translationXYZ.z);
     }
 
     public Transform translate(float x, float y, float z) {
-        get().translation(x,y,z);
+        position.add(x,y,z);
         return this;
     }
 
@@ -56,18 +43,13 @@ public class Transform extends Component {
         return rotate(translationXYZ.x, translationXYZ.y, translationXYZ.z);
     }
 
-    public Transform rotate(Quaternionf quat) {
-        get().rotate(quat);
-        return this;
-    }
-
     public Transform rotate(float x, float y, float z) {
-        get().rotateXYZ((float) Math.toRadians(x), (float) Math.toRadians(y), (float) Math.toRadians(z));
+        rotation.rotateXYZ((float) Math.toRadians(x), (float) Math.toRadians(y), (float) Math.toRadians(z));
         return this;
     }
 
     public Transform scale(float xyz) {
-        get().scale(xyz).setTranslation(getTranslation().mul(xyz));
+        scale.set(xyz,xyz,xyz);
         return this;
     }
 
@@ -76,7 +58,7 @@ public class Transform extends Component {
     }
 
     public Transform translation(float x, float y, float z) {
-        get().setTranslation(x,y,z);
+        position.set(x,y,z);
         return this;
     }
 
@@ -85,7 +67,7 @@ public class Transform extends Component {
     }
 
     public Transform rotation(float x, float y, float z) {
-        get().setRotationXYZ(x,y,z);
+        rotation.set((float) Math.toRadians(x), (float) Math.toRadians(y), (float) Math.toRadians(z));
         return this;
     }
 
@@ -98,18 +80,25 @@ public class Transform extends Component {
     }
 
     public Vector3f up() {
-        return get().positiveY(new Vector3f());
+        return rotation.positiveY(new Vector3f());
     }
 
     public Vector3f right() {
-        return get().positiveX(new Vector3f());
+        return rotation.positiveX(new Vector3f());
     }
 
     public Vector3f forward() {
-        return get().positiveZ(new Vector3f()).negate();
+        return rotation.positiveZ(new Vector3f()).negate();
     }
 
     public int getLayer() {
         return layer;
+    }
+
+    public Matrix4f getModelMatrix(Matrix4f dest) {
+        return dest.identity()
+                .scale(scale)
+                .rotate(rotation)
+                .translate(position);
     }
 }

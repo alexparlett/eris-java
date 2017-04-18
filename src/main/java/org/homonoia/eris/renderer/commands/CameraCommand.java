@@ -16,8 +16,8 @@ import org.joml.Matrix4f;
 public class CameraCommand extends RenderCommand<CameraCommand> {
 
     private static final Pool<CameraCommand> POOL = new ExpandingPool<>(4, Integer.MAX_VALUE, () -> new CameraCommand());
-    private Matrix4f view = new Matrix4f().identity();
-    private Matrix4f projection = new Matrix4f().identity();
+    private Matrix4f view;
+    private Matrix4f projection;
 
     @Override
     public void process(final Renderer renderer, final RenderKey renderKey) {
@@ -31,12 +31,12 @@ public class CameraCommand extends RenderCommand<CameraCommand> {
     }
 
     public CameraCommand view(Matrix4f view) {
-        this.view.set(view);
+        this.view = view;
         return this;
     }
 
     public CameraCommand projection(Matrix4f projection) {
-        this.projection.set(projection);
+        this.projection = projection;
         return this;
     }
 

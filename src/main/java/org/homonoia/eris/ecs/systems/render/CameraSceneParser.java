@@ -92,9 +92,8 @@ public final class CameraSceneParser implements Callable<Boolean> {
                         .material(0)
                         .build()));
 
-        Matrix4f view = new Matrix4f().lookAt(cameraTransform.getTranslation(), cameraTransform.getTranslation().add(cameraTransform.forward()), cameraTransform.up());
-        float aspectRatio = (float) camera.getRenderTarget().getWidth() / camera.getRenderTarget().getHeight();
-        Matrix4f perspective = new Matrix4f().perspective(camera.getFov(), aspectRatio, camera.getNear(), camera.getFar());
+        Matrix4f view = camera.getViewMatrix();
+        Matrix4f perspective = camera.getProjectionMatrix();
         renderFrame.add(CameraCommand.newInstance()
                 .view(view)
                 .projection(perspective)
@@ -142,7 +141,7 @@ public final class CameraSceneParser implements Callable<Boolean> {
             if (debugMode.isBoundingBoxes()) {
                 renderFrame.add(DrawBoundingSphereCommand.newInstance()
                         .boundingBox(mesh.getModel().getAxisAlignedBoundingBox())
-                        .transform(rndrTransform.get())
+                        .transform(rndrTransform)
                         .model(debugMode.getBoundingBoxCube().getSubModels().get(0))
                         .renderKey(RenderKey.builder()
                                 .target(camera.getRenderTarget().getHandle())
@@ -162,7 +161,7 @@ public final class CameraSceneParser implements Callable<Boolean> {
     protected Consumer<SubModel> processSubModel(Transform cameraTransform, Camera camera, Transform rndrTransform) {
         return subModel -> renderFrame.add(DrawModelCommand.newInstance()
                 .model(subModel)
-                .transform(rndrTransform.get())
+                .transform(rndrTransform)
                 .renderKey(buildRenderKey(cameraTransform, camera, rndrTransform, subModel)));
     }
 

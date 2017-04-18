@@ -2,6 +2,7 @@ package org.homonoia.eris.renderer.commands;
 
 import org.homonoia.eris.core.collections.Pool;
 import org.homonoia.eris.core.collections.pools.ExpandingPool;
+import org.homonoia.eris.ecs.components.Transform;
 import org.homonoia.eris.graphics.drawables.model.AxisAlignedBoundingBox;
 import org.homonoia.eris.graphics.drawables.model.SubModel;
 import org.homonoia.eris.renderer.RenderCommand;
@@ -55,8 +56,8 @@ public class DrawBoundingSphereCommand extends RenderCommand<DrawBoundingSphereC
         return this;
     }
 
-    public DrawBoundingSphereCommand transform(Matrix4f transform) {
-        this.transform.set(transform);
+    public DrawBoundingSphereCommand transform(Transform transform) {
+        this.transform = transform.getModelMatrix(this.transform);
         return this;
     }
 

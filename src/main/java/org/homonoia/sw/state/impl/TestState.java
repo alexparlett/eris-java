@@ -105,7 +105,7 @@ public class TestState extends Contextual implements State {
         Transform modelTransform = model.get(Transform.class).get();
         if (evt.getKey().equals(Key.R)) {
             Transform transform = evt.getMods().contains(Modifier.SHIFT) ? modelTransform : cameraTransform;
-            transform.get().setRotationXYZ(0, 0, 0).setTranslation(0, 0, 0);
+            transform.rotation(0, 0, 0).translation(0, 0, 0);
         }
     }
 
@@ -114,9 +114,9 @@ public class TestState extends Contextual implements State {
         double x = evt.getDelta().x();
         double y = evt.getDelta().y();
         if (Math.abs(y) > Math.abs(x)) {
-            cameraTransform.get().rotateX((float) Math.toRadians(y));
+            cameraTransform.getRotation().rotateX((float) Math.toRadians(y));
         } else {
-            cameraTransform.get().rotateY((float) Math.toRadians(x));
+            cameraTransform.getRotation().rotateY((float) Math.toRadians(x));
         }
     }
 
