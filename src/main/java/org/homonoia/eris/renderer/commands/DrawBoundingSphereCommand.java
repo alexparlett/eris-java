@@ -38,12 +38,12 @@ public class DrawBoundingSphereCommand extends RenderCommand<DrawBoundingSphereC
         if (isNull(previousRenderKey) || previousRenderKey.getMaterial() != getRenderKey().getMaterial()) {
             material.use();
 
-            findAndBindUniform("view", renderer, material.getShaderProgram(), renderer.getCurrentView());
-            findAndBindUniform("projection", renderer, material.getShaderProgram(), renderer.getCurrentProjection());
+            findAndBindUniform("view", material.getShaderProgram(), renderer.getCurrentView());
+            findAndBindUniform("projection", material.getShaderProgram(), renderer.getCurrentProjection());
         }
 
         float distance = aabb.getMax().distance(aabb.getMin()) / 2;
-        findAndBindUniform("model", renderer, material.getShaderProgram(), transform.scale(Math.abs(distance)));
+        findAndBindUniform("model", material.getShaderProgram(), transform.scale(Math.abs(distance)));
 
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         model.draw();

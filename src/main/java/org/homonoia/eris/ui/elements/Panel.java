@@ -11,12 +11,9 @@ import org.lwjgl.system.MemoryStack;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-import static org.lwjgl.nuklear.Nuklear.NK_WINDOW_NO_SCROLLBAR;
-import static org.lwjgl.nuklear.Nuklear.nk_begin;
-import static org.lwjgl.nuklear.Nuklear.nk_end;
-import static org.lwjgl.nuklear.Nuklear.nk_rect;
-import static org.lwjgl.nuklear.Nuklear.nk_style_item_hide;
+import static org.lwjgl.nuklear.Nuklear.*;
 import static org.lwjgl.system.MemoryStack.stackPush;
 
 /**
@@ -31,8 +28,8 @@ public class Panel extends UIElement {
 
     private int x;
     private int y;
-    private int width;
-    private int height;
+    private Integer width;
+    private Integer height;
     private String title;
     private int flags;
     private List<UIElement> children = new ArrayList<>();
@@ -49,16 +46,21 @@ public class Panel extends UIElement {
 
     @Override
     public void layout() {
+        Objects.requireNonNull(title);
+        Objects.requireNonNull(width);
+        Objects.requireNonNull(height);
+
         try (MemoryStack stack = stackPush()) {
             NkRect rect = NkRect.mallocStack(stack);
 
+            nk_style_item_hide(nkStyleWindow.fixed_background());
+            ui.getCtx().style().window(nkStyleWindow);
             if (nk_begin(
                     ui.getCtx(),
                     title,
                     nk_rect(x, y, width, height, rect),
-                    flags | NK_WINDOW_NO_SCROLLBAR
+                    flags
             )) {
-                nk_style_item_hide(ui.getCtx().style().window().fixed_background());
                 children.stream()
                         .filter(UIElement::isActive)
                         .forEach(UIElement::layout);

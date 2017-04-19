@@ -25,6 +25,7 @@ import org.homonoia.eris.resources.cache.ResourceCache;
 import org.homonoia.eris.resources.types.json.JsonException;
 import org.homonoia.eris.scripting.ScriptEngine;
 import org.homonoia.eris.ui.UI;
+import org.homonoia.eris.ui.elements.Panel;
 import org.homonoia.eris.ui.elements.Text;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -33,14 +34,15 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static org.homonoia.eris.ui.UI.NK_WINDOW_NOT_INTERACTIVE;
 import static org.lwjgl.glfw.GLFW.glfwTerminate;
-import static org.lwjgl.nuklear.Nuklear.NK_TEXT_ALIGN_LEFT;
-import static org.lwjgl.nuklear.Nuklear.NK_TEXT_ALIGN_TOP;
+import static org.lwjgl.nuklear.Nuklear.*;
 
 /**
  * Copyright (c) 2015-2016 the Eris project.
@@ -69,6 +71,7 @@ public class Engine extends Contextual {
     private ScriptEngine scriptEngine;
     private Statistics statistics;
 
+    private Panel panel;
     private Text fps;
     private DecimalFormat decimalFormat = new DecimalFormat();
 
@@ -169,18 +172,31 @@ public class Engine extends Contextual {
         input.initialize();
         ui.initialize();
 
-        decimalFormat.setGroupingUsed(false);
-        decimalFormat.setDecimalSeparatorAlwaysShown(true);
+        createFPSDisplay();
+    }
 
-        decimalFormat.setMinimumFractionDigits(2);
-        decimalFormat.setMaximumFractionDigits(2);
+    private void createFPSDisplay() {
+        decimalFormat.setGroupingUsed(false);
+        decimalFormat.setDecimalSeparatorAlwaysShown(false);
+        decimalFormat.setRoundingMode(RoundingMode.DOWN);
+
+        decimalFormat.setMinimumFractionDigits(0);
+        decimalFormat.setMaximumFractionDigits(0);
+
+        panel = new Panel(getContext());
+        panel.setHeight(20);
+        panel.setWidth(50);
+        panel.setX(10);
+        panel.setY(10);
+        panel.setFlags(NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_NOT_INTERACTIVE | NK_WINDOW_BACKGROUND);
+        panel.setTitle("FPS");
 
         fps = new Text(getContext());
-        fps.setX(0);
-        fps.setY(0);
-        fps.setAlign(NK_TEXT_ALIGN_TOP| NK_TEXT_ALIGN_LEFT);
+        fps.setAlign(NK_TEXT_LEFT);
         fps.setFont(ui.getDefaultFont());
-        ui.getRoot().getChildren().add(fps);
+
+        panel.getChildren().add(fps);
+        ui.getRoots().add(panel);
     }
 
     public void run() {

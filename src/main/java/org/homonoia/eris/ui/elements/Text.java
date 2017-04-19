@@ -7,9 +7,7 @@ import org.homonoia.eris.resources.types.Font;
 import org.homonoia.eris.ui.UIElement;
 
 import static java.util.Objects.nonNull;
-import static org.lwjgl.nuklear.Nuklear.nk_layout_row_dynamic;
-import static org.lwjgl.nuklear.Nuklear.nk_style_set_font;
-import static org.lwjgl.nuklear.Nuklear.nk_text;
+import static org.lwjgl.nuklear.Nuklear.*;
 
 /**
  * Copyright (c) 2015-2017 Homonoia Studios.
@@ -42,6 +40,6 @@ public class Text extends UIElement {
             nk_style_set_font(ui.getCtx(), font.getNkFont());
         }
         nk_layout_row_dynamic(ui.getCtx(), 20, 1);
-        nk_text(ui.getCtx(), text, align);
+        nk_label(ui.getCtx(), text, align);
     }
 }

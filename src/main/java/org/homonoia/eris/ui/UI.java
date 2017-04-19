@@ -22,6 +22,8 @@ import org.lwjgl.nuklear.NkDrawVertexLayoutElement;
 import org.lwjgl.system.MemoryStack;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 import static java.util.Objects.nonNull;
 import static org.lwjgl.glfw.GLFW.glfwSetClipboardString;
@@ -136,7 +138,7 @@ public class UI extends Contextual {
     private int vao;
 
     @Getter
-    private Panel root;
+    private List<UIElement> roots = new ArrayList<>();
     private NkDrawVertexLayoutElement.Buffer vertexLayout;
 
 
@@ -178,12 +180,11 @@ public class UI extends Contextual {
 
         setupClipboard();
         setupContext();
-        setupRoot();
     }
 
     public void shutdown() {
-        if (nonNull(root)) {
-            root.destroy();
+        if (nonNull(roots)) {
+            roots.forEach(UIElement::destroy);
         }
 
         if (nonNull(nullTexture)) {
@@ -225,10 +226,6 @@ public class UI extends Contextual {
     }
 
     private void handleScreenMode(ScreenMode evt) {
-        if (nonNull(root)) {
-            root.setWidth(evt.getWidth());
-            root.setHeight(evt.getHeight());
-        }
     }
 
     private void setupClipboard() {
@@ -306,8 +303,8 @@ public class UI extends Contextual {
         shaderProgram = resourceCache.get(ShaderProgram.class, "Shaders/ui.shader")
                 .orElseThrow(() -> new InitializationException("Shaders/ui.shader missing for UI module."));
 
-        defaultFont = resourceCache.get(Font.class, "Fonts/CODE_12_b.font")
-                .orElseThrow(() -> new InitializationException("Fonts/CODE_12_b.font missing for UI module."));
+        defaultFont = resourceCache.get(Font.class, "Fonts/code_18_b.font")
+                .orElseThrow(() -> new InitializationException("Fonts/code_18_b.font missing for UI module."));
 
         nk_buffer_init(cmds, allocator, BUFFER_INITIAL_SIZE);
 
@@ -320,18 +317,6 @@ public class UI extends Contextual {
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
         glBindVertexArray(0);
-    }
-
-    private void setupRoot() {
-        Graphics graphics = getContext().getBean(Graphics.class);
-
-        Panel panel = new Panel(getContext());
-        panel.setFlags(NK_WINDOW_BACKGROUND);
-        panel.setHeight(graphics.getDefaultRenderTarget().getHeight());
-        panel.setWidth(graphics.getDefaultRenderTarget().getWidth());
-        panel.setTitle("Root");
-
-        root = panel;
     }
 
     public Font getDefaultFont() {
@@ -359,12 +344,11 @@ public class UI extends Contextual {
                     .orElseThrow(() -> new ErisRuntimeExcecption("Shaders/ui.shader missing ProjMtx uniform"));
 
             glUniformMatrix4fv(projMtx.getLocation(), false, stack.floats(
-                    2.0f / root.getWidth(), 0.0f, 0.0f, 0.0f,
-                    0.0f, -2.0f / root.getHeight(), 0.0f, 0.0f,
+                    2.0f / graphics.getWidth(), 0.0f, 0.0f, 0.0f,
+                    0.0f, -2.0f / graphics.getHeight(), 0.0f, 0.0f,
                     0.0f, 0.0f, -1.0f, 0.0f,
                     -1.0f, 1.0f, 0.0f, 1.0f
             ));
-            glViewport(0, 0, root.getWidth(), root.getHeight());
         }
 
         {
@@ -407,8 +391,8 @@ public class UI extends Contextual {
             glUnmapBuffer(GL_ARRAY_BUFFER);
 
             // iterate over and execute each draw command
-            float fb_scale_x = (float)root.getWidth() / (float)root.getWidth();
-            float fb_scale_y = (float)root.getHeight() / (float)root.getHeight();
+            float fb_scale_x = (float) graphics.getDefaultRenderTarget().getWidth() / (float) graphics.getWidth();
+            float fb_scale_y = (float) graphics.getDefaultRenderTarget().getHeight() / (float)graphics.getHeight();
 
             long offset = NULL;
             for (NkDrawCommand cmd = nk__draw_begin(ctx, cmds); cmd != null; cmd = nk__draw_next(cmd, cmds, ctx) ) {
@@ -416,7 +400,7 @@ public class UI extends Contextual {
                 glBindTexture(GL_TEXTURE_2D, cmd.texture().id());
                 glScissor(
                         (int)(cmd.clip_rect().x() * fb_scale_x),
-                        (int)((root.getHeight() - (int)(cmd.clip_rect().y() + cmd.clip_rect().h())) * fb_scale_y),
+                        (int)((graphics.getHeight() - (int)(cmd.clip_rect().y() + cmd.clip_rect().h())) * fb_scale_y),
                         (int)(cmd.clip_rect().w() * fb_scale_x),
                         (int)(cmd.clip_rect().h() * fb_scale_y)
                 );

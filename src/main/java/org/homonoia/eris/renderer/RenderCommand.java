@@ -34,7 +34,7 @@ public abstract class RenderCommand<T extends RenderCommand> implements Comparab
         return this.getRenderKey().compareTo(o.getRenderKey());
     }
 
-    protected void findAndBindUniform(String uniform, Renderer renderer, ShaderProgram shaderProgram, Object value) {
+    protected void findAndBindUniform(String uniform, ShaderProgram shaderProgram, Object value) {
         Optional<Uniform> shaderUniformMaybe = shaderProgram.getUniform(uniform);
         Uniform shaderUniform = shaderUniformMaybe.orElseThrow(() -> new IllegalArgumentException("No uniforms in shader found for " + uniform));
         shaderUniform.bindUniform(value);

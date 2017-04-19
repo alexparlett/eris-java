@@ -111,12 +111,12 @@ public final class CameraRenderer implements Callable<Boolean> {
                         .material(0)
                         .build()));
 
-        Matrix4f frustumMatrix = perspective.mul(view);
-        FrustumIntersection intersection = new FrustumIntersection(frustumMatrix);
+//        Matrix4f frustumMatrix = perspective.mul(view);
+//        FrustumIntersection intersection = new FrustumIntersection(frustumMatrix);
 
         renderableFamily.getEntities()
                 .stream()
-                .filter(filterEntities(camera, intersection, cameraTransform))
+                .filter(filterEntities(camera, null, cameraTransform))
                 .forEach(processEntity(cameraTransform, camera));
 
         if (nonNull(camera.getSkybox())) {
@@ -189,8 +189,9 @@ public final class CameraRenderer implements Callable<Boolean> {
             boolean inLayer = camera.getLayerMask().isEmpty() || camera.getLayerMask().contains(rndrTransform.getLayer());
             AxisAlignedBoundingBox aabb = rndrMesh.getModel().getAxisAlignedBoundingBox();
             boolean visible = inLayer
-                    && testFrustumSphere(rndrTransform, aabb, intersection);
-//                    && testNearPlane(rndrTransform, aabb, cameraTransform, camera);
+//                    && testFrustumSphere(rndrTransform, aabb, intersection)
+//                    && testNearPlane(rndrTransform, aabb, cameraTransform, camera)
+            ;
             return visible;
         };
     }

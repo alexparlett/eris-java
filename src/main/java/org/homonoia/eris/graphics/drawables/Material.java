@@ -44,6 +44,8 @@ import java.util.function.Function;
 import static org.lwjgl.opengl.GL11.glCullFace;
 import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
 import static org.lwjgl.opengl.GL13.glActiveTexture;
+import static org.lwjgl.opengl.GL20.GL_SAMPLER_2D;
+import static org.lwjgl.opengl.GL20.GL_SAMPLER_CUBE;
 
 /**
  * Created by alexparlett on 20/04/2016.
@@ -229,6 +231,7 @@ public class Material extends Resource implements GPUResource {
                 });
 
         uniforms.values().stream()
+                .filter(uniform -> !Objects.equals(uniform.getType(), GL_SAMPLER_2D) && !Objects.equals(uniform.getType(), GL_SAMPLER_CUBE))
                 .filter(uniform -> Objects.nonNull(uniform.getData()))
                 .forEach(Uniform::bindUniform);
     }

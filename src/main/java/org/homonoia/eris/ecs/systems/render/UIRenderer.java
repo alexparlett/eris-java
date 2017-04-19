@@ -4,6 +4,7 @@ import org.homonoia.eris.renderer.RenderFrame;
 import org.homonoia.eris.renderer.RenderKey;
 import org.homonoia.eris.renderer.commands.UICommand;
 import org.homonoia.eris.ui.UI;
+import org.homonoia.eris.ui.UIElement;
 
 import java.util.concurrent.Callable;
 
@@ -25,7 +26,7 @@ public class UIRenderer implements Callable<Boolean> {
 
     @Override
     public Boolean call() throws Exception {
-        ui.getRoot().layout();
+        ui.getRoots().forEach(UIElement::layout);
 
         renderFrame.add(UICommand.newInstance()
                 .renderKey(RenderKey.builder()

@@ -31,11 +31,11 @@ public class DrawModelCommand extends RenderCommand<DrawModelCommand> {
         if (isNull(previousRenderKey) || previousRenderKey.getMaterial() != getRenderKey().getMaterial()) {
             material.use();
 
-            findAndBindUniform("view", renderer, material.getShaderProgram(), renderer.getCurrentView());
-            findAndBindUniform("projection", renderer, material.getShaderProgram(), renderer.getCurrentProjection());
+            findAndBindUniform("view", material.getShaderProgram(), renderer.getCurrentView());
+            findAndBindUniform("projection", material.getShaderProgram(), renderer.getCurrentProjection());
         }
 
-        findAndBindUniform("model", renderer, material.getShaderProgram(), transform);
+        findAndBindUniform("model", material.getShaderProgram(), transform);
 
         model.draw();
     }

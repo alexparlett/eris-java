@@ -28,8 +28,8 @@ public class DrawSkyboxCommand extends RenderCommand<DrawSkyboxCommand> {
             skybox.getMaterial().use();
 
             Matrix4f currentView = new Matrix4f(renderer.getCurrentView()).setTranslation(0,0,0);
-            findAndBindUniform("view", renderer, skybox.getMaterial().getShaderProgram(), currentView);
-            findAndBindUniform("projection", renderer, skybox.getMaterial().getShaderProgram(), renderer.getCurrentProjection());
+            findAndBindUniform("view", skybox.getMaterial().getShaderProgram(), currentView);
+            findAndBindUniform("projection", skybox.getMaterial().getShaderProgram(), renderer.getCurrentProjection());
         }
 
         skybox.use();
