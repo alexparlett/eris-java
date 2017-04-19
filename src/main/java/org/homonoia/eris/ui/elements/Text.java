@@ -19,8 +19,6 @@ import static org.lwjgl.nuklear.Nuklear.*;
 @Setter
 public class Text extends UIElement {
 
-    private int x;
-    private int y;
     private String text;
     private int align;
     private Font font;

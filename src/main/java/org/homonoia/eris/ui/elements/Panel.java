@@ -53,7 +53,6 @@ public class Panel extends UIElement {
         try (MemoryStack stack = stackPush()) {
             NkRect rect = NkRect.mallocStack(stack);
 
-            nk_style_item_hide(nkStyleWindow.fixed_background());
             ui.getCtx().style().window(nkStyleWindow);
             if (nk_begin(
                     ui.getCtx(),

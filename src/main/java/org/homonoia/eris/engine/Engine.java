@@ -45,6 +45,7 @@ import static org.lwjgl.glfw.GLFW.glfwTerminate;
 import static org.lwjgl.nuklear.Nuklear.NK_TEXT_LEFT;
 import static org.lwjgl.nuklear.Nuklear.NK_WINDOW_BACKGROUND;
 import static org.lwjgl.nuklear.Nuklear.NK_WINDOW_NO_SCROLLBAR;
+import static org.lwjgl.nuklear.Nuklear.nk_style_item_hide;
 
 /**
  * Copyright (c) 2015-2016 the Eris project.
@@ -192,6 +193,8 @@ public class Engine extends Contextual {
         panel.setY(10);
         panel.setFlags(NK_WINDOW_NO_SCROLLBAR | NK_WINDOW_NOT_INTERACTIVE | NK_WINDOW_BACKGROUND);
         panel.setTitle("FPS");
+
+        nk_style_item_hide(panel.getNkStyleWindow().fixed_background());
 
         fps = new Text(getContext());
         fps.setAlign(NK_TEXT_LEFT);
