@@ -103,7 +103,9 @@ processResources {
     }
 }
 
-compileJava.dependsOn(processResources)
+processResources.outputs.upToDateWhen { false }
+
+build.dependsOn(processResources)
 
 idea {
     module {

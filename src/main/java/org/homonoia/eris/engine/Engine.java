@@ -42,7 +42,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.homonoia.eris.ui.UI.NK_WINDOW_NOT_INTERACTIVE;
 import static org.lwjgl.glfw.GLFW.glfwTerminate;
-import static org.lwjgl.nuklear.Nuklear.*;
+import static org.lwjgl.nuklear.Nuklear.NK_TEXT_LEFT;
+import static org.lwjgl.nuklear.Nuklear.NK_WINDOW_BACKGROUND;
+import static org.lwjgl.nuklear.Nuklear.NK_WINDOW_NO_SCROLLBAR;
 
 /**
  * Copyright (c) 2015-2016 the Eris project.
@@ -211,6 +213,7 @@ public class Engine extends Contextual {
         Timer timer = new Timer();
 
         graphics.show();
+        graphics.maximize();
         try {
             while (!shouldExit.get()) {
                 if (delta >= rate) {
@@ -291,7 +294,7 @@ public class Engine extends Contextual {
     }
 
     private void handleGLFWError(int error, long description) {
-        LOG.error("GLFW Error {} {}", error, description);
+        LOG.error("GLFW Error {} {}", error, GLFWErrorCallback.getDescription(description));
         shouldExit.set(true);
         getContext().setExitCode(ExitCode.GLFW_RUNTIME_ERROR);
     }
