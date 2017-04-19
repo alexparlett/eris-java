@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static org.lwjgl.glfw.GLFW.glfwSetWindowShouldClose;
 import static org.lwjgl.glfw.GLFW.glfwSwapBuffers;
 import static org.lwjgl.opengl.GL11.GL_DEPTH_TEST;
 import static org.lwjgl.opengl.GL11.GL_LESS;
@@ -132,12 +131,6 @@ public class Renderer extends Contextual {
 
     private void handleScreenMode(final ScreenMode evt) {
         viewportDirty.set(true);
-    }
-
-    private void handleRenderingThreadException(final Thread thread, final Throwable throwable) {
-        LOG.error("Uncaught Exception in Rendering Thread", throwable);
-        getContext().setExitCode(ExitCode.RUNTIME);
-        glfwSetWindowShouldClose(graphics.getRenderWindow(), true);
     }
 
     private void handleRenderEvent(final Render evt) {

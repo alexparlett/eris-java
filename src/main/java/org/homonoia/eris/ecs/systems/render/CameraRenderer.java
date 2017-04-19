@@ -79,7 +79,7 @@ public final class CameraRenderer implements Callable<Boolean> {
                 .renderKey(RenderKey.builder()
                         .target(camera.getRenderTarget().getHandle())
                         .targetLayer(0)
-                        .command(0)
+                        .command(1)
                         .extra(0)
                         .depth(0)
                         .material(0)

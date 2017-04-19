@@ -10,9 +10,9 @@ import org.homonoia.eris.renderer.commands.ClearCommand;
 import org.homonoia.eris.ui.UI;
 import org.joml.Vector4f;
 
+import java.util.ArrayDeque;
 import java.util.Objects;
 import java.util.Queue;
-import java.util.concurrent.ArrayBlockingQueue;
 
 import static java.util.Objects.nonNull;
 import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
@@ -27,7 +27,7 @@ import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 public class SwappingRenderState implements RenderState<CommandRenderFrame> {
 
     private final Pool<CommandRenderFrame> renderFramePool;
-    private final Queue<CommandRenderFrame> frames = new ArrayBlockingQueue<>(8);
+    private final Queue<CommandRenderFrame> frames = new ArrayDeque<>(8);
     private CommandRenderFrame lastFrame;
 
     public SwappingRenderState(Renderer renderer, UI ui) {

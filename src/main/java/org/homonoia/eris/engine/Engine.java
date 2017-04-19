@@ -16,6 +16,7 @@ import org.homonoia.eris.engine.properties.EngineProperties;
 import org.homonoia.eris.events.core.ExitRequested;
 import org.homonoia.eris.events.frame.Begin;
 import org.homonoia.eris.events.frame.End;
+import org.homonoia.eris.events.frame.FixedUpdate;
 import org.homonoia.eris.events.frame.Render;
 import org.homonoia.eris.events.frame.Update;
 import org.homonoia.eris.graphics.Graphics;
@@ -211,42 +212,45 @@ public class Engine extends Contextual {
         Begin.Builder beginBuilder = Begin.builder();
         End.Builder endBuilder = End.builder();
         Update.Builder updateBuilder = Update.builder();
+        FixedUpdate.Builder fixedUpdateBuilder = FixedUpdate.builder();
         Render.Builder renderBuilder = Render.builder();
 
-        Timer timer = new Timer();
+        Timer dynamicTimer = new Timer();
+        Timer fixedTimer = new Timer();
 
         graphics.show();
         graphics.maximize();
         try {
             while (!shouldExit.get()) {
-                if (delta >= rate) {
-                    fps.setText(decimalFormat.format(1 / delta));
-                    statistics.beginFrame();
-                    {
-                        statistics.getCurrent().startSegment();
-                        publish(beginBuilder.timeStep(delta));
-                        statistics.getCurrent().endSegment("Begin");
-                    }
-                    {
-                        statistics.getCurrent().startSegment();
-                        publish(updateBuilder.timeStep(delta));
-                        statistics.getCurrent().endSegment("Update");
-                    }
-                    {
-                        statistics.getCurrent().startSegment();
-                        publish(renderBuilder.timeStep(delta));
-                        statistics.getCurrent().endSegment("Render");
-                    }
-                    {
-                        statistics.getCurrent().startSegment();
-                        publish(endBuilder.timeStep(delta));
-                        statistics.getCurrent().endSegment("End");
-                    }
-                    statistics.endFrame(delta);
-                    delta = timer.getElapsedTime(true);
-                } else {
-                    delta = timer.getElapsedTime(false);
+                statistics.beginFrame();
+                delta = dynamicTimer.getElapsedTime(true);
+                fps.setText(decimalFormat.format(1 / delta));
+                {
+                    statistics.getCurrent().startSegment();
+                    publish(beginBuilder.timeStep(delta));
+                    statistics.getCurrent().endSegment("Begin");
                 }
+                {
+                    statistics.getCurrent().startSegment();
+                    publish(updateBuilder.timeStep(delta));
+                    statistics.getCurrent().endSegment("Update");
+                }
+                if (fixedTimer.getElapsedTime() >= rate) {
+                    statistics.getCurrent().startSegment();
+                    publish(fixedUpdateBuilder.timeStep(fixedTimer.getElapsedTime(true)));
+                    statistics.getCurrent().endSegment("Fixed Update");
+                }
+                {
+                    statistics.getCurrent().startSegment();
+                    publish(renderBuilder.timeStep(delta));
+                    statistics.getCurrent().endSegment("Render");
+                }
+                {
+                    statistics.getCurrent().startSegment();
+                    publish(endBuilder.timeStep(delta));
+                    statistics.getCurrent().endSegment("End");
+                }
+                statistics.endFrame(delta);
             }
         } catch (Throwable t) {
             LOG.error("Unhandled exception", t);
