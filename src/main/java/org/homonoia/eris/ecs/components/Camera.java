@@ -101,7 +101,7 @@ public class Camera extends Component {
     public Matrix4f getViewMatrix() {
         Transform transform = getEntity().get(Transform.class)
                 .orElseThrow(() -> new ErisRuntimeExcecption("Camera on Entity {} without Transform", getEntity().getId()));
-        return viewMatrix.setLookAt(transform.getTranslation(), transform.forward().add(transform.forward()), transform.up());
+        return viewMatrix.setLookAt(transform.getTranslation(), transform.forward().add(transform.getTranslation()), transform.up());
     }
 
     public Matrix4f getProjectionMatrix() {

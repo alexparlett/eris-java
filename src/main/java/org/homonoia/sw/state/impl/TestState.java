@@ -117,9 +117,9 @@ public class TestState extends Contextual implements State {
         double x = evt.getDelta().x();
         double y = evt.getDelta().y();
         if (Math.abs(y) > Math.abs(x)) {
-            cameraTransform.getRotation().rotateX((float) Math.toRadians(y));
+            cameraTransform.getRotation().rotateLocalX((float) Math.toRadians(y));
         } else {
-            cameraTransform.getRotation().rotateY((float) Math.toRadians(x));
+            cameraTransform.getRotation().rotateLocalY((float) Math.toRadians(x));
         }
     }
 
