@@ -63,16 +63,18 @@ public final class CameraRenderer implements Callable<Boolean> {
         Transform cameraTransform = cameraEntity.get(Transform.class).get();
         Camera camera = cameraEntity.get(Camera.class).get();
 
-        renderFrame.add(ClearCommand.newInstance()
-                .bitfield(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
-                .renderKey(RenderKey.builder()
-                        .target(camera.getRenderTarget().getHandle())
-                        .targetLayer(0)
-                        .command(0)
-                        .extra(0)
-                        .depth(0)
-                        .material(0)
-                        .build()));
+        if (camera.getRenderTarget().getHandle() != 0) {
+            renderFrame.add(ClearCommand.newInstance()
+                    .bitfield(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+                    .renderKey(RenderKey.builder()
+                            .target(camera.getRenderTarget().getHandle())
+                            .targetLayer(0)
+                            .command(0)
+                            .extra(0)
+                            .depth(0)
+                            .material(0)
+                            .build()));
+        }
 
         renderFrame.add(ClearColorCommand.newInstance()
                 .color(camera.getBackgroundColor())
@@ -195,7 +197,7 @@ public final class CameraRenderer implements Callable<Boolean> {
             boolean visible = inLayer
                     && testFrustumSphere(rndrTransform, aabb, intersection)
 //                    && testNearPlane(rndrTransform, aabb, cameraTransform, camera)
-            ;
+                    ;
             return visible;
         };
     }

@@ -12,7 +12,9 @@ import org.homonoia.eris.ecs.systems.render.CameraRenderer;
 import org.homonoia.eris.ecs.systems.render.UIRenderer;
 import org.homonoia.eris.events.frame.Update;
 import org.homonoia.eris.renderer.RenderFrame;
+import org.homonoia.eris.renderer.RenderKey;
 import org.homonoia.eris.renderer.Renderer;
+import org.homonoia.eris.renderer.commands.ClearCommand;
 import org.homonoia.eris.ui.UI;
 
 import java.util.concurrent.CompletionService;
@@ -21,6 +23,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import static java.util.Objects.nonNull;
+import static org.lwjgl.opengl.GL11.GL_COLOR_BUFFER_BIT;
+import static org.lwjgl.opengl.GL11.GL_DEPTH_BUFFER_BIT;
 
 /**
  * Copyright (c) 2015-2016 Homonoia Studios.
@@ -51,6 +55,17 @@ public class RenderSystem extends EntitySystem {
     public void update(final Update update) throws RenderingException {
         statistics.getCurrent().startSegment();
         RenderFrame renderFrame = renderer.getState().newRenderFrame();
+
+        renderFrame.add(ClearCommand.newInstance()
+                .bitfield(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+                .renderKey(RenderKey.builder()
+                        .target(0)
+                        .targetLayer(0)
+                        .command(0)
+                        .extra(0)
+                        .depth(0)
+                        .material(0)
+                        .build()));
 
         long totalCount = 1L;
         completionService.submit(new UIRenderer(renderFrame, ui));
