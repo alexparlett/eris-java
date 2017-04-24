@@ -77,7 +77,12 @@ public class Transform extends Component {
     }
 
     public Transform rotation(float x, float y, float z) {
-        rotation.set((float) Math.toRadians(x), (float) Math.toRadians(y), (float) Math.toRadians(z));
+        rotation.rotationXYZ((float) Math.toRadians(x), (float) Math.toRadians(y), (float) Math.toRadians(z));
+        return this;
+    }
+
+    public Transform rotation(float x, float y, float z, float w) {
+        rotation.set((float) Math.toRadians(x), (float) Math.toRadians(y), (float) Math.toRadians(z), w);
         return this;
     }
 

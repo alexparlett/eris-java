@@ -2,6 +2,7 @@ package core.ships;
 
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.ecs.Component;
+import org.homonoia.eris.ecs.components.RigidBody;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,5 +21,7 @@ public class Fighter extends Component {
 
     @Override
     public void update(double delta) {
+        RigidBody rigidBody = (RigidBody) getEntity().get(RigidBody.class).get();
+        rigidBody.getDBody().addRelForce(0,0,-1);
     }
 }

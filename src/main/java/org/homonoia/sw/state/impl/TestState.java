@@ -13,6 +13,7 @@ import org.homonoia.eris.ecs.components.Mesh;
 import org.homonoia.eris.ecs.components.Transform;
 import org.homonoia.eris.ecs.exceptions.MissingRequiredComponentException;
 import org.homonoia.eris.ecs.systems.InputSystem;
+import org.homonoia.eris.ecs.systems.PhysicsSystem;
 import org.homonoia.eris.ecs.systems.RenderSystem;
 import org.homonoia.eris.ecs.systems.UpdateSystem;
 import org.homonoia.eris.events.core.ExitRequested;
@@ -61,6 +62,7 @@ public class TestState extends Contextual implements State {
         entitySystemManager.add(new InputSystem(getContext(), familyManager));
         entitySystemManager.add(new UpdateSystem(getContext(), familyManager));
         entitySystemManager.add(new RenderSystem(getContext(), familyManager));
+        entitySystemManager.add(new PhysicsSystem(getContext(), familyManager));
 
         resourceCache = getContext().getBean(ResourceCache.class);
         resourceCache.add(Model.class, "Models/fighter.mdl", false);
@@ -94,7 +96,6 @@ public class TestState extends Contextual implements State {
             this.model = new Entity(getContext());
             this.model.add(componentFactory.newInstance(Transform.class).translate(0, 0, -15));
             this.model.add(componentFactory.newInstance(Mesh.class).model(model));
-            this.model.add(componentFactory.newInstance("core.ships.Fighter"));
             entityManager.add(this.model);
         } catch (MissingRequiredComponentException e) {
             e.printStackTrace();
