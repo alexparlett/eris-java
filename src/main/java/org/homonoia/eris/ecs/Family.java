@@ -1,5 +1,7 @@
 package org.homonoia.eris.ecs;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.events.ecs.ComponentAdded;
@@ -8,7 +10,10 @@ import org.homonoia.eris.events.ecs.ComponentRemoved;
 import java.util.Collections;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
+
+import static java.util.Objects.nonNull;
 
 /**
  * Copyright (c) 2015-2016 Homonoia Studios.
@@ -17,6 +22,14 @@ import java.util.function.Predicate;
  * @since 15/07/2016
  */
 public class Family extends Contextual {
+
+    @Getter
+    @Setter
+    private Consumer<Component> addedCallback;
+
+    @Getter
+    @Setter
+    private Consumer<Component> removedCallback;
 
     private Set<Entity> entities = Collections.newSetFromMap(new ConcurrentHashMap());
     private Set<Class<? extends Component>> watchedComponents;
@@ -56,8 +69,9 @@ public class Family extends Contextual {
     }
 
     private Predicate<ComponentAdded> getComponentAddedPredicate() {
-        return componentAdded -> watchedComponents.stream()
-                .allMatch(watchClass -> ((Entity)componentAdded.getSource()).has(watchClass));
+        return componentAdded ->
+                watchedComponents.stream().anyMatch(watchClass -> watchClass.isAssignableFrom(componentAdded.getComponent().getClass())) &&
+                watchedComponents.stream().allMatch(watchClass -> ((Entity)componentAdded.getSource()).has(watchClass));
     }
 
     private Predicate<ComponentRemoved> getComponentRemovedPredicate() {
@@ -66,9 +80,15 @@ public class Family extends Contextual {
 
     private void handleComponentAdded(final ComponentAdded componentAdded) {
         entities.add((Entity) componentAdded.getSource());
+        if (nonNull(addedCallback)) {
+            addedCallback.accept(componentAdded.getComponent());
+        }
     }
 
     private void handleComponentRemoved(final ComponentRemoved componentRemoved) {
         entities.remove(componentRemoved.getSource());
+        if (nonNull(removedCallback)) {
+            removedCallback.accept(componentRemoved.getComponent());
+        }
     }
 }
