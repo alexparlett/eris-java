@@ -4,6 +4,7 @@ import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.Statistics;
 import org.homonoia.eris.core.exceptions.ErisException;
+import org.homonoia.eris.events.frame.FixedUpdate;
 import org.homonoia.eris.events.frame.Update;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,7 @@ public class EntitySystemManager extends Contextual {
         statistics = context.getBean(Statistics.class);
 
         subscribe(this::handleUpdate, Update.class);
+        subscribe(this::handleFixedUpdate, FixedUpdate.class);
     }
 
     public EntitySystemManager add(EntitySystem entitySystem) {
@@ -66,5 +68,20 @@ public class EntitySystemManager extends Contextual {
                     }
                 });
         statistics.getCurrent().endSegment("Entity System Update");
+    }
+
+    private void handleFixedUpdate(final FixedUpdate update) {
+        statistics.getCurrent().startSegment();
+        entitySystems.stream()
+                .filter(EntitySystem::isEnabled)
+                .forEachOrdered(entitySystem -> {
+                    try {
+                        entitySystem.fixedUpdate(update);
+                    } catch (ErisException e) {
+                        LOG.error("Failed to update entity system {}", entitySystem.getClass().getSimpleName(), e);
+                        return;
+                    }
+                });
+        statistics.getCurrent().endSegment("Entity System Fixed Update");
     }
 }

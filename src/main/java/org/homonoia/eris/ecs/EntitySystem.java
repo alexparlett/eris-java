@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.homonoia.eris.core.Context;
 import org.homonoia.eris.core.Contextual;
 import org.homonoia.eris.core.exceptions.ErisException;
+import org.homonoia.eris.events.frame.FixedUpdate;
 import org.homonoia.eris.events.frame.Update;
 
 /**
@@ -42,7 +43,9 @@ public abstract class EntitySystem extends Contextual implements Comparable<Enti
         this.enabled = true;
     }
 
-    public abstract void update(final Update update) throws ErisException;
+    public void update(final Update update) throws ErisException {}
+
+    public void fixedUpdate(final FixedUpdate update) throws ErisException {}
 
     public boolean isEnabled() {
         return enabled;
