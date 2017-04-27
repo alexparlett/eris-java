@@ -26,7 +26,6 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
 import java.nio.DoubleBuffer;
-import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -36,13 +35,11 @@ import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_HIDDEN;
 import static org.lwjgl.glfw.GLFW.GLFW_CURSOR_NORMAL;
 import static org.lwjgl.glfw.GLFW.glfwGetCursorPos;
 import static org.lwjgl.glfw.GLFW.glfwGetKeyName;
-import static org.lwjgl.glfw.GLFW.glfwGetWindowPos;
 import static org.lwjgl.glfw.GLFW.glfwPollEvents;
 import static org.lwjgl.glfw.GLFW.glfwSetCursorPos;
 import static org.lwjgl.glfw.GLFW.glfwSetInputMode;
 import static org.lwjgl.nuklear.Nuklear.nk_input_begin;
 import static org.lwjgl.nuklear.Nuklear.nk_input_end;
-import static org.lwjgl.system.MemoryStack.stackPush;
 
 /**
  * Copyright (c) 2015-2016 the Eris project.
@@ -177,15 +174,6 @@ public class Input extends Contextual {
                 return isKeyDown(Key.LEFT_SUPER) || isKeyDown(Key.RIGHT_SUPER);
         }
         return false;
-    }
-
-    public void setMousePosition(int x, int y) {
-        try (MemoryStack stack = stackPush()) {
-            final IntBuffer xpos = stack.mallocInt(1);
-            final IntBuffer ypos = stack.mallocInt(1);
-            glfwGetWindowPos(renderWindow, xpos, ypos);
-            glfwSetCursorPos(renderWindow, x - xpos.get(0), y - ypos.get(0));
-        }
     }
 
     private void handleGLFWKeyCallback(long window, int key, int scancode, int action, int mods) {
