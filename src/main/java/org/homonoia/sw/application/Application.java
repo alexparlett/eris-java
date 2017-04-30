@@ -1,13 +1,14 @@
 package org.homonoia.sw.application;
 
+import com.jme3.app.DebugKeysAppState;
+import com.jme3.app.SimpleApplication;
+import com.jme3.app.StatsAppState;
+import com.jme3.asset.plugins.FileLocator;
+import com.jme3.audio.AudioListenerState;
 import org.homonoia.eris.core.CommandLineArgs;
-import org.homonoia.eris.core.Context;
-import org.homonoia.eris.core.Contextual;
-import org.homonoia.eris.core.exceptions.InitializationException;
-import org.homonoia.eris.engine.Engine;
-import org.homonoia.sw.state.events.StateChange;
-import org.homonoia.sw.state.events.StateCreate;
-import org.homonoia.sw.state.impl.TestState;
+import org.homonoia.eris.core.FileSystem;
+
+import static com.jme3.system.AppSettings.LWJGL_OPENGL3;
 
 /**
  * Copyright (c) 2015-2017 Homonoia Studios.
@@ -15,34 +16,25 @@ import org.homonoia.sw.state.impl.TestState;
  * @author alexparlett
  * @since 13/04/2017
  */
-public class Application extends Contextual {
+public class Application extends SimpleApplication {
 
-    private Engine engine;
-    private StateMachine stateMachine;
+    private final CommandLineArgs commandLineArgs;
 
     public Application(CommandLineArgs commandLineArgs) {
-        super(new Context(commandLineArgs));
-        engine = new Engine(getContext());
-        stateMachine = new StateMachine(getContext());
+        super(new AudioListenerState());
+        this.commandLineArgs = commandLineArgs;
+
+        if (commandLineArgs.containsOption("debug")) {
+            stateManager.attach(new StatsAppState());
+            stateManager.attach(new DebugKeysAppState());
+        }
+
+        settings.setRenderer(LWJGL_OPENGL3);
     }
 
-    public void startup() throws InitializationException {
-        engine.initialize();
-
-        publish(StateCreate.builder()
-                .id(1L)
-                .state(new TestState(getContext())));
-
-        publish(StateChange.builder()
-                .id(1L));
-    }
-
-    public void run() {
-        engine.run();
-    }
-
-    public void shutdown() {
-        engine.shutdown();
-        getContext().destroy();
+    @Override
+    public void simpleInitApp() {
+        assetManager.registerLocator(FileSystem.getApplicationDirectory(), FileLocator.class);
+        assetManager.registerLocator(FileSystem.getApplicationDataDirectory(), FileLocator.class);
     }
 }

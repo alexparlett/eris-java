@@ -91,6 +91,14 @@ dependencies {
     compile 'org.ode4j:core:0.3.0'
     compile 'com.google.code.gson:gson:+'
 
+    compile 'org.jmonkeyengine:jme3-bullet:+'
+    compile 'org.jmonkeyengine:jme3-bullet-native:+'
+    compile 'org.jmonkeyengine:jme3-core:+'
+    compile 'org.jmonkeyengine:jme3-lwjgl3:+'
+    compile 'org.jmonkeyengine:jme3-effects:+'
+    compile 'org.jmonkeyengine:jme3-niftygui:+'
+    compile 'org.jmonkeyengine:jme3-plugins:+'
+
     compileOnly "org.projectlombok:lombok:1.16.10"
 
     testCompile 'org.mockito:mockito-core:2.+'
