@@ -40,7 +40,7 @@ public class ScriptClassLoader {
         }
     }
 
-    public void addDirectory(Path root) {
+    public void registerDirectory(Path root) {
         File scriptDirectory = root.resolve("Scripts").toFile();
         if (scriptDirectory.exists()) {
             File[] directories = {scriptDirectory};

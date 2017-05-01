@@ -1,4 +1,4 @@
-package org.homonoia.eris.resources.types;
+package org.homonoia.sw.assets;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -8,9 +8,9 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonStreamParser;
 import com.google.gson.stream.JsonWriter;
-import org.homonoia.eris.resources.types.json.JsonException;
-import org.homonoia.eris.resources.types.json.JsonPatch;
-import org.homonoia.eris.resources.types.json.JsonType;
+import org.homonoia.sw.assets.json.JsonException;
+import org.homonoia.sw.assets.json.JsonPatch;
+import org.homonoia.sw.assets.json.JsonType;
 
 import java.io.IOException;
 import java.io.InputStream;

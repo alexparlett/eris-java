@@ -1,4 +1,4 @@
-package org.homonoia.eris.resources.types.json;
+package org.homonoia.sw.assets.json;
 
 import com.google.gson.JsonElement;
 import org.apache.commons.lang3.StringUtils;

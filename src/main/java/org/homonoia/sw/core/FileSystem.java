@@ -1,4 +1,4 @@
-package org.homonoia.eris.core;
+package org.homonoia.sw.core;
 
 import com.jme3.system.JmeSystem;
 import com.jme3.system.Platform;
@@ -34,9 +34,14 @@ public class FileSystem {
         return getApplicationDirectory().toString();
     }
 
-    public static String getApplicationDirectory() {
-        return System.getProperty("user.dir");
+    public static Path getApplicationDirectory() {
+        return Paths.get(System.getProperty("user.dir"), "Data");
     }
+
+    public static String getApplicationDirectoryString() {
+        return Paths.get(System.getProperty("user.dir"), "Data").toString();
+    }
+
 
     public static Path getTempDirectory() {
         return Paths.get(System.getProperty("java.io.tmpdir"));

@@ -1,4 +1,4 @@
-package org.homonoia.eris.core.exceptions;
+package org.homonoia.sw.core.exceptions;
 
 import org.slf4j.helpers.MessageFormatter;
 

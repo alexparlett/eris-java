@@ -1,4 +1,4 @@
-package org.homonoia.eris.core;
+package org.homonoia.sw.core;
 
 /**
  * Copyright (c) 2015-2017 Homonoia Studios.

@@ -1,18 +1,11 @@
 package org.homonoia.sw.assets.json;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.core.Is;
-import org.homonoia.sw.core.CommandLineArgs;
-import org.homonoia.eris.core.Context;
-import org.homonoia.eris.core.EmptyStatistics;
 import org.homonoia.sw.assets.Json;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.io.ByteArrayInputStream;
@@ -28,17 +21,6 @@ import java.util.NoSuchElementException;
 @RunWith(MockitoJUnitRunner.class)
 public class JsonPathTest {
 
-    @Mock
-    CommandLineArgs commandLineArgs;
-
-    @InjectMocks
-    Context context;
-
-    @Before
-    public void setup() {
-        context.registerBean(new EmptyStatistics());
-        context.registerBean(new Gson());
-    }
 
     @Test
     public void testSearch_SuccessfulNamedProperty() throws Exception {
@@ -47,7 +29,7 @@ public class JsonPathTest {
 
         InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 
-        Json jsonFile = new Json(context);
+        Json jsonFile = new Json();
         jsonFile.load(inputStream);
 
         JsonElement root = jsonFile.getRoot().orElseThrow(() -> new Exception("Root not found."));
@@ -64,7 +46,7 @@ public class JsonPathTest {
 
         InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 
-        Json jsonFile = new Json(context);
+        Json jsonFile = new Json();
         jsonFile.load(inputStream);
 
         JsonElement root = jsonFile.getRoot().orElseThrow(() -> new Exception("Root not found."));
@@ -81,7 +63,7 @@ public class JsonPathTest {
 
         InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 
-        Json jsonFile = new Json(context);
+        Json jsonFile = new Json();
         jsonFile.load(inputStream);
 
         JsonElement root = jsonFile.getRoot().orElseThrow(() -> new Exception("Root not found."));
@@ -98,7 +80,7 @@ public class JsonPathTest {
 
         InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 
-        Json jsonFile = new Json(context);
+        Json jsonFile = new Json();
         jsonFile.load(inputStream);
 
         JsonElement root = jsonFile.getRoot().orElseThrow(() -> new Exception("Root not found."));
@@ -113,7 +95,7 @@ public class JsonPathTest {
 
         InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 
-        Json jsonFile = new Json(context);
+        Json jsonFile = new Json();
         jsonFile.load(inputStream);
 
         JsonElement root = jsonFile.getRoot().orElseThrow(() -> new Exception("Root not found."));
@@ -123,13 +105,13 @@ public class JsonPathTest {
 
 
     @Test(expected = JsonPathException.class)
-    public void testSearch_FailureNoPath() throws Exception {
+    public void testSearch_FailureNoPath() throws Exception, JsonPathException {
         String json = "{ a: { b: 0 }, c: [ true ], d: null }";
 
 
         InputStream inputStream = new ByteArrayInputStream(json.getBytes());
 
-        Json jsonFile = new Json(context);
+        Json jsonFile = new Json();
         jsonFile.load(inputStream);
 
         JsonElement root = jsonFile.getRoot().orElseThrow(() -> new Exception("Root not found."));

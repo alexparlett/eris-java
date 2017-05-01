@@ -1,4 +1,4 @@
-package org.homonoia.eris.resources.types.json;
+package org.homonoia.sw.assets.json;
 
 /**
  * Copyright (c) 2015-2016 the Eris project.

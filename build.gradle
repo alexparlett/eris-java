@@ -16,21 +16,7 @@ plugins {
 
 project.ext.describe = grgit.describe()
 project.ext.commit = grgit.head().abbreviatedId
-project.ext.lwjglVersion = "3.1.2-SNAPSHOT"
 project.ext.steamworks4jVersion = "1.6.1"
-project.ext.jomlVersion = "1.9.2"
-
-switch (org.gradle.internal.os.OperatingSystem.current()) {
-    case org.gradle.internal.os.OperatingSystem.WINDOWS:
-        project.ext.lwjglNatives = "natives-windows"
-        break
-    case org.gradle.internal.os.OperatingSystem.LINUX:
-        project.ext.lwjglNatives = "natives-linux"
-        break
-    case org.gradle.internal.os.OperatingSystem.MAC_OS:
-        project.ext.lwjglNatives = "natives-macos"
-        break
-}
 
 group 'org.homonoia'
 version grgit.describe().split('-')[0]
@@ -51,44 +37,12 @@ repositories {
 }
 
 dependencies {
-    compile "org.lwjgl:lwjgl:${lwjglVersion}"
-    compile "org.lwjgl:lwjgl-assimp:${lwjglVersion}"
-    compile "org.lwjgl:lwjgl-glfw:${lwjglVersion}"
-    compile "org.lwjgl:lwjgl-jemalloc:${lwjglVersion}"
-    compile "org.lwjgl:lwjgl-nanovg:${lwjglVersion}"
-    compile "org.lwjgl:lwjgl-nfd:${lwjglVersion}"
-    compile "org.lwjgl:lwjgl-nuklear:${lwjglVersion}"
-    compile "org.lwjgl:lwjgl-openal:${lwjglVersion}"
-    compile "org.lwjgl:lwjgl-opengl:${lwjglVersion}"
-    compile "org.lwjgl:lwjgl-par:${lwjglVersion}"
-    compile "org.lwjgl:lwjgl-sse:${lwjglVersion}"
-    compile "org.lwjgl:lwjgl-stb:${lwjglVersion}"
-    compile "org.lwjgl:lwjgl-tinyfd:${lwjglVersion}"
-    compile "org.lwjgl:lwjgl-yoga:${lwjglVersion}"
-    runtime "org.lwjgl:lwjgl:${lwjglVersion}:${lwjglNatives}"
-    runtime "org.lwjgl:lwjgl-assimp:${lwjglVersion}:${lwjglNatives}"
-    runtime "org.lwjgl:lwjgl-glfw:${lwjglVersion}:${lwjglNatives}"
-    runtime "org.lwjgl:lwjgl-jemalloc:${lwjglVersion}:${lwjglNatives}"
-    runtime "org.lwjgl:lwjgl-nanovg:${lwjglVersion}:${lwjglNatives}"
-    runtime "org.lwjgl:lwjgl-nfd:${lwjglVersion}:${lwjglNatives}"
-    runtime "org.lwjgl:lwjgl-nuklear:${lwjglVersion}:${lwjglNatives}"
-    runtime "org.lwjgl:lwjgl-openal:${lwjglVersion}:${lwjglNatives}"
-    runtime "org.lwjgl:lwjgl-opengl:${lwjglVersion}:${lwjglNatives}"
-    runtime "org.lwjgl:lwjgl-par:${lwjglVersion}:${lwjglNatives}"
-    runtime "org.lwjgl:lwjgl-sse:${lwjglVersion}:${lwjglNatives}"
-    runtime "org.lwjgl:lwjgl-stb:${lwjglVersion}:${lwjglNatives}"
-    runtime "org.lwjgl:lwjgl-tinyfd:${lwjglVersion}:${lwjglNatives}"
-    runtime "org.lwjgl:lwjgl-yoga:${lwjglVersion}:${lwjglNatives}"
-
     compile "com.code-disaster.steamworks4j:steamworks4j:${steamworks4jVersion}"
-    compile "org.joml:joml:${jomlVersion}"
     compile 'org.codehaus.janino:janino:3.0.7'
     compile 'org.slf4j:jcl-over-slf4j:1.7.+'
+    compile 'org.slf4j:jul-to-slf4j:1.7.+'
     compile 'ch.qos.logback:logback-classic:+'
-    compile 'io.reactivex:rxjava:+'
     compile 'org.apache.commons:commons-lang3:3.5'
-    compile 'org.reflections:reflections:+'
-    compile 'org.ode4j:core:0.3.0'
     compile 'com.google.code.gson:gson:+'
 
     compile 'org.jmonkeyengine:jme3-bullet:+'
@@ -98,6 +52,8 @@ dependencies {
     compile 'org.jmonkeyengine:jme3-effects:+'
     compile 'org.jmonkeyengine:jme3-niftygui:+'
     compile 'org.jmonkeyengine:jme3-plugins:+'
+    compile 'org.jmonkeyengine:jme3-blender:+'
+    compile 'org.jmonkeyengine:jme3-desktop:+'
 
     compileOnly "org.projectlombok:lombok:1.16.10"
 

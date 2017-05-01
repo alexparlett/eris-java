@@ -1,6 +1,6 @@
-package org.homonoia.eris.resources.types.json;
+package org.homonoia.sw.assets.json;
 
-import org.homonoia.eris.resources.exceptions.ResourceException;
+import org.homonoia.sw.core.exceptions.ErisException;
 
 /**
  * Copyright (c) 2015-2016 the Eris project.
@@ -8,7 +8,7 @@ import org.homonoia.eris.resources.exceptions.ResourceException;
  * @author alexparlett
  * @since 17/02/2016
  */
-public class JsonPathException extends ResourceException {
+public class JsonPathException extends ErisException {
     public JsonPathException(final String msg) {
         super(msg);
     }

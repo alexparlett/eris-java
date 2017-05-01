@@ -1,4 +1,4 @@
-package org.homonoia.eris.resources.types;
+package org.homonoia.sw.assets;
 
 import com.google.gson.TypeAdapter;
 import com.google.gson.annotations.JsonAdapter;

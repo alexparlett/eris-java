@@ -1,11 +1,11 @@
-package org.homonoia.sw.assets;
+package org.homonoia.sw.assets.loaders;
 
 import com.jme3.asset.AssetInfo;
 import com.jme3.asset.AssetLoader;
 import lombok.extern.slf4j.Slf4j;
-import org.homonoia.eris.resources.types.Json;
-import org.homonoia.eris.resources.types.Locale;
-import org.homonoia.eris.resources.types.json.JsonException;
+import org.homonoia.sw.assets.Json;
+import org.homonoia.sw.assets.json.JsonException;
+import org.homonoia.sw.assets.Locale;
 
 import java.io.IOException;
 import java.io.InputStream;

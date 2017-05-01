@@ -1,4 +1,4 @@
-package org.homonoia.eris.core;
+package org.homonoia.sw.core;
 
 import lombok.Data;
 
