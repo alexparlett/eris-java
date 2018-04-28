@@ -2,82 +2,51 @@ buildscript {
     repositories {
         mavenLocal()
         mavenCentral()
-        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
         jcenter()
+        google()
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
     }
     dependencies {
-        
-
+        classpath "com.badlogicgames.gdx:gdx-tools:$gdxVersion"
     }
 }
+
 allprojects {
-    apply plugin: "idea"
+    apply plugin: 'idea'
+}
 
-    version = '1.0'
-    ext {
-        appName = "eris-gdx"
-        gdxVersion = '1.9.8'
-        roboVMVersion = '2.3.3'
-        box2DLightsVersion = '1.4'
-        ashleyVersion = '1.7.0'
-        aiVersion = '1.8.0'
-        lwjglVersion = '+'
+configure(subprojects) {
+    apply plugin: 'java'
+    sourceCompatibility = 1.8
+    dependencies {
+        compile "org.projectlombok:lombok:1.16.10"
+        compile 'com.gmail.blueboxware:libgdxpluginannotations:1.13'
     }
+}
 
+subprojects {
+    version = '0.0.1-SNAPSHOT'
+    ext.appName = 'SolarianWars'
     repositories {
         mavenLocal()
         mavenCentral()
-        maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
-        maven { url "https://oss.sonatype.org/content/repositories/releases/" }
+        jcenter()
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
     }
 }
 
-project(":desktop") {
-    apply plugin: "java"
+// Run `gradle pack` task to generate skin.atlas file at assets/ui.
+import com.badlogic.gdx.tools.texturepacker.TexturePacker
 
-
-    dependencies {
-        compile project(":core")
-        compile "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
-        compile "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
-        compile "com.badlogicgames.gdx:gdx-bullet-platform:$gdxVersion:natives-desktop"
-        compile "com.badlogicgames.gdx:gdx-freetype-platform:$gdxVersion:natives-desktop"
-        compile "org.lwjgl:lwjgl:${lwjglVersion}"
-        compile "org.lwjgl:lwjgl-glfw:${lwjglVersion}"
-        compile "org.lwjgl:lwjgl-jemalloc:${lwjglVersion}"
-        compile "org.lwjgl:lwjgl-openal:${lwjglVersion}"
-        compile "org.lwjgl:lwjgl-opengl:${lwjglVersion}"
-        runtime "org.lwjgl:lwjgl:${lwjglVersion}:natives-linux"
-        runtime "org.lwjgl:lwjgl:${lwjglVersion}:natives-macos"
-        runtime "org.lwjgl:lwjgl:${lwjglVersion}:natives-windows"
-        runtime "org.lwjgl:lwjgl-glfw:${lwjglVersion}:natives-linux"
-        runtime "org.lwjgl:lwjgl-glfw:${lwjglVersion}:natives-macos"
-        runtime "org.lwjgl:lwjgl-glfw:${lwjglVersion}:natives-windows"
-        runtime "org.lwjgl:lwjgl-jemalloc:${lwjglVersion}:natives-linux"
-        runtime "org.lwjgl:lwjgl-jemalloc:${lwjglVersion}:natives-macos"
-        runtime "org.lwjgl:lwjgl-jemalloc:${lwjglVersion}:natives-windows"
-        runtime "org.lwjgl:lwjgl-openal:${lwjglVersion}:natives-linux"
-        runtime "org.lwjgl:lwjgl-openal:${lwjglVersion}:natives-macos"
-        runtime "org.lwjgl:lwjgl-openal:${lwjglVersion}:natives-windows"
-        runtime "org.lwjgl:lwjgl-opengl:${lwjglVersion}:natives-linux"
-        runtime "org.lwjgl:lwjgl-opengl:${lwjglVersion}:natives-macos"
-        runtime "org.lwjgl:lwjgl-opengl:${lwjglVersion}:natives-windows"
-
-    }
-}
-
-project(":core") {
-    apply plugin: "java"
-
-
-    dependencies {
-        compile "com.badlogicgames.gdx:gdx:$gdxVersion"
-        compile "com.badlogicgames.gdx:gdx-bullet:$gdxVersion"
-        compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
-        compile "com.badlogicgames.ashley:ashley:$ashleyVersion"
-        compile "com.badlogicgames.gdx:gdx-ai:$aiVersion"
-        
-    }
+task pack << {
+    // Note that if you need multiple atlases, you can duplicate the
+    // TexturePacker.process invocation and change paths to generate
+    // additional atlases with this task.
+    TexturePacker.process(
+            'raw/ui',           // Raw assets path.
+            'assets/ui',        // Output directory.
+            'skin'              // Name of the generated atlas (without extension).
+    )
 }
 
 task wrapper(type: Wrapper) {

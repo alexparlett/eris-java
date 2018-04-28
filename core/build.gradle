@@ -1,6 +1,24 @@
-apply plugin: "java"
-
-sourceCompatibility = 1.8
 [compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
 
-sourceSets.main.java.srcDirs = [ "src/" ]
+dependencies {
+    compile "com.badlogicgames.gdx:gdx:$gdxVersion"
+    compile "com.badlogicgames.ashley:ashley:$ashleyVersion"
+    compile "com.badlogicgames.gdx:gdx-ai:$aiVersion"
+    compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
+    compile "com.badlogicgames.gdx:gdx-bullet:$gdxVersion"
+    compile "com.kotcrab.vis:vis-runtime:$visRuntimeVersion"
+    compile "net.onedaybeard.artemis:artemis-odb:$artemisOdbVersion"
+    compile "com.github.czyzby:gdx-autumn:$autumnVersion"
+    compile "com.github.czyzby:gdx-kiwi:$kiwiVersion"
+    compile "com.github.tommyettinger:regexodus:$regExodusVersion"
+    compile "com.github.czyzby:gdx-lml-vis:$lmlVisVersion"
+    compile "com.github.czyzby:gdx-lml:$lmlVersion"
+    compile "com.kotcrab.vis:vis-ui:$visUiVersion"
+    compile "com.squidpony:squidlib-util:$squidLibUtilVersion"
+    compile "com.github.czyzby:noise4j:$noise4jVersion"
+    compile "com.strongjoshua:libgdx-inGameConsole:$inGameConsoleVersion"
+    compile "com.github.czyzby:gdx-autumn-mvc:$autumnMvcVersion"
+    compile "net.dermetfan.libgdx-utils:libgdx-utils:$utilsVersion"
+    compile 'org.codehaus.janino:janino:+'
+}
+        
