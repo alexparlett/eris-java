@@ -6,8 +6,6 @@ dependencies {
     compile "com.badlogicgames.gdx:gdx-ai:$aiVersion"
     compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
     compile "com.badlogicgames.gdx:gdx-bullet:$gdxVersion"
-    compile "com.kotcrab.vis:vis-runtime:$visRuntimeVersion"
-    compile "net.onedaybeard.artemis:artemis-odb:$artemisOdbVersion"
     compile "com.github.czyzby:gdx-autumn:$autumnVersion"
     compile "com.github.czyzby:gdx-kiwi:$kiwiVersion"
     compile "com.github.tommyettinger:regexodus:$regExodusVersion"
@@ -16,9 +14,16 @@ dependencies {
     compile "com.kotcrab.vis:vis-ui:$visUiVersion"
     compile "com.squidpony:squidlib-util:$squidLibUtilVersion"
     compile "com.github.czyzby:noise4j:$noise4jVersion"
-    compile "com.strongjoshua:libgdx-inGameConsole:$inGameConsoleVersion"
-    compile "com.github.czyzby:gdx-autumn-mvc:$autumnMvcVersion"
     compile "net.dermetfan.libgdx-utils:libgdx-utils:$utilsVersion"
-    compile 'org.codehaus.janino:janino:+'
+    compile "org.codehaus.janino:janino:+"
+    compile "commons-cli:commons-cli:1.4"
+    compile "com.github.nifty-gui:nifty:${niftyGuiVersion}"
+    compile "com.github.nifty-gui:nifty-style-black:${niftyGuiVersion}"
+    compile "com.github.nifty-gui:nifty-default-controls:${niftyGuiVersion}"
+//    compile ("com.github.nifty-gui:nifty-libgdx-renderer:${niftyGuiVersion}") {
+//        exclude group: 'org.lwjgl.lwjgl', module: 'lwjgl'
+//        exclude group: 'org.lwjgl.lwjgl', module: 'lwjgl_util'
+//        exclude group: 'com.badlogicgames.gdx', module: 'gdx-backend-lwjgl'
+//    }
 }
         

@@ -1,8 +1,8 @@
 package org.homonoia.sw.configuration.preferences;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
-import com.github.czyzby.autumn.mvc.component.preferences.dto.AbstractPreference;
-import com.github.czyzby.autumn.mvc.stereotype.preference.Property;
+import org.homonoia.sw.mvc.component.preferences.dto.AbstractPreference;
+import org.homonoia.sw.mvc.stereotype.preference.Property;
 import com.github.czyzby.lml.util.LmlUtilities;
 import com.kotcrab.vis.ui.VisUI.SkinScale;
 

@@ -1,8 +1,8 @@
 package org.homonoia.sw.controller.action;
 
-import com.github.czyzby.autumn.mvc.stereotype.ViewActionContainer;
 import com.github.czyzby.lml.annotation.LmlAction;
 import com.github.czyzby.lml.parser.action.ActionContainer;
+import org.homonoia.sw.mvc.stereotype.ViewActionContainer;
 
 /**
  * Since this class implements ActionContainer and is annotated with ViewActionContainer, its methods will be reflected

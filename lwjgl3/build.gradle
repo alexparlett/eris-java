@@ -4,7 +4,6 @@ sourceCompatibility = 1.8
 sourceSets.main.resources.srcDirs += [rootProject.file('assets').absolutePath]
 mainClassName = 'org.homonoia.sw.lwjgl3.Lwjgl3Launcher'
 applicationDefaultJvmArgs = ['-XstartOnFirstThread']
-run.args = ['--dtd']
 
 dependencies {
     compile project(':core')

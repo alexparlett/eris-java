@@ -2,10 +2,10 @@ package org.homonoia.sw.controller.dialog;
 
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.github.czyzby.autumn.annotation.Inject;
-import com.github.czyzby.autumn.mvc.stereotype.ViewDialog;
 import com.github.czyzby.lml.annotation.LmlAction;
 import com.github.czyzby.lml.parser.action.ActionContainer;
 import com.kotcrab.vis.ui.VisUI.SkinScale;
+import org.homonoia.sw.mvc.stereotype.ViewDialog;
 import org.homonoia.sw.service.ScaleService;
 
 /**
