@@ -1,6 +1,6 @@
-package org.homonoia.sw.controller;
+package org.homonoia.sw.mvc.controller;
 
-import com.badlogic.ashley.core.Engine;
+import org.homonoia.sw.ecs.core.Engine;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.scenes.scene2d.Action;
@@ -43,14 +43,13 @@ public abstract class AshleyView implements ViewInitializer, ViewRenderer, ViewS
     }
 
     @Override
+    @OverridingMethodsMustInvokeSuper
     public void destroy(ViewController viewController) {
         engine.removeAllEntities();
     }
 
     @Override
-    @OverridingMethodsMustInvokeSuper
     public void resize(Stage stage, int width, int height) {
-        stage.getViewport().update(width, height, true);
     }
 
     @Override
@@ -62,8 +61,7 @@ public abstract class AshleyView implements ViewInitializer, ViewRenderer, ViewS
     @Override
     @OverridingMethodsMustInvokeSuper
     public void hide(Stage stage, Action action) {
-        stage.addAction(Actions.sequence(action, Actions.run(() -> inputMultiplexer.removeProcessor(this))));
-        stage.addAction(action);
+        stage.addAction(Actions.sequence(Actions.run(() -> inputMultiplexer.removeProcessor(this)), action));
     }
 
     @Override

@@ -1,4 +1,4 @@
-package org.homonoia.sw.controller;
+package org.homonoia.sw.mvc.controller;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;

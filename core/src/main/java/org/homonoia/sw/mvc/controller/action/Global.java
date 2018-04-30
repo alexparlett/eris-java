@@ -1,4 +1,4 @@
-package org.homonoia.sw.controller.action;
+package org.homonoia.sw.mvc.controller.action;
 
 import com.github.czyzby.lml.annotation.LmlAction;
 import com.github.czyzby.lml.parser.action.ActionContainer;

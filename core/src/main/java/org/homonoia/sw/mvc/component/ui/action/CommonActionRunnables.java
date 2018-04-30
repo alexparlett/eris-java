@@ -13,7 +13,6 @@ import org.homonoia.sw.mvc.component.ui.controller.ViewController;
  * @author MJ */
 public class CommonActionRunnables {
     private static ActionPosterRunnable POST_ACTION_RUNNABLE = new ActionPosterRunnable();
-    private static InputSetterRunnable SET_INPUT_RUNNABLE = new InputSetterRunnable();
     private static ViewShowerRunnable SHOW_VIEW_RUNNABLE = new ViewShowerRunnable();
     private static CurrentThemeClearerRunnable CLEAR_THEME_RUNNABLE = new CurrentThemeClearerRunnable();
     private static CurrentThemeSetterRunnable SET_THEME_RUNNABLE = new CurrentThemeSetterRunnable();
@@ -23,25 +22,8 @@ public class CommonActionRunnables {
             Gdx.app.exit();
         }
     };
-    private static Runnable CLEAR_INPUT_RUNNABLE = new Runnable() {
-        @Override
-        public void run() {
-            Gdx.input.setInputProcessor(null);
-        }
-    };
 
     private CommonActionRunnables() {
-    }
-
-    /** @param inputProcessor the next input processor.
-     * @return will set application's input processor when run. */
-    public static Runnable getInputSetterRunnable(final InputProcessor inputProcessor) {
-        return SET_INPUT_RUNNABLE.setProcessor(inputProcessor);
-    }
-
-    /** @return will clear input processor when run. */
-    public static Runnable getInputClearerRunnable() {
-        return CLEAR_INPUT_RUNNABLE;
     }
 
     /** @param interfaceService manages views.

@@ -1,4 +1,4 @@
-package org.homonoia.sw.controller;
+package org.homonoia.sw.mvc.controller;
 
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.github.czyzby.autumn.annotation.Inject;
