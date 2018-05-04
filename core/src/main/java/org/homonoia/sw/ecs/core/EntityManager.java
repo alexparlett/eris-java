@@ -106,6 +106,7 @@ class EntityManager {
 		if (removed) {
 			entity.scheduledForRemoval = false;
 			entity.removing = true;
+			entity.removeAll();
 			entities.removeValue(entity, true);
 			listener.entityRemoved(entity);
 			entity.removing = false;

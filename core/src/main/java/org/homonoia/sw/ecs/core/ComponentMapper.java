@@ -16,8 +16,6 @@
 
 package org.homonoia.sw.ecs.core;
 
-import java.util.Optional;
-
 /**
  * Provides super fast {@link Component} retrieval from {@Link Entity} objects.
  * @param <T> the class type of the {@link Component}.
@@ -35,7 +33,7 @@ public final class ComponentMapper<T extends Component> {
 	}
 
 	/** @return The {@link Component} of the specified class belonging to entity. */
-	public Optional<T> get (Entity entity) {
+	public T get (Entity entity) {
 		return entity.getComponent(componentType);
 	}
 

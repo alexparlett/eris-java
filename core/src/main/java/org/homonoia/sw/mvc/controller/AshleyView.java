@@ -1,16 +1,18 @@
 package org.homonoia.sw.mvc.controller;
 
-import org.homonoia.sw.ecs.core.Engine;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.github.czyzby.autumn.annotation.Inject;
+import com.github.czyzby.kiwi.util.gdx.GdxUtilities;
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.homonoia.sw.ecs.core.Engine;
 import org.homonoia.sw.mvc.component.ui.controller.ViewController;
 import org.homonoia.sw.mvc.component.ui.controller.ViewInitializer;
 import org.homonoia.sw.mvc.component.ui.controller.ViewRenderer;
@@ -18,6 +20,8 @@ import org.homonoia.sw.mvc.component.ui.controller.ViewResizer;
 import org.homonoia.sw.mvc.component.ui.controller.ViewShower;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
+
+import static com.badlogic.gdx.Gdx.gl;
 
 /**
  * Copyright (c) 2015-2018 Homonoia Studios.
@@ -45,7 +49,7 @@ public abstract class AshleyView implements ViewInitializer, ViewRenderer, ViewS
     @Override
     @OverridingMethodsMustInvokeSuper
     public void destroy(ViewController viewController) {
-        engine.removeAllEntities();
+        engine.dispose();
     }
 
     @Override
@@ -66,7 +70,12 @@ public abstract class AshleyView implements ViewInitializer, ViewRenderer, ViewS
 
     @Override
     public void render(Stage stage, float delta) {
+        GdxUtilities.clearScreen();
+
         engine.update(delta);
+
+        gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
+
         stage.act(delta);
         stage.draw();
     }

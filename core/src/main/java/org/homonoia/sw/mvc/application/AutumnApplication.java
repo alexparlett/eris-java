@@ -7,7 +7,6 @@ import com.badlogic.gdx.utils.Array;
 import com.github.czyzby.autumn.context.ContextDestroyer;
 import com.github.czyzby.autumn.context.ContextInitializer;
 import com.github.czyzby.autumn.scanner.ClassScanner;
-import com.github.czyzby.kiwi.util.gdx.GdxUtilities;
 import com.github.czyzby.kiwi.util.gdx.asset.Disposables;
 import com.github.czyzby.kiwi.util.gdx.collection.GdxArrays;
 import com.github.czyzby.kiwi.util.tuple.immutable.Pair;
@@ -152,7 +151,6 @@ public class AutumnApplication implements ApplicationListener {
 
     @Override
     public void render() {
-        GdxUtilities.clearScreen();
         interfaceService.render(Gdx.graphics.getDeltaTime());
     }
 

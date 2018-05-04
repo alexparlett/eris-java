@@ -16,13 +16,15 @@
 
 package org.homonoia.sw.ecs.core;
 
+import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.GdxRuntimeException;
 import org.homonoia.sw.ecs.core.ComponentOperationHandler.BooleanInformer;
 import org.homonoia.sw.ecs.core.SystemManager.SystemListener;
-import com.badlogic.gdx.utils.reflect.ClassReflection;
-import com.badlogic.gdx.utils.reflect.ReflectionException;
 import org.homonoia.sw.ecs.signals.Listener;
 import org.homonoia.sw.ecs.signals.Signal;
 import org.homonoia.sw.ecs.utils.ImmutableArray;
+
+import java.util.stream.Stream;
 
 /**
  * The heart of the Entity framework. It is responsible for keeping track of {@link Entity} and
@@ -40,7 +42,7 @@ import org.homonoia.sw.ecs.utils.ImmutableArray;
  *
  * @author Stefan Bachmann
  */
-public class Engine {
+public class Engine implements Disposable {
 	private static Family empty = Family.all().get();
 	
 	private final Listener<Entity> componentAdded = new ComponentListener();
@@ -61,15 +63,31 @@ public class Engine {
 		return new Entity();
 	}
 
+	public Entity createEntity (Component... components) {
+		Entity entity = createEntity();
+
+		Stream.of(components).forEachOrdered(entity::add);
+
+		return entity;
+	}
+
 	/**
 	 * Creates a new {@link Component}. To use that method your components must have a visible no-arg constructor
 	 */
-	public <T extends Component> T createComponent (Class<T> componentType) {
-		try {
-			return ClassReflection.newInstance(componentType);
-		} catch (ReflectionException e) {
-			return null;
-		}
+	public <T extends Component> T createComponent (Class<T> componentType, Object... args) {
+		java.lang.reflect.Constructor<?>[] constructors = componentType.getConstructors();
+		return (T) Stream.of(constructors)
+				.filter(constructor -> Stream.of(constructor.getDeclaredAnnotations())
+						.anyMatch(annotation -> annotation instanceof DefaultConstructor))
+				.findFirst()
+				.map(constructor -> {
+					try {
+						return constructor.newInstance(args);
+					} catch (Exception e) {
+						throw new GdxRuntimeException(e);
+					}
+				})
+				.orElse(null);
 	}
 
 	/**
@@ -226,7 +244,15 @@ public class Engine {
 		entity.componentRemoved.remove(componentRemoved);
 		entity.componentOperationHandler = null;
 	}
-	
+
+	@Override
+	public void dispose() {
+		systemManager.getSystems()
+				.forEach(this::removeSystem);
+
+		removeAllEntities();
+	}
+
 	private class ComponentListener implements Listener<Entity> {
 		@Override
 		public void receive(Signal<Entity> signal, Entity object) {

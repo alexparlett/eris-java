@@ -112,6 +112,6 @@ public class ImmutableArray<T> implements Iterable<T> {
 	}
 
 	public Stream<T> stream() {
-		return StreamSupport.stream(spliterator(), true);
+		return StreamSupport.stream(spliterator(), false);
 	}
 }

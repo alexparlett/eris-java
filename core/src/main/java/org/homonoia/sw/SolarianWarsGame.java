@@ -1,5 +1,6 @@
 package org.homonoia.sw;
 
+import com.badlogic.gdx.physics.bullet.Bullet;
 import com.github.czyzby.autumn.context.ContextInitializer;
 import com.github.czyzby.autumn.scanner.ClassScanner;
 import org.apache.commons.cli.CommandLine;
@@ -21,6 +22,7 @@ public class SolarianWarsGame extends AutumnApplication {
     public SolarianWarsGame(ClassScanner componentScanner, final CommandLine args) {
         super(componentScanner, SolarianWarsGame.class);
         this.args = args;
+        Bullet.init(true, true);
     }
 
     @Override

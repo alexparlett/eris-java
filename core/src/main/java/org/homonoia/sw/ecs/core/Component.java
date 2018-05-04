@@ -24,6 +24,24 @@ import lombok.Data;
  * @author Stefan Bachmann
  */
 @Data
-public abstract class Component {
+public abstract class Component  {
     private Entity entity;
+
+    public final void addedToEntityInternal(Entity entity) {
+        this.entity = entity;
+        this.addedToEntity(entity);
+    }
+
+    public final void removedFromEntityInternal() {
+        this.entity = null;
+        this.removedFromEntity();
+    }
+
+    protected void addedToEntity(Entity entity) {
+
+    }
+
+    protected void removedFromEntity() {
+
+    }
 }

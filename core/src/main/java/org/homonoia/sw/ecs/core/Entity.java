@@ -190,7 +190,7 @@ public class Entity {
 		components.set(componentTypeIndex, component);
 		componentsArray.add(component);
 		componentBits.set(componentTypeIndex);
-		component.setEntity(this);
+		component.addedToEntityInternal(this);
 		
 		return true;
 	}
@@ -208,7 +208,7 @@ public class Entity {
 			components.set(componentTypeIndex, null);
 			componentsArray.removeValue(removeComponent, true);
 			componentBits.clear(componentTypeIndex);
-			removeComponent.setEntity(null);
+			removeComponent.removedFromEntityInternal();
 			
 			return true;
 		}

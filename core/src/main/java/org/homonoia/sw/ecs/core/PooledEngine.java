@@ -72,7 +72,7 @@ public class PooledEngine extends Engine {
 	 * Overrides the default implementation of Engine (creating a new Object)
 	 */
 	@Override
-	public <T extends Component> T createComponent (Class<T> componentType) {
+	public <T extends Component> T createComponent (Class<T> componentType, Object... args) {
 		return componentPools.obtain(componentType);
 	}
 
