@@ -1,8 +1,11 @@
 package org.homonoia.sw.ecs.components;
 
 import com.badlogic.gdx.graphics.Camera;
-import lombok.AllArgsConstructor;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
+import com.badlogic.gdx.utils.viewport.Viewport;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.homonoia.sw.ecs.core.Component;
 import org.homonoia.sw.ecs.core.DefaultConstructor;
 
@@ -13,7 +16,13 @@ import org.homonoia.sw.ecs.core.DefaultConstructor;
  * @since 29/04/2018
  */
 @Data
-@AllArgsConstructor(onConstructor = @__(@DefaultConstructor))
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 public class CameraComponent extends Component {
-    private Camera camera;
+    private final Viewport viewport;
+    @DefaultConstructor
+    public CameraComponent(Camera camera, int viewportWidth, int viewportHeight) {
+        viewport = new ScreenViewport(camera);
+        viewport.update(viewportWidth, viewportHeight, false);
+    }
 }

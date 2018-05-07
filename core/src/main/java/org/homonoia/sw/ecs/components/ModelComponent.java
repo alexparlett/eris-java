@@ -3,6 +3,8 @@ package org.homonoia.sw.ecs.components;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.math.collision.BoundingBox;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.homonoia.sw.ecs.core.Component;
 import org.homonoia.sw.ecs.core.DefaultConstructor;
 
@@ -13,6 +15,8 @@ import org.homonoia.sw.ecs.core.DefaultConstructor;
  * @since 29/04/2018
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
 public class ModelComponent extends Component {
     private ModelInstance model;
     private BoundingBox boundingBox = new BoundingBox();
@@ -24,7 +28,8 @@ public class ModelComponent extends Component {
     }
 
     @Override
-    protected void removedFromEntity() {
-        model = null;
+    public void dispose() {
+        this.model = null;
+        this.boundingBox = null;
     }
 }

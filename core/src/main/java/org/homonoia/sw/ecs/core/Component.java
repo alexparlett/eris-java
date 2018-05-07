@@ -16,6 +16,7 @@
 
 package org.homonoia.sw.ecs.core;
 
+import com.badlogic.gdx.utils.Disposable;
 import lombok.Data;
 
 /**
@@ -24,7 +25,7 @@ import lombok.Data;
  * @author Stefan Bachmann
  */
 @Data
-public abstract class Component  {
+public abstract class Component implements Disposable {
     private Entity entity;
 
     public final void addedToEntityInternal(Entity entity) {
@@ -42,6 +43,11 @@ public abstract class Component  {
     }
 
     protected void removedFromEntity() {
+
+    }
+
+    @Override
+    public void dispose() {
 
     }
 }

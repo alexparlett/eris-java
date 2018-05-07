@@ -19,7 +19,7 @@ public class Lwjgl3Launcher {
 
     private static Lwjgl3Application createApplication(String[] args) throws ParseException {
         Options options = new Options();
-        options.addOption("debug", "Turn on debug mode");
+        options.addOption("D", "debug", false,"Turn on debug mode");
 
         CommandLine commandLine = new DefaultParser().parse(options, args);
 

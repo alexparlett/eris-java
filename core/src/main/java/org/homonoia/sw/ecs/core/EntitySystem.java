@@ -16,11 +16,13 @@
 
 package org.homonoia.sw.ecs.core;
 
+import com.badlogic.gdx.utils.Disposable;
+
 /**
  * Abstract class for processing sets of {@link Entity} objects.
  * @author Stefan Bachmann
  */
-public abstract class EntitySystem {
+public abstract class EntitySystem implements Disposable {
 	/** Use this to set the priority of the system. Lower means it'll get executed first. */
 	public int priority;
 
@@ -86,5 +88,9 @@ public abstract class EntitySystem {
 	final void removedFromEngineInternal(Engine engine) {
 		this.engine = null;
 		removedFromEngine(engine);
+	}
+
+	@Override
+	public void dispose() {
 	}
 }

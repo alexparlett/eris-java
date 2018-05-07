@@ -1,9 +1,9 @@
 package org.homonoia.sw.physics;
 
 import com.badlogic.gdx.math.Matrix4;
-import com.badlogic.gdx.physics.bullet.linearmath.btMotionState;
-import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 /**
  * Copyright (c) 2015-2018 Homonoia Studios.
@@ -12,9 +12,12 @@ import lombok.Data;
  * @since 30/04/2018
  */
 @Data
-@AllArgsConstructor
-public class MotionState extends btMotionState {
-    private Matrix4 worldTransform;
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true)
+public class KinematicMotionState extends BaseMotionState {
+    public KinematicMotionState(Matrix4 worldTransform) {
+        super(worldTransform);
+    }
 
     @Override
     public void getWorldTransform (Matrix4 worldTrans) {
@@ -22,6 +25,5 @@ public class MotionState extends btMotionState {
     }
     @Override
     public void setWorldTransform (Matrix4 worldTrans) {
-        worldTransform.set(worldTrans);
     }
 }

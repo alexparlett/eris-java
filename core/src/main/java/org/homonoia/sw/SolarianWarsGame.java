@@ -4,7 +4,6 @@ import com.badlogic.gdx.physics.bullet.Bullet;
 import com.github.czyzby.autumn.context.ContextInitializer;
 import com.github.czyzby.autumn.scanner.ClassScanner;
 import org.apache.commons.cli.CommandLine;
-import org.homonoia.sw.configuration.ProgramArguments;
 import org.homonoia.sw.mvc.application.AutumnApplication;
 
 /**
@@ -28,6 +27,6 @@ public class SolarianWarsGame extends AutumnApplication {
     @Override
     protected void addDefaultComponents(ContextInitializer initializer) {
         super.addDefaultComponents(initializer);
-        initializer.addComponent(new ProgramArguments(args));
+        initializer.addComponent(args);
     }
 }

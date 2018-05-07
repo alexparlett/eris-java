@@ -24,14 +24,14 @@ class ComponentOperationHandler {
 		}
 	}
 
-	public void remove(Entity entity) {
+	public void remove(Entity entity, Component removeComponent) {
 		if (delayed.value()) {
 			ComponentOperation operation = operationPool.obtain();
-			operation.makeRemove(entity);
+			operation.makeRemove(entity, removeComponent);
 			operations.add(operation);
 		}
 		else {
-			entity.notifyComponentRemoved();
+			entity.notifyComponentRemoved(removeComponent);
 		}
 	}
 
@@ -44,7 +44,7 @@ class ComponentOperationHandler {
 					operation.entity.notifyComponentAdded();
 					break;
 				case Remove:
-					operation.entity.notifyComponentRemoved();
+					operation.entity.notifyComponentRemoved(operation.component);
 					break;
 				default: break;
 			}
@@ -56,6 +56,8 @@ class ComponentOperationHandler {
 	}
 
 	private static class ComponentOperation implements Pool.Poolable {
+		private Component component;
+
 		public enum Type {
 			Add,
 			Remove,
@@ -69,7 +71,8 @@ class ComponentOperationHandler {
 			this.entity = entity;
 		}
 
-		public void makeRemove(Entity entity) {
+		public void makeRemove(Entity entity, Component component) {
+			this.component = component;
 			this.type = Type.Remove;
 			this.entity = entity;
 		}

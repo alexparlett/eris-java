@@ -18,6 +18,10 @@ package org.homonoia.sw.ecs.core;
 
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Bits;
+import com.badlogic.gdx.utils.Disposable;
+import io.reactivex.subjects.PublishSubject;
+import org.homonoia.sw.ecs.signals.ComponentAddedSignal;
+import org.homonoia.sw.ecs.signals.ComponentRemovedSignal;
 import org.homonoia.sw.ecs.signals.Signal;
 import org.homonoia.sw.ecs.utils.Bag;
 import org.homonoia.sw.ecs.utils.ImmutableArray;
@@ -26,13 +30,11 @@ import org.homonoia.sw.ecs.utils.ImmutableArray;
  * Simple containers of {@link Component}s that give them "data". The component's data is then processed by {@link EntitySystem}s.
  * @author Stefan Bachmann
  */
-public class Entity {
-	/** A flag that can be used to bit mask this entity. Up to the user to manage. */
-	public int flags;
-	/** Will dispatch an event when a component is added. */
-	public final Signal<Entity> componentAdded;
-	/** Will dispatch an event when a component is removed. */
-	public final Signal<Entity> componentRemoved;
+public class Entity implements Disposable {
+    public int id;
+    /** A flag that can be used to bit mask this entity. Up to the user to manage. */
+    public int flags;
+    public final PublishSubject<Signal> publisher = PublishSubject.create();
 
 	boolean scheduledForRemoval;
 	boolean removing;
@@ -52,9 +54,6 @@ public class Entity {
 		componentBits = new Bits();
 		familyBits = new Bits();
 		flags = 0;
-
-		componentAdded = new Signal<Entity>();
-		componentRemoved = new Signal<Entity>();
 	}
 
 	/**
@@ -95,10 +94,10 @@ public class Entity {
 
 		if (removeComponent != null && removeInternal(componentClass)) {
 			if (componentOperationHandler != null) {
-				componentOperationHandler.remove(this);
+				componentOperationHandler.remove(this, removeComponent);
 			}
 			else {
-				notifyComponentRemoved();
+				notifyComponentRemoved(removeComponent);
 			}
 		}
 
@@ -217,15 +216,32 @@ public class Entity {
 	}
 	
 	void notifyComponentAdded() {
-		componentAdded.dispatch(this);
+        if(!publisher.hasComplete()) {
+            publisher.onNext(ComponentAddedSignal.builder().item(this).build());
+        }
 	}
 	
-	void notifyComponentRemoved() {
-		componentRemoved.dispatch(this);
+	void notifyComponentRemoved(Component removeComponent) {
+	    if(!publisher.hasComplete()) {
+            publisher.onNext(ComponentRemovedSignal.builder()
+                    .item(this)
+                    .component(removeComponent)
+                    .build());
+        }
 	}
 
 	/** @return true if the entity is scheduled to be removed */
 	public boolean isScheduledForRemoval () {
 		return scheduledForRemoval;
+	}
+
+	@Override
+	public void dispose() {
+		while (componentsArray.size > 0) {
+			Component component = componentsArray.first();
+			remove(component.getClass());
+			component.dispose();
+		}
+        publisher.onComplete();
 	}
 }

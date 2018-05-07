@@ -1,15 +1,15 @@
 package org.homonoia.sw.mvc.controller;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.InputProcessor;
-import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g3d.Environment;
 import com.badlogic.gdx.scenes.scene2d.Action;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.github.czyzby.autumn.annotation.Inject;
-import com.github.czyzby.kiwi.util.gdx.GdxUtilities;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.homonoia.sw.ecs.core.Engine;
@@ -22,6 +22,8 @@ import org.homonoia.sw.mvc.component.ui.controller.ViewShower;
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 
 import static com.badlogic.gdx.Gdx.gl;
+import static com.badlogic.gdx.graphics.GL20.GL_COLOR_BUFFER_BIT;
+import static com.badlogic.gdx.graphics.GL20.GL_DEPTH_BUFFER_BIT;
 
 /**
  * Copyright (c) 2015-2018 Homonoia Studios.
@@ -39,6 +41,9 @@ public abstract class AshleyView implements ViewInitializer, ViewRenderer, ViewS
 
     @Getter(AccessLevel.PROTECTED)
     private Stage stage;
+
+    @Getter(AccessLevel.PROTECTED)
+    private Environment environment = new Environment();
 
     @Override
     @OverridingMethodsMustInvokeSuper
@@ -70,11 +75,12 @@ public abstract class AshleyView implements ViewInitializer, ViewRenderer, ViewS
 
     @Override
     public void render(Stage stage, float delta) {
-        GdxUtilities.clearScreen();
+        Gdx.gl.glClearColor(0f, 0f, 0f, 1f);
+        Gdx.gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         engine.update(delta);
 
-        gl.glClear(GL20.GL_DEPTH_BUFFER_BIT);
+        gl.glClear(GL_DEPTH_BUFFER_BIT);
 
         stage.act(delta);
         stage.draw();

@@ -20,8 +20,8 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.GdxRuntimeException;
 import org.homonoia.sw.ecs.core.ComponentOperationHandler.BooleanInformer;
 import org.homonoia.sw.ecs.core.SystemManager.SystemListener;
-import org.homonoia.sw.ecs.signals.Listener;
-import org.homonoia.sw.ecs.signals.Signal;
+import org.homonoia.sw.ecs.signals.ComponentAddedSignal;
+import org.homonoia.sw.ecs.signals.ComponentRemovedSignal;
 import org.homonoia.sw.ecs.utils.ImmutableArray;
 
 import java.util.stream.Stream;
@@ -44,9 +44,6 @@ import java.util.stream.Stream;
  */
 public class Engine implements Disposable {
 	private static Family empty = Family.all().get();
-	
-	private final Listener<Entity> componentAdded = new ComponentListener();
-	private final Listener<Entity> componentRemoved = new ComponentListener();
 	
 	private SystemManager systemManager = new SystemManager(new EngineSystemListener());
 	private EntityManager entityManager = new EntityManager(new EngineEntityListener());
@@ -212,6 +209,7 @@ public class Engine implements Disposable {
 		
 		updating = true;
 		ImmutableArray<EntitySystem> systems = systemManager.getSystems();
+
 		try {
 			for (int i = 0; i < systems.size(); ++i) {
 				EntitySystem system = systems.get(i);
@@ -230,8 +228,17 @@ public class Engine implements Disposable {
 	}
 	
 	protected void addEntityInternal(Entity entity) {
-		entity.componentAdded.add(componentAdded);
-		entity.componentRemoved.add(componentRemoved);
+		entity.publisher.filter(ComponentAddedSignal.class::isInstance)
+				.map(ComponentAddedSignal.class::cast)
+				.map(ComponentAddedSignal::getItem)
+				.subscribe(familyManager::updateFamilyMembership);
+
+
+		entity.publisher.filter(ComponentRemovedSignal.class::isInstance)
+				.map(ComponentRemovedSignal.class::cast)
+				.map(ComponentRemovedSignal::getItem)
+				.subscribe(familyManager::updateFamilyMembership);
+
 		entity.componentOperationHandler = componentOperationHandler;
 		
 		familyManager.updateFamilyMembership(entity);
@@ -239,25 +246,12 @@ public class Engine implements Disposable {
 	
 	protected void removeEntityInternal(Entity entity) {
 		familyManager.updateFamilyMembership(entity);
-
-		entity.componentAdded.remove(componentAdded);
-		entity.componentRemoved.remove(componentRemoved);
-		entity.componentOperationHandler = null;
 	}
 
 	@Override
 	public void dispose() {
-		systemManager.getSystems()
-				.forEach(this::removeSystem);
-
-		removeAllEntities();
-	}
-
-	private class ComponentListener implements Listener<Entity> {
-		@Override
-		public void receive(Signal<Entity> signal, Entity object) {
-			familyManager.updateFamilyMembership(object);
-		}
+		entityManager.getEntities().forEach(Entity::dispose);
+		systemManager.getSystems().forEach(EntitySystem::dispose);
 	}
 	
 	private class EngineSystemListener implements SystemListener {

@@ -19,6 +19,7 @@ dependencies {
     compile "com.github.nifty-gui:nifty:${niftyGuiVersion}"
     compile "com.github.nifty-gui:nifty-style-black:${niftyGuiVersion}"
     compile "com.github.nifty-gui:nifty-default-controls:${niftyGuiVersion}"
+    compile "io.reactivex.rxjava2:rxjava:2.+"
 //    compile ("com.github.nifty-gui:nifty-libgdx-renderer:${niftyGuiVersion}") {
 //        exclude group: 'org.lwjgl.lwjgl', module: 'lwjgl'
 //        exclude group: 'org.lwjgl.lwjgl', module: 'lwjgl_util'
