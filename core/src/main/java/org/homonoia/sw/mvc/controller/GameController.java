@@ -9,6 +9,7 @@ import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.ModelInstance;
 import com.badlogic.gdx.graphics.g3d.attributes.ColorAttribute;
+import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
 import com.badlogic.gdx.math.Matrix4;
 import com.badlogic.gdx.math.Vector3;
@@ -47,7 +48,7 @@ import static com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw.DebugDrawM
  * This is application's main view, displaying a menu with several options.
  */
 @View(id = "game", value = "ui/templates/game.lml", themes = "music/theme.ogg")
-public class GameController extends AshleyView {
+public class GameController extends Scene {
 
     @Inject
     private InterfaceService interfaceService;
@@ -60,13 +61,14 @@ public class GameController extends AshleyView {
 
     private ImmutableArray<Entity> cameras;
     private TransformComponent transformComponent;
+    private CameraInputController inputController;
 
 
     @Override
     public void initialize(Stage stage, ObjectMap<String, Actor> actorMappedByIds) {
         super.initialize(stage, actorMappedByIds);
 
-        Engine engine = getEngine();
+        Engine engine = this.getEngine();
         cameras = engine.getEntitiesFor(Family.all(CameraComponent.class).get());
 
         Environment environment = getEnvironment();
@@ -112,6 +114,8 @@ public class GameController extends AshleyView {
         CameraComponent cameraComponent = engine.createComponent(CameraComponent.class, perspectiveCamera,Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         Entity cameraEntity = engine.createEntity(cameraComponent);
         engine.addEntity(cameraEntity);
+
+        inputController = new CameraInputController(perspectiveCamera);
     }
 
     @Override
@@ -131,5 +135,45 @@ public class GameController extends AshleyView {
                 .map(entity -> entity.getComponent(CameraComponent.class))
                 .map(CameraComponent::getViewport)
                 .forEach(viewport -> viewport.update(width,height,false));
+    }
+
+    @Override
+    public boolean keyDown(int keycode) {
+        return super.keyDown(keycode) || inputController.keyDown(keycode);
+    }
+
+    @Override
+    public boolean keyUp(int keycode) {
+        return super.keyUp(keycode) || inputController.keyUp(keycode);
+    }
+
+    @Override
+    public boolean keyTyped(char character) {
+        return super.keyTyped(character) || inputController.keyTyped(character);
+    }
+
+    @Override
+    public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+        return super.touchDown(screenX, screenY, pointer, button) || inputController.touchDown(screenX, screenY, pointer, button);
+    }
+
+    @Override
+    public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+        return super.touchUp(screenX, screenY, pointer, button) || inputController.touchUp(screenX, screenY, pointer, button);
+    }
+
+    @Override
+    public boolean touchDragged(int screenX, int screenY, int pointer) {
+        return super.touchDragged(screenX, screenY, pointer) || inputController.touchDragged(screenX, screenY, pointer);
+    }
+
+    @Override
+    public boolean mouseMoved(int screenX, int screenY) {
+        return super.mouseMoved(screenX, screenY) || inputController.mouseMoved(screenX, screenY);
+    }
+
+    @Override
+    public boolean scrolled(int amount) {
+        return super.scrolled(amount) || inputController.scrolled(amount);
     }
 }

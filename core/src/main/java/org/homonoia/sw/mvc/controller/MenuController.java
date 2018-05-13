@@ -15,7 +15,7 @@ import org.homonoia.sw.mvc.stereotype.View;
  * This is application's main view, displaying a menu with several options.
  */
 @View(id = "menu", value = "ui/templates/menu.lml", themes = "music/theme.ogg")
-public class MenuController extends AshleyView {
+public class MenuController extends Scene {
     /**
      * Asset-annotated files will be found and automatically loaded by the AssetsService.
      */
@@ -36,7 +36,7 @@ public class MenuController extends AshleyView {
     public void render(final Stage stage, final float delta) {
         // As a proof of concept that you can pair custom logic with Autumn MVC views, this class implements
         // ViewRenderer and handles view rendering manually. It renders LibGDX logo before drawing the stage.
-        getEngine().update(delta);
+        this.getEngine().update(delta);
         stage.act(delta);
 
         final Batch batch = stage.getBatch();

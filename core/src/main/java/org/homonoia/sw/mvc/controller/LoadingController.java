@@ -14,7 +14,7 @@ import org.homonoia.sw.mvc.stereotype.View;
  * loaded.
  */
 @View(value = "ui/templates/loading.lml", first = true)
-public class LoadingController extends AshleyView {
+public class LoadingController extends Scene {
     /**
      * Will be injected automatically. Manages assets. Used to display loading progress.
      */

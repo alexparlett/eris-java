@@ -42,9 +42,10 @@ import java.util.stream.Stream;
  *
  * @author Stefan Bachmann
  */
+@com.github.czyzby.autumn.annotation.Component
 public class Engine implements Disposable {
 	private static Family empty = Family.all().get();
-	
+
 	private SystemManager systemManager = new SystemManager(new EngineSystemListener());
 	private EntityManager entityManager = new EntityManager(new EngineEntityListener());
 	private ComponentOperationHandler componentOperationHandler = new ComponentOperationHandler(new EngineDelayedInformer());
@@ -206,27 +207,27 @@ public class Engine implements Disposable {
 		if (updating) {
 			throw new IllegalStateException("Cannot call update() on an Engine that is already updating.");
 		}
-		
+
 		updating = true;
 		ImmutableArray<EntitySystem> systems = systemManager.getSystems();
 
 		try {
 			for (int i = 0; i < systems.size(); ++i) {
 				EntitySystem system = systems.get(i);
-				
+
 				if (system.checkProcessing()) {
 					system.update(deltaTime);
 				}
-	
+
 				componentOperationHandler.processOperations();
 				entityManager.processPendingOperations();
 			}
 		}
 		finally {
 			updating = false;
-		}	
+		}
 	}
-	
+
 	protected void addEntityInternal(Entity entity) {
 		entity.publisher.filter(ComponentAddedSignal.class::isInstance)
 				.map(ComponentAddedSignal.class::cast)
@@ -240,10 +241,10 @@ public class Engine implements Disposable {
 				.subscribe(familyManager::updateFamilyMembership);
 
 		entity.componentOperationHandler = componentOperationHandler;
-		
+
 		familyManager.updateFamilyMembership(entity);
 	}
-	
+
 	protected void removeEntityInternal(Entity entity) {
 		familyManager.updateFamilyMembership(entity);
 	}
@@ -253,7 +254,7 @@ public class Engine implements Disposable {
 		entityManager.getEntities().forEach(Entity::dispose);
 		systemManager.getSystems().forEach(EntitySystem::dispose);
 	}
-	
+
 	private class EngineSystemListener implements SystemListener {
 		@Override
 		public void systemAdded (EntitySystem system) {
@@ -265,7 +266,7 @@ public class Engine implements Disposable {
 			system.removedFromEngineInternal(Engine.this);
 		}
 	}
-	
+
 	private class EngineEntityListener implements EntityListener {
 		@Override
 		public void entityAdded (Entity entity) {
@@ -277,7 +278,7 @@ public class Engine implements Disposable {
 			removeEntityInternal(entity);
 		}
 	}
-	
+
 	private class EngineDelayedInformer implements BooleanInformer {
 		@Override
 		public boolean value () {

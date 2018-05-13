@@ -76,7 +76,7 @@ public abstract class EntitySystem implements Disposable {
 
 	/** @return engine instance the system is registered to.
 	 * It will be null if the system is not associated to any engine instance. */
-	public Engine getEngine () {
+	public Engine getEngine() {
 		return engine;
 	}
 

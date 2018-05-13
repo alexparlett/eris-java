@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.actions.Actions;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.github.czyzby.autumn.annotation.Inject;
+import com.github.czyzby.kiwi.util.gdx.asset.Disposables;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.homonoia.sw.ecs.core.Engine;
@@ -18,6 +19,7 @@ import org.homonoia.sw.mvc.component.ui.controller.ViewInitializer;
 import org.homonoia.sw.mvc.component.ui.controller.ViewRenderer;
 import org.homonoia.sw.mvc.component.ui.controller.ViewResizer;
 import org.homonoia.sw.mvc.component.ui.controller.ViewShower;
+import org.homonoia.sw.mvc.component.ui.controller.impl.StandardViewResizer;
 
 import javax.annotation.OverridingMethodsMustInvokeSuper;
 
@@ -31,11 +33,13 @@ import static com.badlogic.gdx.graphics.GL20.GL_DEPTH_BUFFER_BIT;
  * @author alexparlett
  * @since 28/04/2018
  */
-public abstract class AshleyView implements ViewInitializer, ViewRenderer, ViewShower, InputProcessor, ViewResizer {
+public abstract class Scene implements ViewInitializer, ViewRenderer, ViewShower, InputProcessor, ViewResizer {
 
     @Inject
+    @Getter(AccessLevel.PROTECTED)
     private InputMultiplexer inputMultiplexer;
 
+    @Inject
     @Getter(AccessLevel.PROTECTED)
     private Engine engine = new Engine();
 
@@ -44,6 +48,8 @@ public abstract class AshleyView implements ViewInitializer, ViewRenderer, ViewS
 
     @Getter(AccessLevel.PROTECTED)
     private Environment environment = new Environment();
+
+    private StandardViewResizer viewResizer = new StandardViewResizer();
 
     @Override
     @OverridingMethodsMustInvokeSuper
@@ -54,11 +60,13 @@ public abstract class AshleyView implements ViewInitializer, ViewRenderer, ViewS
     @Override
     @OverridingMethodsMustInvokeSuper
     public void destroy(ViewController viewController) {
-        engine.dispose();
+        Disposables.disposeOf(engine, stage);
     }
 
     @Override
+    @OverridingMethodsMustInvokeSuper
     public void resize(Stage stage, int width, int height) {
+        viewResizer.resize(stage, width, height);
     }
 
     @Override
@@ -79,10 +87,10 @@ public abstract class AshleyView implements ViewInitializer, ViewRenderer, ViewS
         Gdx.gl.glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         engine.update(delta);
+        stage.act(delta);
 
         gl.glClear(GL_DEPTH_BUFFER_BIT);
 
-        stage.act(delta);
         stage.draw();
     }
 

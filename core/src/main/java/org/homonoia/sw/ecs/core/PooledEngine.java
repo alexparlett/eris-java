@@ -42,7 +42,7 @@ public class PooledEngine extends Engine {
 	 * Creates a new PooledEngine with a maximum of 100 entities and 100 components of each type. Use
 	 * {@link #PooledEngine(int, int, int, int)} to configure the entity and component pools.
 	 */
-	public PooledEngine () {
+	public PooledEngine() {
 		this(10, 100, 10, 100);
 	}
 
@@ -53,7 +53,7 @@ public class PooledEngine extends Engine {
 	 * @param componentPoolInitialSize initial size for each component type pool.
 	 * @param componentPoolMaxSize maximum size for each component type pool.
 	 */
-	public PooledEngine (int entityPoolInitialSize, int entityPoolMaxSize, int componentPoolInitialSize, int componentPoolMaxSize) {
+	public PooledEngine(int entityPoolInitialSize, int entityPoolMaxSize, int componentPoolInitialSize, int componentPoolMaxSize) {
 		super();
 
 		entityPool = new EntityPool(entityPoolInitialSize, entityPoolMaxSize);
