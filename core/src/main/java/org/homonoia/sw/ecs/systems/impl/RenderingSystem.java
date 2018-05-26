@@ -16,7 +16,6 @@ import org.homonoia.sw.ecs.utils.ImmutableArray;
 import java.util.Objects;
 
 import static java.util.Objects.nonNull;
-import static org.homonoia.sw.mvc.config.AutumnActionPriority.TOP_PRIORITY;
 
 /**
  * Copyright (c) 2015-2018 Homonoia Studios.
@@ -40,7 +39,7 @@ public class RenderingSystem extends EntitySystem {
     private ImmutableArray<Entity> lightsEntities;
 
     public RenderingSystem(final Environment environment, final DebugDrawer debugDrawer) {
-        super(TOP_PRIORITY);
+        super(MIN_PRIORITY);
         this.environment = environment;
         this.debugDrawer = debugDrawer;
         renderableFamily = Family.all(ModelComponent.class).get();

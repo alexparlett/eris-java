@@ -20,7 +20,6 @@ import org.homonoia.sw.ecs.core.Family;
 import org.homonoia.sw.ecs.signals.ComponentRemovedSignal;
 
 import static java.util.Objects.nonNull;
-import static org.homonoia.sw.mvc.config.AutumnActionPriority.MIN_PRIORITY;
 
 /**
  * Copyright (c) 2015-2018 Homonoia Studios.
@@ -39,7 +38,7 @@ public class PhysicsSystem extends EntitySystem implements EntityListener  {
     private final ComponentMapper<RigidBodyComponent> rigidBodyComponentMapper;
 
     public PhysicsSystem(DebugDrawer debugDrawer) {
-        super(MIN_PRIORITY);
+        super(MAX_PRIORITY);
         this.family = Family.all(RigidBodyComponent.class).get();
         this.collisionConfig = new btDefaultCollisionConfiguration();
         this.dispatcher = new btCollisionDispatcher(collisionConfig);

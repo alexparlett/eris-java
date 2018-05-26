@@ -42,7 +42,6 @@ import java.util.stream.Stream;
  *
  * @author Stefan Bachmann
  */
-@com.github.czyzby.autumn.annotation.Component
 public class Engine implements Disposable {
 	private static Family empty = Family.all().get();
 

@@ -8,18 +8,16 @@ dependencies {
     compile "com.github.czyzby:gdx-autumn:$autumnVersion"
     compile "com.github.czyzby:gdx-kiwi:$kiwiVersion"
     compile "com.github.tommyettinger:regexodus:$regExodusVersion"
-    compile "com.github.czyzby:gdx-lml-vis:$lmlVisVersion"
-    compile "com.github.czyzby:gdx-lml:$lmlVersion"
     compile "com.kotcrab.vis:vis-ui:$visUiVersion"
     compile "com.squidpony:squidlib-util:$squidLibUtilVersion"
     compile "com.github.czyzby:noise4j:$noise4jVersion"
     compile "net.dermetfan.libgdx-utils:libgdx-utils:$utilsVersion"
     compile "org.codehaus.janino:janino:+"
     compile "commons-cli:commons-cli:1.4"
-    compile "com.github.nifty-gui:nifty:${niftyGuiVersion}"
-    compile "com.github.nifty-gui:nifty-style-black:${niftyGuiVersion}"
-    compile "com.github.nifty-gui:nifty-default-controls:${niftyGuiVersion}"
     compile "io.reactivex.rxjava2:rxjava:2.+"
+//    compile "com.github.nifty-gui:nifty:${niftyGuiVersion}"
+//    compile "com.github.nifty-gui:nifty-style-black:${niftyGuiVersion}"
+//    compile "com.github.nifty-gui:nifty-default-controls:${niftyGuiVersion}"
 //    compile ("com.github.nifty-gui:nifty-libgdx-renderer:${niftyGuiVersion}") {
 //        exclude group: 'org.lwjgl.lwjgl', module: 'lwjgl'
 //        exclude group: 'org.lwjgl.lwjgl', module: 'lwjgl_util'

@@ -23,6 +23,11 @@ import com.badlogic.gdx.utils.Disposable;
  * @author Stefan Bachmann
  */
 public abstract class EntitySystem implements Disposable {
+
+	public static int MAX_PRIORITY = -5;
+	public static int DEFAULT_PRIORITY = 0;
+	public static int MIN_PRIORITY = 5;
+
 	/** Use this to set the priority of the system. Lower means it'll get executed first. */
 	public int priority;
 
