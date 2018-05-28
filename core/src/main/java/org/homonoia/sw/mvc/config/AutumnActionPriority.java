@@ -1,11 +1,9 @@
 package org.homonoia.sw.mvc.config;
 
-import org.homonoia.sw.mvc.component.asset.AssetService;
-import org.homonoia.sw.mvc.component.preferences.PreferencesService;
-import org.homonoia.sw.mvc.component.sfx.MusicService;
-import org.homonoia.sw.mvc.component.ui.InterfaceService;
-import org.homonoia.sw.mvc.component.ui.SkinService;
-import org.homonoia.sw.mvc.component.ui.processor.LmlMacroAnnotationProcessor;
+import org.homonoia.sw.service.AssetService;
+import org.homonoia.sw.service.MusicService;
+import org.homonoia.sw.service.InterfaceService;
+import org.homonoia.sw.service.SkinService;
 
 /** Contains priorities used by initiation and destruction methods in Autumn MVC.
  *
@@ -21,8 +19,7 @@ public class AutumnActionPriority {
     /** 2. Used by: {@link InterfaceService} (bundles and preferences
      * assignment, LML parser creation). */
     public static final int VERY_HIGH_PRIORITY = 2;
-    /** 1. Used by: {@link PreferencesService} (preferences loading),
-     * {@link LmlMacroAnnotationProcessor} (macros loading). */
+    /** 1. */
     public static final int HIGH_PRIORITY = 1;
     /** 0. Used by: {@link MusicService} (adding sound settings actions to
      * LML parser). */
@@ -34,7 +31,6 @@ public class AutumnActionPriority {
      * {@link SkinService} (skin disposing). */
     public static final int VERY_LOW_PRIORITY = -2;
     /** -3. Executes last. Used by: {@link InterfaceService} (first view
-     * initiation and showing); {@link AssetService} (assets disposing),
-     * {@link PreferencesService} (saving preferences) */
+     * initiation and showing); {@link AssetService} (assets disposing) */
     public static final int MIN_PRIORITY = -3;
 }

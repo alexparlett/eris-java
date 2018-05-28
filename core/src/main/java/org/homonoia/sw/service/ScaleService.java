@@ -4,30 +4,25 @@ import com.github.czyzby.autumn.annotation.Component;
 import com.github.czyzby.autumn.annotation.Inject;
 import com.kotcrab.vis.ui.VisUI;
 import com.kotcrab.vis.ui.VisUI.SkinScale;
-import org.homonoia.sw.configuration.preferences.ScalePreference;
-import org.homonoia.sw.mvc.component.ui.InterfaceService;
-import org.homonoia.sw.mvc.component.ui.SkinService;
 
 /**
- * Thanks to the ViewActionContainer annotation, this class will be automatically found and processed.
- * <p>
  * This service handles GUI scale.
  */
 @Component
 public class ScaleService {
     // @Inject-annotated fields will be automatically filled by the context initializer.
     @Inject
-    private ScalePreference preference;
-    @Inject
     private InterfaceService interfaceService;
     @Inject
     private SkinService skinService;
+
+    private SkinScale skinScale;
 
     /**
      * @return current GUI scale.
      */
     public SkinScale getScale() {
-        return preference.get();
+        return skinScale;
     }
 
     /**
@@ -38,20 +33,13 @@ public class ScaleService {
     }
 
     /**
-     * @return scale property, which is saved in application's preferences.
-     */
-    public ScalePreference getPreference() {
-        return preference;
-    }
-
-    /**
      * @param scale the new application's scale.
      */
     public void changeScale(final SkinScale scale) {
-        if (preference.get() == scale) {
+        if (skinScale == scale) {
             return; // This is the current scale.
         }
-        preference.set(scale);
+        skinScale = scale;
         // Changing GUI skin, reloading all screens:
         interfaceService.reload(new Runnable() {
             @Override

@@ -1,8 +1,8 @@
 package org.homonoia.sw.mvc.config;
 
 import com.badlogic.gdx.assets.AssetLoaderParameters;
-import org.homonoia.sw.mvc.component.asset.AssetService;
-import org.homonoia.sw.mvc.component.ui.InterfaceService;
+import org.homonoia.sw.service.AssetService;
+import org.homonoia.sw.service.InterfaceService;
 
 /** Contains all messages posted by Autumn MVC components using a
  * {@link com.github.czyzby.autumn.processor.event.MessageDispatcher}.
