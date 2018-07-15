@@ -27,6 +27,7 @@ import org.homonoia.sw.ecs.systems.impl.RenderingSystem;
 import org.homonoia.sw.physics.KinematicMotionState;
 import org.homonoia.sw.scene.World;
 import org.homonoia.sw.scene.WorldController;
+import org.homonoia.sw.service.AssetService;
 
 import static com.badlogic.gdx.graphics.VertexAttributes.Usage;
 import static com.badlogic.gdx.physics.bullet.collision.CollisionConstants.DISABLE_DEACTIVATION;
@@ -41,7 +42,7 @@ import static com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw.DebugDrawM
  */
 public class MapWorldController extends WorldController {
     @Override
-    public void create() {
+    public void create(AssetService assetService) {
         PerspectiveCamera perspectiveCamera = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         perspectiveCamera.position.set(10, 10, 10);
         perspectiveCamera.lookAt(0,0,0);

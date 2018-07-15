@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import org.homonoia.sw.service.AssetService;
 import org.homonoia.sw.service.InterfaceService;
 
 import static com.badlogic.gdx.Gdx.gl;
@@ -20,9 +21,9 @@ public abstract class ViewController implements Disposable {
 
     protected Stage stage;
 
-    public void create(final InterfaceService interfaceService) {
+    public void create(InterfaceService interfaceService, AssetService assetService) {
         Viewport viewport = new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-        stage = new Stage(viewport);
+        stage = new Stage(viewport, interfaceService.getBatch());
     }
 
     public void show() {

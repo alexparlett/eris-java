@@ -1,10 +1,10 @@
-package org.homonoia.sw.scene;
+package org.homonoia.sw.service;
 
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.github.czyzby.kiwi.util.gdx.asset.Disposables;
 import com.github.czyzby.kiwi.util.gdx.collection.GdxMaps;
-import org.homonoia.sw.service.InterfaceService;
+import org.homonoia.sw.scene.Scene;
 
 import static java.util.Objects.nonNull;
 
@@ -14,16 +14,22 @@ import static java.util.Objects.nonNull;
  * @author alexparlett
  * @since 26/05/2018
  */
-public class SceneManager implements Disposable {
+public class SceneService implements Disposable {
 
+    private final AssetService assetService;
+    private final InterfaceService interfaceService;
     private ObjectMap<String, Scene> scenes = GdxMaps.newObjectMap();
     private Scene current;
-    private InterfaceService interfaceService;
+
+    public SceneService(final AssetService assetService, final InterfaceService interfaceService) {
+        this.assetService = assetService;
+        this.interfaceService = interfaceService;
+    }
 
     public void add(String id, Scene scene) {
         if (!scenes.containsKey(id)) {
             scenes.put(id, scene);
-            scene.create(interfaceService);
+            scene.create(assetService, interfaceService);
         }
     }
 

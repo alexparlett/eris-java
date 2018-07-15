@@ -11,8 +11,13 @@ buildscript {
     }
 }
 
+plugins {
+    id "net.ltgt.apt" version "0.10"
+}
+
 allprojects {
     apply plugin: 'idea'
+    apply plugin: 'net.ltgt.apt'
 }
 
 configure(subprojects) {

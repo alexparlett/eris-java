@@ -1,6 +1,7 @@
 package org.homonoia.sw.scene;
 
 import com.badlogic.gdx.utils.Disposable;
+import org.homonoia.sw.service.AssetService;
 
 /**
  * Copyright (c) 2015-2018 Homonoia Studios.
@@ -12,7 +13,7 @@ public abstract class WorldController implements Disposable {
 
     protected World world;
 
-    public void create() {
+    public void create(AssetService assetService) {
         world = new World();
     }
 

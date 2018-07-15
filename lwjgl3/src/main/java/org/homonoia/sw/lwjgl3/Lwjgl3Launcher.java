@@ -24,7 +24,7 @@ public class Lwjgl3Launcher {
         CommandLine commandLine = new DefaultParser().parse(options, args);
 
 
-        return new Lwjgl3Application(new SolarianWarsGame(new DesktopClassScanner(), commandLine),
+        return new Lwjgl3Application(new SolarianWarsGame(commandLine, new DesktopClassScanner()),
                 getDefaultConfiguration());
     }
 

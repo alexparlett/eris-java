@@ -1,0 +1,22 @@
+[
+  {
+    "name": "Terran",
+    "temperature": {
+      "start": 0,
+      "end": 100
+    },
+    "mass": {
+      "start": 0.3,
+      "end": 1
+    },
+    "radius": {
+
+    },
+    "tags": [
+
+    ],
+    "conditions": [
+
+    ]
+  }
+]

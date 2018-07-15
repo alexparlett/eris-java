@@ -3,7 +3,6 @@ package org.homonoia.sw.graphics;
 import com.badlogic.gdx.graphics.g3d.Material;
 import com.badlogic.gdx.graphics.g3d.Model;
 import com.badlogic.gdx.graphics.g3d.utils.ModelBuilder;
-import com.github.czyzby.autumn.annotation.Component;
 
 import static com.badlogic.gdx.graphics.VertexAttributes.Usage.Normal;
 import static com.badlogic.gdx.graphics.VertexAttributes.Usage.Position;
@@ -14,7 +13,6 @@ import static com.badlogic.gdx.graphics.VertexAttributes.Usage.Position;
  * @author alexparlett
  * @since 30/04/2018
  */
-@Component
 public class ModelService {
 
     private ModelBuilder modelBuilder = new ModelBuilder();

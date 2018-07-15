@@ -77,6 +77,12 @@
       b: 0,
       a: 0.6
     },
+    transparent: {
+      r: 0,
+      g: 0,
+      b: 0,
+      a: 0
+    },
     font: white
     fontOver: white
     fontDown: gray
@@ -259,15 +265,15 @@
     },
     textField: {
       name: rect,
-      color: up
+      color: transparent
     },
     textFieldDown: {
       name: rect,
-      color: over
+      color: transparent
     },
     textFieldDisabled: {
       name: rect,
-      color: disabled
+      color: transparent
     },
     textFieldCursor: {
       name: dot,

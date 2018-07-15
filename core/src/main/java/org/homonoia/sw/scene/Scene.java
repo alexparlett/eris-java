@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.utils.Disposable;
 import com.github.czyzby.kiwi.util.gdx.asset.Disposables;
+import org.homonoia.sw.service.AssetService;
 import org.homonoia.sw.service.InterfaceService;
 
 import static com.badlogic.gdx.Gdx.gl;
@@ -26,9 +27,9 @@ public class Scene implements Disposable, InputProcessor {
         this.worldController = worldController;
     }
 
-    public void create(final InterfaceService interfaceService) {
-        this.viewController.create(interfaceService);
-        this.worldController.create();
+    public void create(AssetService assetService, InterfaceService interfaceService) {
+        this.viewController.create(interfaceService, assetService);
+        this.worldController.create(assetService);
     }
 
     public void show() {

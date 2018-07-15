@@ -2,8 +2,8 @@ package org.homonoia.sw.scene.controllers.map;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import org.homonoia.sw.scene.ViewController;
+import org.homonoia.sw.service.AssetService;
 import org.homonoia.sw.service.InterfaceService;
 
 /**
@@ -17,10 +17,11 @@ public class MapViewController extends ViewController {
     private TextArea actor;
 
     @Override
-    public void create(final InterfaceService interfaceService) {
-        super.create(interfaceService);
+    public void create(InterfaceService interfaceService, AssetService assetService) {
+        super.create(interfaceService, assetService);
 
-        actor = new TextArea("FPS: ", new TextField.TextFieldStyle());
+        actor = new TextArea("FPS: ", interfaceService.getSkin());
+        actor.setDisabled(true);
         stage.addActor(actor);
     }
 
