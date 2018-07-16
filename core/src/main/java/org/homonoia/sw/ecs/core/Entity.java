@@ -23,11 +23,11 @@ import io.reactivex.subjects.PublishSubject;
 import org.homonoia.sw.ecs.signals.ComponentAddedSignal;
 import org.homonoia.sw.ecs.signals.ComponentRemovedSignal;
 import org.homonoia.sw.ecs.signals.Signal;
-import org.homonoia.sw.ecs.utils.Bag;
-import org.homonoia.sw.ecs.utils.ImmutableArray;
+import org.homonoia.sw.collections.Bag;
+import org.homonoia.sw.collections.ImmutableArray;
 
 /**
- * Simple containers of {@link Component}s that give them "data". The component's data is then processed by {@link EntitySystem}s.
+ * Simple containers of {@link Component}s that give them "spec". The component's spec is then processed by {@link EntitySystem}s.
  * @author Stefan Bachmann
  */
 public class Entity implements Disposable {

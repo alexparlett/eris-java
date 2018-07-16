@@ -2,7 +2,7 @@ package org.homonoia.sw.ecs.core;
 
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
-import org.homonoia.sw.ecs.utils.ImmutableArray;
+import org.homonoia.sw.collections.ImmutableArray;
 
 import java.util.Comparator;
 

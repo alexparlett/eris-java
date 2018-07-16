@@ -22,7 +22,7 @@ import org.homonoia.sw.ecs.core.ComponentOperationHandler.BooleanInformer;
 import org.homonoia.sw.ecs.core.SystemManager.SystemListener;
 import org.homonoia.sw.ecs.signals.ComponentAddedSignal;
 import org.homonoia.sw.ecs.signals.ComponentRemovedSignal;
-import org.homonoia.sw.ecs.utils.ImmutableArray;
+import org.homonoia.sw.collections.ImmutableArray;
 
 import java.util.stream.Stream;
 

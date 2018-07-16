@@ -4,7 +4,7 @@ package org.homonoia.sw.ecs.core;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectSet;
 import com.badlogic.gdx.utils.Pool;
-import org.homonoia.sw.ecs.utils.ImmutableArray;
+import org.homonoia.sw.collections.ImmutableArray;
 
 class EntityManager {
 	private EntityListener listener;

@@ -11,7 +11,7 @@ import org.homonoia.sw.ecs.core.Engine;
 import org.homonoia.sw.ecs.core.Entity;
 import org.homonoia.sw.ecs.core.EntitySystem;
 import org.homonoia.sw.ecs.core.Family;
-import org.homonoia.sw.ecs.utils.ImmutableArray;
+import org.homonoia.sw.collections.ImmutableArray;
 
 import java.util.Objects;
 

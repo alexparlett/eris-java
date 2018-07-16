@@ -20,7 +20,7 @@ import org.homonoia.sw.ecs.core.Engine;
 import org.homonoia.sw.ecs.core.Entity;
 import org.homonoia.sw.ecs.core.EntitySystem;
 import org.homonoia.sw.ecs.core.Family;
-import org.homonoia.sw.ecs.utils.ImmutableArray;
+import org.homonoia.sw.collections.ImmutableArray;
 
 /**
  * A simple {@link EntitySystem} that processes a {@link Family} of entities not once per frame, but after a given interval.

@@ -20,7 +20,7 @@ import com.badlogic.gdx.utils.Disposable;
 import lombok.Data;
 
 /**
- * Interface for all Components. A Component is intended as a data holder and provides data to be processed in an
+ * Interface for all Components. A Component is intended as a spec holder and provides spec to be processed in an
  * {@link EntitySystem}. But do as you wish.
  * @author Stefan Bachmann
  */

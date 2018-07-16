@@ -7,11 +7,9 @@ import com.badlogic.gdx.assets.loaders.AssetLoader;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.ObjectSet;
-import com.badlogic.gdx.utils.ObjectSet.ObjectSetIterator;
 import com.github.czyzby.kiwi.util.gdx.asset.Disposables;
 import com.github.czyzby.kiwi.util.gdx.collection.GdxArrays;
 import com.github.czyzby.kiwi.util.gdx.collection.GdxSets;
-import org.homonoia.sw.asset.injection.AssetInjection;
 
 /**
  * Wraps around two internal {@link AssetManager}s, providing utilities for asset loading.
@@ -30,7 +28,6 @@ public class AssetService implements Disposable {
      */
     private final AssetManager eagerAssetManager = new AssetManager();
 
-    private final ObjectSet<AssetInjection> assetInjections = GdxSets.newSet();
     private final ObjectSet<String> scheduledAssets = GdxSets.newSet();
     private final Array<Runnable> onLoadActions = GdxArrays.newArray();
 
@@ -161,16 +158,6 @@ public class AssetService implements Disposable {
         return eagerAssetManager.get(assetPath, assetClass);
     }
 
-    private void injectRequestedAssets() {
-        for (final ObjectSetIterator<AssetInjection> iterator = assetInjections.iterator(); iterator.hasNext(); ) {
-            final AssetInjection assetInjection = iterator.next();
-            if (assetInjection.inject(this)) {
-                assetInjection.removeScheduledAssets(scheduledAssets);
-                iterator.remove();
-            }
-        }
-    }
-
     /**
      * Manually updates wrapped asset manager.
      *
@@ -185,7 +172,6 @@ public class AssetService implements Disposable {
     }
 
     private void doOnLoadingFinish() {
-        injectRequestedAssets();
         invokeOnLoadActions();
     }
 

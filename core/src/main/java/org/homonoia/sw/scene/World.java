@@ -7,6 +7,7 @@ import com.badlogic.gdx.graphics.g3d.utils.CameraInputController;
 import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import org.homonoia.sw.ecs.core.Engine;
@@ -19,26 +20,27 @@ import static java.util.Objects.nonNull;
  * @author alexparlett
  * @since 26/05/2018
  */
-@Getter
-@Setter
+@Data
 public class World implements Disposable {
 
-    private Environment environment = new Environment();
-    private Engine engine = new Engine();
-    private CameraInputController cameraInputController;
-    private Viewport viewport;
+    private final Environment environment;
+    private final Engine engine;
+    private final CameraInputController cameraInputController;
+    private final Viewport viewport;
 
     public World() {
-        this.viewport = new ScreenViewport(new PerspectiveCamera(66f, Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
+        this(new ScreenViewport(new PerspectiveCamera(66f, Gdx.graphics.getWidth(), Gdx.graphics.getHeight())));
     }
 
     public World(Viewport viewport) {
-        this.viewport = viewport;
+       this(viewport, null);
     }
 
     public World(Viewport viewport, CameraInputController cameraInputController) {
         this.viewport = viewport;
         this.cameraInputController = cameraInputController;
+        this.engine = new Engine();
+        this.environment = new Environment();
     }
 
     public void act(float delta) {
@@ -107,14 +109,7 @@ public class World implements Disposable {
 
     @Override
     public void dispose() {
-        viewport = null;
-
-        cameraInputController = null;
-
         environment.clear();
-        environment = null;
-
         engine.dispose();
-        engine = null;
     }
 }

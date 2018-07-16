@@ -20,7 +20,7 @@ import org.homonoia.sw.ecs.core.Engine;
 import org.homonoia.sw.ecs.core.Entity;
 import org.homonoia.sw.ecs.core.EntitySystem;
 import org.homonoia.sw.ecs.core.Family;
-import org.homonoia.sw.ecs.utils.ImmutableArray;
+import org.homonoia.sw.collections.ImmutableArray;
 
 /**
  * A simple EntitySystem that iterates over each entity and calls processEntity() for each entity every time the EntitySystem is

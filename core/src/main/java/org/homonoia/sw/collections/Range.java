@@ -1,4 +1,4 @@
-package org.homonoia.sw.data;
+package org.homonoia.sw.collections;
 
 import lombok.Data;
 
