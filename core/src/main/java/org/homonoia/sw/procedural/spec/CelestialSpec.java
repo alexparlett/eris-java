@@ -1,5 +1,6 @@
 package org.homonoia.sw.procedural.spec;
 
+import com.badlogic.gdx.math.Vector3;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,5 +21,5 @@ public abstract class CelestialSpec<T> {
     private List<String> tags;
     private List<String> conditions;
 
-    public abstract T generate(Random random);
+    public abstract T generate(Random random, Vector3 position);
 }

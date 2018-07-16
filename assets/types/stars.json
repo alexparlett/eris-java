@@ -1,0 +1,163 @@
+[
+  {
+    "name": "O",
+    "temperature": {
+      "start": 30000,
+      "end": 40000
+    },
+    "mass": {
+      "start": 16,
+      "end": 20
+    },
+    "radius": {
+      "start": 6.6,
+      "end": 8
+    },
+    "luminosity": {
+      "start": 30000,
+      "end": 40000
+    },
+    "tags": [
+    ],
+    "conditions": [
+    ]
+  },
+  {
+    "name": "B",
+    "temperature": {
+      "start": 10000,
+      "end": 30000
+    },
+    "mass": {
+      "start": 2.1,
+      "end": 16
+    },
+    "radius": {
+      "start": 1.8,
+      "end": 6.6
+    },
+    "luminosity": {
+      "start": 25,
+      "end": 30000
+    },
+    "tags": [
+    ],
+    "conditions": [
+    ]
+  },
+  {
+    "name": "A",
+    "temperature": {
+      "start": 75000,
+      "end": 10000
+    },
+    "mass": {
+      "start": 1.4,
+      "end": 2.1
+    },
+    "radius": {
+      "start": 1.4,
+      "end": 1.8
+    },
+    "luminosity": {
+      "start": 5,
+      "end": 25
+    },
+    "tags": [
+    ],
+    "conditions": [
+    ]
+  },
+  {
+    "name": "F",
+    "temperature": {
+      "start": 6000,
+      "end": 7500
+    },
+    "mass": {
+      "start": 1.04,
+      "end": 1.4
+    },
+    "radius": {
+      "start": 1.15,
+      "end": 1.4
+    },
+    "luminosity": {
+      "start": 1.5,
+      "end": 5
+    },
+    "tags": [
+    ],
+    "conditions": [
+    ]
+  },
+  {
+    "name": "G",
+    "temperature": {
+      "start": 5200,
+      "end": 6000
+    },
+    "mass": {
+      "start": 0.8,
+      "end": 1.04
+    },
+    "radius": {
+      "start": 0.96,
+      "end": 1.15
+    },
+    "luminosity": {
+      "start": 0.6,
+      "end": 1.5
+    },
+    "tags": [
+    ],
+    "conditions": [
+    ]
+  },
+  {
+    "name": "K",
+    "temperature": {
+      "start": 3700,
+      "end": 5200
+    },
+    "mass": {
+      "start": 0.45,
+      "end": 0.8
+    },
+    "radius": {
+      "start": 0.7,
+      "end": 0.96
+    },
+    "luminosity": {
+      "start": 0.08,
+      "end": 0.6
+    },
+    "tags": [
+    ],
+    "conditions": [
+    ]
+  },
+  {
+    "name": "M",
+    "temperature": {
+      "start": 2400,
+      "end": 3700
+    },
+    "mass": {
+      "start": 0.08,
+      "end": 0.45
+    },
+    "radius": {
+      "start": 0.5,
+      "end": 0.7
+    },
+    "luminosity": {
+      "start": 0.05,
+      "end": 0.08
+    },
+    "tags": [
+    ],
+    "conditions": [
+    ]
+  }
+]
