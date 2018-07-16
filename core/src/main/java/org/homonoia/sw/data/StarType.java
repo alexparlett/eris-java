@@ -11,8 +11,11 @@ import java.util.List;
  * @since 15/07/2018
  */
 @Data
-public class StarData {
+public class StarType {
     String name;
     Range<Float> temperature;
+    Range<Float> mass;
+    Range<Float> radius;
+    List<String> tags;
     List<String> conditions;
 }

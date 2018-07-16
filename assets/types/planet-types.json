@@ -6,17 +6,37 @@
       "end": 100
     },
     "mass": {
-      "start": 0.3,
-      "end": 1
+      "start": 0.5,
+      "end": 2
     },
     "radius": {
-
+      "start": 0.8,
+      "end": 1.9
     },
     "tags": [
 
     ],
     "conditions": [
+    ]
+  },
+  {
+    "name": "Sub Terran",
+    "temperature": {
+      "start": 0,
+      "end": 100
+    },
+    "mass": {
+      "start": 0.1,
+      "end": 0.5
+    },
+    "radius": {
+      "start": 0.5,
+      "end": 1.2
+    },
+    "tags": [
 
+    ],
+    "conditions": [
     ]
   }
 ]
