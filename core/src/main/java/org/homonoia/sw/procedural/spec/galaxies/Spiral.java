@@ -1,6 +1,7 @@
 package org.homonoia.sw.procedural.spec.galaxies;
 
-import org.homonoia.sw.procedural.Galaxy;
+import com.badlogic.gdx.utils.Array;
+import org.homonoia.sw.procedural.Star;
 import org.homonoia.sw.procedural.spec.GalaxySpec;
 
 import java.util.Random;
@@ -8,12 +9,11 @@ import java.util.Random;
 public class Spiral extends GalaxySpec {
 
     private int spacing;
-    private int minArms;
-    private int maxAms;
+    private int arms;
     private float swirl = (float) (Math.PI * 4);
 
     @Override
-    public Galaxy generate(Random random) {
+    public Array<Star> generate(Random random) {
         return null;
     }
 }

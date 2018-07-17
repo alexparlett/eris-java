@@ -19,6 +19,13 @@ import static org.homonoia.sw.utils.RandomUtils.random;
 @Data
 public class StarSpec extends CelestialSpec<Star> {
 
+    public Star generate(Random random, Vector3 position, float kelvin) {
+        return Star.builder()
+                .position(position)
+                .color(kelvinToColor(kelvin))
+                .build();
+    }
+
     @Override
     public Star generate(Random random, Vector3 position) {
         return Star.builder()
