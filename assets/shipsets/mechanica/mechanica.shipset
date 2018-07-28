@@ -1,0 +1,10 @@
+Hull MechanicaColony
+{
+    Name {string {"Colony"}}
+    Material {ref {$MechanicaGenericPBR}}
+    Model (tangent = true)
+    {
+        MeshRef {string {"shipsets/mechanica/civilian_colony.ogex"}}
+    }
+    Scale {float {0.4}}
+}

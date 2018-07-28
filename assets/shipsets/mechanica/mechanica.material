@@ -1,0 +1,10 @@
+Material MechanicaGenericPBR
+{
+	Shader{ref {$PBRShipSupport}}
+	Texture: data/shipsets/volkur/diffuse.png
+	Texture2: data/shipsets/volkur/normal.png
+	Texture3: data/shipsets/volkur/masks.png
+	Texture4: data/shipsets/volkur/damaged.png
+	Texture5: data/shipsets/mechanica/mechanica_emissives.png
+	Cubemap6: data/images/skycube.png
+}
