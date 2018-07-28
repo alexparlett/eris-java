@@ -17,12 +17,12 @@ import static com.badlogic.gdx.graphics.GL20.GL_DEPTH_BUFFER_BIT;
  * @author alexparlett
  * @since 25/05/2018
  */
-public class Scene implements Disposable, InputProcessor {
+public class State implements Disposable, InputProcessor {
 
     private ViewController viewController;
     private WorldController worldController;
 
-    public Scene(ViewController viewController, WorldController worldController) {
+    public State(ViewController viewController, WorldController worldController) {
         this.viewController = viewController;
         this.worldController = worldController;
     }

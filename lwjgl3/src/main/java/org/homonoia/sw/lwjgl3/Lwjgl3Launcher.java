@@ -3,9 +3,6 @@ package org.homonoia.sw.lwjgl3;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.github.czyzby.autumn.fcs.scanner.DesktopClassScanner;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.homonoia.sw.SolarianWarsGame;
 
@@ -18,13 +15,7 @@ public class Lwjgl3Launcher {
     }
 
     private static Lwjgl3Application createApplication(String[] args) throws ParseException {
-        Options options = new Options();
-        options.addOption("D", "debug", false,"Turn on debug mode");
-
-        CommandLine commandLine = new DefaultParser().parse(options, args);
-
-
-        return new Lwjgl3Application(new SolarianWarsGame(commandLine, new DesktopClassScanner()),
+        return new Lwjgl3Application(new SolarianWarsGame(args, new DesktopClassScanner()),
                 getDefaultConfiguration());
     }
 

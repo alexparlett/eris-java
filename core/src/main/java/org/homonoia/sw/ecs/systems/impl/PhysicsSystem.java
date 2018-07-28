@@ -46,7 +46,7 @@ public class PhysicsSystem extends EntitySystem implements EntityListener  {
         this.solver = new btSequentialImpulseConstraintSolver();
         this.world = new btDiscreteDynamicsWorld(dispatcher, broadphase, solver, collisionConfig);
         this.world.setDebugDrawer(debugDrawer);
-        rigidBodyComponentMapper = ComponentMapper.getFor(RigidBodyComponent.class);
+        this.rigidBodyComponentMapper = ComponentMapper.getFor(RigidBodyComponent.class);
     }
 
     @Override

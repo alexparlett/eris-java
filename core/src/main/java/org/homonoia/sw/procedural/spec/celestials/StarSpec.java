@@ -1,7 +1,6 @@
 package org.homonoia.sw.procedural.spec.celestials;
 
 import com.badlogic.gdx.math.Vector3;
-import lombok.Data;
 import org.homonoia.sw.procedural.Star;
 import org.homonoia.sw.procedural.spec.CelestialSpec;
 
@@ -16,7 +15,6 @@ import static org.homonoia.sw.utils.RandomUtils.random;
  * @author alexparlett
  * @since 15/07/2018
  */
-@Data
 public class StarSpec extends CelestialSpec<Star> {
 
     public Star generate(Random random, Vector3 position, float kelvin) {

@@ -1,6 +1,6 @@
 package org.homonoia.sw.procedural.spec.celestials;
 
-import lombok.Data;
+import com.badlogic.gdx.math.Vector3;
 import org.homonoia.sw.procedural.Planet;
 import org.homonoia.sw.procedural.spec.CelestialSpec;
 
@@ -12,10 +12,10 @@ import java.util.Random;
  * @author alexparlett
  * @since 15/07/2018
  */
-@Data
 public class PlanetSpec extends CelestialSpec<Planet> {
+
     @Override
-    public Planet generate(Random random) {
+    public Planet generate(Random random, Vector3 position) {
         return null;
     }
 }

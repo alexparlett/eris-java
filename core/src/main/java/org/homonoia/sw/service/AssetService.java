@@ -48,14 +48,13 @@ public class AssetService implements Disposable {
      * @param loader     asset loader for the selected type. Will be registered in all managed {@link AssetManager}
      *                   instances.
      * @param suffix     allows to filter files.
-     * @param assetClass class of the loaded asset.
-     * @param <Type>     type of registered loader.
+     * @param type class of the loaded asset.
      * @see AssetManager#setLoader(Class, String, AssetLoader)
      */
-    public <Type> void registerLoader(final AssetLoader<Type, AssetLoaderParameters<Type>> loader, final String suffix,
-                                      final Class<Type> assetClass) {
-        assetManager.setLoader(assetClass, suffix, loader);
-        eagerAssetManager.setLoader(assetClass, suffix, loader);
+    public  <T, P extends AssetLoaderParameters<T>> void registerLoader(Class<T> type, String suffix,
+                                                                    AssetLoader<T, P> loader) {
+        assetManager.setLoader(type, suffix, loader);
+        eagerAssetManager.setLoader(type, suffix, loader);
     }
 
     /**

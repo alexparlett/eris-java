@@ -43,6 +43,8 @@ import static com.badlogic.gdx.physics.bullet.linearmath.btIDebugDraw.DebugDrawM
 public class MapWorldController extends WorldController {
     @Override
     public void create(AssetService assetService) {
+        Model ogexTest = assetService.finishLoading("shipsets/mechanica/civilian_colony.ogex", Model.class);
+
         PerspectiveCamera perspectiveCamera = new PerspectiveCamera(67, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
         perspectiveCamera.position.set(10, 10, 10);
         perspectiveCamera.lookAt(0,0,0);
@@ -69,8 +71,10 @@ public class MapWorldController extends WorldController {
                 new Material(ColorAttribute.createDiffuse(Color.GREEN)),
                 Usage.Position | Usage.Normal);
 
+        ogexTest.materials.add(new Material(ColorAttribute.createDiffuse(Color.GREEN)));
+
         Matrix4 position = new Matrix4();
-        ModelInstance modelInstance = new ModelInstance(model, position);
+        ModelInstance modelInstance = new ModelInstance(ogexTest, position);
         KinematicMotionState motionState = new KinematicMotionState(position);
 
         ModelComponent modelComponent = engine.createComponent(ModelComponent.class, modelInstance);

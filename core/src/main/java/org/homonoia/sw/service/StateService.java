@@ -4,7 +4,7 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.ObjectMap;
 import com.github.czyzby.kiwi.util.gdx.asset.Disposables;
 import com.github.czyzby.kiwi.util.gdx.collection.GdxMaps;
-import org.homonoia.sw.scene.Scene;
+import org.homonoia.sw.scene.State;
 
 import static java.util.Objects.nonNull;
 
@@ -14,28 +14,28 @@ import static java.util.Objects.nonNull;
  * @author alexparlett
  * @since 26/05/2018
  */
-public class SceneService implements Disposable {
+public class StateService implements Disposable {
 
     private final AssetService assetService;
     private final InterfaceService interfaceService;
-    private ObjectMap<String, Scene> scenes = GdxMaps.newObjectMap();
-    private Scene current;
+    private ObjectMap<String, State> scenes = GdxMaps.newObjectMap();
+    private State current;
 
-    public SceneService(final AssetService assetService, final InterfaceService interfaceService) {
+    public StateService(final AssetService assetService, final InterfaceService interfaceService) {
         this.assetService = assetService;
         this.interfaceService = interfaceService;
     }
 
-    public void add(String id, Scene scene) {
+    public void add(String id, State state) {
         if (!scenes.containsKey(id)) {
-            scenes.put(id, scene);
-            scene.create(assetService, interfaceService);
+            scenes.put(id, state);
+            state.create(assetService, interfaceService);
         }
     }
 
     public void remove(String id) {
-        Scene scene = scenes.remove(id);
-        scene.dispose();
+        State state = scenes.remove(id);
+        state.dispose();
     }
 
     public void setCurrent(String id) {

@@ -8,8 +8,6 @@ import com.badlogic.gdx.utils.Disposable;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.badlogic.gdx.utils.viewport.Viewport;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 import org.homonoia.sw.ecs.core.Engine;
 
 import static java.util.Objects.nonNull;
@@ -45,6 +43,9 @@ public class World implements Disposable {
 
     public void act(float delta) {
         engine.update(delta);
+        if (nonNull(cameraInputController)) {
+            cameraInputController.update();
+        }
     }
 
     public boolean keyDown(int keycode) {

@@ -16,7 +16,7 @@ public class Galaxy {
         this.stars = stars;
     }
 
-    public static Callable<Galaxy> Generate(GalaxySpec spec, Random random) {
-        return () -> spec.generate(random);
+    public static Callable<Galaxy> generate(GalaxySpec spec, Random random) {
+        return () -> new Galaxy(spec.generate(random));
     }
 }

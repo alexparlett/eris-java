@@ -2,7 +2,6 @@ package org.homonoia.sw.procedural.spec.galaxies;
 
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
-import lombok.NonNull;
 import org.homonoia.sw.procedural.Star;
 import org.homonoia.sw.procedural.spec.GalaxySpec;
 import org.homonoia.sw.procedural.spec.celestials.StarSpec;
@@ -21,7 +20,6 @@ import static org.homonoia.sw.utils.RandomUtils.normallyDistributedSingle;
  */
 public class Disk extends GalaxySpec {
 
-    @NonNull
     private int size;
 
     private float densityMean = 0.0000025f;
@@ -48,7 +46,7 @@ public class Disk extends GalaxySpec {
         Array<Star> stars = new Array();
 
         float density = max(0, normallyDistributedSingle(random, densityDeviation, densityMean));
-        int countMax = max(0, (int) (size * size * size * density));
+        int countMax = max(0, (int) (size * size * density));
         if (countMax <= 0)
             return stars;
 
