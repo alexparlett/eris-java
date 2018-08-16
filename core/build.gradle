@@ -5,7 +5,6 @@ dependencies {
     compile "com.badlogicgames.gdx:gdx-ai:$aiVersion"
     compile "com.badlogicgames.gdx:gdx-freetype:$gdxVersion"
     compile "com.badlogicgames.gdx:gdx-bullet:$gdxVersion"
-    compile "com.github.czyzby:gdx-autumn-fcs:$autumnVersion"
     compile "com.github.czyzby:gdx-kiwi:$kiwiVersion"
     compile "com.kotcrab.vis:vis-ui:$visUiVersion"
     compile "net.dermetfan.libgdx-utils:libgdx-utils:$utilsVersion"
